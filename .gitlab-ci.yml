@@ -1,0 +1,74 @@
+include:
+  - project: 'nds-ifce-maracanau/devops-shared-jobs'
+    ref: 'main-v02'
+    file: 'dotnet-jobs.yml'
+
+variables:
+  GIT_DEPTH: 1
+  SERVICE: 'Avisos'
+  DEPLOY_PATH: '/var/www/src/Senium/backend'
+  OUTPUT_PUBLISH: 'publish'
+  PROJECT_BUILD: 'Src/Senium.Api/Senium.Api.csproj'
+  SOURCE_CODE_DIRECTORY: 'Src'
+  NUGET_PACKAGES_DIRECTORY: '.nuget'
+
+default:
+  cache: &global_cache
+    key: $CI_COMMIT_REF_SLUG
+    paths:
+      - Src/*/bin/
+      - Src/*/obj/
+      - $OUTPUT_PUBLISH
+      - $NUGET_PACKAGES_DIRECTORY
+    policy: pull
+
+build:
+  extends: .build
+  cache:
+    <<: *global_cache
+    policy: push
+
+test:
+  extends: .test
+  cache:
+    <<: *global_cache
+  allow_failure: false
+
+# required DotCoverConfig.xml
+coverage:
+  extends: .coverage
+  variables:
+    ASSEMBLY_FILTERS: '+Senium.Application;+Senium.Domain;+Senium.Core;-xunit*;-Senium.Infra.Data;-Senium.Api;-Senium.Api.*;'
+    CLASS_FILTERS: '-*.DependencyInjection;'
+  cache:
+    <<: *global_cache
+  allow_failure: true
+
+deploy:staging:
+  extends: .deploy
+  environment:
+    name: Staging
+  variables:
+    SSH_HOST: '$HOST_STAGING'
+    APPSETTINGS_PATH: '$OUTPUT_PUBLISH/appsettings.Staging.json'
+  cache:
+    <<: *global_cache
+  allow_failure: false
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "development"'
+      when: on_success
+      
+deploy:production:
+  extends: .deploy
+  environment:
+    name: Production
+  variables:
+    SSH_HOST: '$HOST_PROD'
+    APPSETTINGS_PATH: '$OUTPUT_PUBLISH/appsettings.Production.json'
+  cache:
+    <<: *global_cache
+  allow_failure: false
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+      when: on_success
+
