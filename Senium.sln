@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3FE2A978-D9E9-410A-A1D7-05293E99AD4A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Senium.API", "src\Senium.API\Senium.API.csproj", "{560BEB27-2782-46B8-83A7-E19EC0C3CADC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Senium.Domain", "src\Senium.Domain\Senium.Domain.csproj", "{15587775-4073-49CC-9A86-F86FF92824F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Senium.Infra.Data", "src\Senium.Infra.Data\Senium.Infra.Data.csproj", "{38BE0492-9A34-4E1C-AD4A-6BD0428D07A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Senium.Application", "src\Senium.Application\Senium.Application.csproj", "{9855E9D5-0554-4186-B012-818B1B0EEF59}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Senium.Core", "src\Senium.Core\Senium.Core.csproj", "{3E5EF42F-E6AB-4F7D-B38A-CA1C684687CA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{560BEB27-2782-46B8-83A7-E19EC0C3CADC} = {3FE2A978-D9E9-410A-A1D7-05293E99AD4A}
+		{15587775-4073-49CC-9A86-F86FF92824F6} = {3FE2A978-D9E9-410A-A1D7-05293E99AD4A}
+		{38BE0492-9A34-4E1C-AD4A-6BD0428D07A7} = {3FE2A978-D9E9-410A-A1D7-05293E99AD4A}
+		{9855E9D5-0554-4186-B012-818B1B0EEF59} = {3FE2A978-D9E9-410A-A1D7-05293E99AD4A}
+		{3E5EF42F-E6AB-4F7D-B38A-CA1C684687CA} = {3FE2A978-D9E9-410A-A1D7-05293E99AD4A}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{560BEB27-2782-46B8-83A7-E19EC0C3CADC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{560BEB27-2782-46B8-83A7-E19EC0C3CADC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{560BEB27-2782-46B8-83A7-E19EC0C3CADC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{560BEB27-2782-46B8-83A7-E19EC0C3CADC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15587775-4073-49CC-9A86-F86FF92824F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15587775-4073-49CC-9A86-F86FF92824F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15587775-4073-49CC-9A86-F86FF92824F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15587775-4073-49CC-9A86-F86FF92824F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38BE0492-9A34-4E1C-AD4A-6BD0428D07A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38BE0492-9A34-4E1C-AD4A-6BD0428D07A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38BE0492-9A34-4E1C-AD4A-6BD0428D07A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38BE0492-9A34-4E1C-AD4A-6BD0428D07A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9855E9D5-0554-4186-B012-818B1B0EEF59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9855E9D5-0554-4186-B012-818B1B0EEF59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9855E9D5-0554-4186-B012-818B1B0EEF59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9855E9D5-0554-4186-B012-818B1B0EEF59}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E5EF42F-E6AB-4F7D-B38A-CA1C684687CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E5EF42F-E6AB-4F7D-B38A-CA1C684687CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E5EF42F-E6AB-4F7D-B38A-CA1C684687CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E5EF42F-E6AB-4F7D-B38A-CA1C684687CA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
