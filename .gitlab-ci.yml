@@ -5,7 +5,7 @@ include:
 
 variables:
   GIT_DEPTH: 1
-  SERVICE: 'Avisos'
+  SERVICE: 'Senium'
   DEPLOY_PATH: '/var/www/src/Senium/backend'
   OUTPUT_PUBLISH: 'publish'
   PROJECT_BUILD: 'src/Senium.API/Senium.API.csproj'
