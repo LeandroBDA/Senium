@@ -8,8 +8,8 @@ variables:
   SERVICE: 'Avisos'
   DEPLOY_PATH: '/var/www/src/Senium/backend'
   OUTPUT_PUBLISH: 'publish'
-  PROJECT_BUILD: 'Src/Senium.Api/Senium.Api.csproj'
-  SOURCE_CODE_DIRECTORY: 'Src'
+  PROJECT_BUILD: 'src/Senium.API/Senium.API.csproj'
+  SOURCE_CODE_DIRECTORY: 'src'
   NUGET_PACKAGES_DIRECTORY: '.nuget'
 
 default:
@@ -38,7 +38,7 @@ test:
 coverage:
   extends: .coverage
   variables:
-    ASSEMBLY_FILTERS: '+Senium.Application;+Senium.Domain;+Senium.Core;-xunit*;-Senium.Infra.Data;-Senium.Api;-Senium.Api.*;'
+    ASSEMBLY_FILTERS: '+Senium.Application;+Senium.Domain;+Senium.Core;-xunit*;-Senium.Infra.Data;-Senium.API;-Senium.API.*;'
     CLASS_FILTERS: '-*.DependencyInjection;'
   cache:
     <<: *global_cache
