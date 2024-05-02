@@ -1,19 +1,57 @@
-using Senium.Application.Dependency;
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
+using Senium.API.Configuration;
+using Senium.Application.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+builder
+    .Services
+    .Configure<RequestLocalizationOptions>(o =>
+    {
+        var supportedCultures = new[] { new CultureInfo("pt-BR") };
+        o.DefaultRequestCulture = new RequestCulture("pt-BR", "pt-BR");
+        o.SupportedCultures = supportedCultures;
+        o.SupportedUICultures = supportedCultures;
+    });
+
+builder
+    .Configuration
+    .SetBasePath(builder.Environment.ContentRootPath)
+    .AddJsonFile("appsettings.json", true, true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true)
+    .AddEnvironmentVariables();
+
+builder
+    .Services
+    .SetupSettings(builder.Configuration);
+
+builder
+    .Services
+    .AddResponseCompression(options => { options.EnableForHttps = true; });
+
+builder
+    .Services
+    .AddApiConfiguration();
+
 builder.Services.ConfigureApplication(builder.Configuration);
+builder.Services.AddDependencyServices();
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder
+    .Services.AddVersioning();
 
+builder
+    .Services
+    .AddSwagger();
+
+builder
+    .Services
+    .AddAuthenticationConfig(builder.Configuration, builder.Environment);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.UseApiConfiguration(app.Services, app.Environment);
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -22,7 +60,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
+app.UseAuthenticationConfig();
 
 app.MapControllers();
 

@@ -29,12 +29,10 @@ public class UsuarioValidation : AbstractValidator<Usuario>
 
     private bool TemMinimoDeIdade(DateTime date)
     {
-        var dataAtual = DateTime.Today;
-        var idade = dataAtual.Year - date.Year;
+        var anoAtual = DateTime.Today.Year;
         
-        if (date > dataAtual.AddYears(-idade))
-            idade--;
-
+        var idade = anoAtual - date.Year;
+        
         return idade >= 45;
     }
 }
