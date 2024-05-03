@@ -44,7 +44,7 @@ public class UsuarioService : BaseService, IUsuarioService
         {
             return Mapper.Map<UsuarioDto>(usuario);
         }
-        Notificator.Handle("Não foi possível cadastrar o administrador");
+        Notificator.Handle("Não foi possível cadastrar o usuário");
         return null;
     }
 
