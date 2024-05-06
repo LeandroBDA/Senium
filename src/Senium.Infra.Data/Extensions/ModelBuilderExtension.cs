@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Query;
-using Senium.Domain.Contracts;
 using Senium.Domain.Contracts.Interfaces;
 
 namespace Senium.Infra.Data.Extensions;

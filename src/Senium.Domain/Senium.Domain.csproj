@@ -7,8 +7,17 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Contracts\" />
       <Folder Include="Entities\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="FluentValidation">
+        <HintPath>..\..\..\..\..\.nuget\packages\fluentvalidation\11.9.0\lib\net6.0\FluentValidation.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FluentValidation" Version="11.9.1" />
     </ItemGroup>
 
 </Project>

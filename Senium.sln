@@ -12,6 +12,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Senium.Application", "src\S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Senium.Core", "src\Senium.Core\Senium.Core.csproj", "{3E5EF42F-E6AB-4F7D-B38A-CA1C684687CA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{2BF3B800-BB73-4D5E-BD8A-76D4E22F6902}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Senium.Application.Tests", "tests\Senium.Application.Tests\Senium.Application.Tests.csproj", "{DDAFFE21-841B-414E-AB0D-C04F97CAE201}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +27,7 @@ Global
 		{38BE0492-9A34-4E1C-AD4A-6BD0428D07A7} = {3FE2A978-D9E9-410A-A1D7-05293E99AD4A}
 		{9855E9D5-0554-4186-B012-818B1B0EEF59} = {3FE2A978-D9E9-410A-A1D7-05293E99AD4A}
 		{3E5EF42F-E6AB-4F7D-B38A-CA1C684687CA} = {3FE2A978-D9E9-410A-A1D7-05293E99AD4A}
+		{DDAFFE21-841B-414E-AB0D-C04F97CAE201} = {2BF3B800-BB73-4D5E-BD8A-76D4E22F6902}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{560BEB27-2782-46B8-83A7-E19EC0C3CADC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -45,5 +50,9 @@ Global
 		{3E5EF42F-E6AB-4F7D-B38A-CA1C684687CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E5EF42F-E6AB-4F7D-B38A-CA1C684687CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E5EF42F-E6AB-4F7D-B38A-CA1C684687CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DDAFFE21-841B-414E-AB0D-C04F97CAE201}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDAFFE21-841B-414E-AB0D-C04F97CAE201}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDAFFE21-841B-414E-AB0D-C04F97CAE201}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDAFFE21-841B-414E-AB0D-C04F97CAE201}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

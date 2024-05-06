@@ -1,6 +1,3 @@
 ﻿namespace Senium.Domain.Contracts.Interfaces;
 
-public interface IAggregateRoot
-{
-    
-}
+public interface IAggregateRoot { }

@@ -7,13 +7,24 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="DateOnlyTimeOnly.AspNet" Version="2.1.1" />
+        <PackageReference Include="DateOnlyTimeOnly.AspNet.Swashbuckle" Version="2.1.1" />
+        <PackageReference Include="Microsoft.AspNetCore.DataProtection.StackExchangeRedis" Version="8.0.2" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.29" />
+        <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.1.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.18" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.18">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.18" />
+        <PackageReference Include="NetDevPack.Security.Jwt.AspNetCore" Version="8.1.5" />
+        <PackageReference Include="NetDevPack.Security.Jwt.Core" Version="8.1.5" />
+        <PackageReference Include="NetDevPack.Security.Jwt.Store.EntityFrameworkCore" Version="8.1.5" />
+        <PackageReference Include="NetDevPack.Security.Jwt.Store.FileSystem" Version="8.1.5" />
+        <PackageReference Include="StackExchange.Redis" Version="2.7.33" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
+        <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.5.0" />
     </ItemGroup>
 
     <ItemGroup>

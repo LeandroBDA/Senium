@@ -2,9 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Senium.Domain.Contracts.Repositories;
 using Senium.Infra.Data.Context;
+using Senium.Infra.Data.Repositories;
 
-namespace Senium.Infra.Data.Dependency;
+namespace Senium.Infra.Data.Configuration;
 
 public static class DependencyInjection
 {
@@ -30,5 +32,10 @@ public static class DependencyInjection
         using var scope = services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         db.Database.Migrate();
+    }
+    
+    public static void AddDependencyRepositories(this IServiceCollection service)
+    {
+        service.AddScoped<IUsuarioRepository, UsuarioRepository>();
     }
 }
