@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Senium.Domain.Contracts.Interfaces;
 using Senium.Domain.Contracts.Repositories;
 using Senium.Infra.Data.Context;
 using Senium.Infra.Data.Repositories;
@@ -36,6 +37,7 @@ public static class DependencyInjection
     
     public static void AddDependencyRepositories(this IServiceCollection service)
     {
-        service.AddScoped<IUsuarioRepository, UsuarioRepository>();
+        service.AddScoped<IUsuarioRepository, UsuarioRepository>()
+            .AddScoped<ICurriculoRepository, CurriculoRepository>();
     }
 }
