@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Senium.Application.Dto.V1.Empresa;
 using Senium.Application.Dto.V1.Usuario;
 using Senium.Domain.Entities;
 
@@ -12,6 +13,13 @@ public class AutoMapperProfile : Profile
 
         CreateMap<UsuarioDto, Usuario>().ReverseMap();
         CreateMap<AdicionarUsuarioDto, Usuario>().ReverseMap();
+
+        #endregion
+
+        #region Empresa
+
+        CreateMap<EmpresaDto, Empresa>().ReverseMap();
+        CreateMap<AdicionarEmpresaDto, Empresa>().ReverseMap();
 
         #endregion
     }
