@@ -8,17 +8,8 @@ public class CurriculoMapping : IEntityTypeConfiguration<Curriculo>
 {
     public void Configure(EntityTypeBuilder<Curriculo> builder)
     {
-        builder.ToTable("User");
-           
-        builder.HasKey(x => x.Id);
-        
-        builder.Property(x => x.Id)
-            .UseMySqlIdentityColumn()
-            .HasColumnType("BIGINT");
-
         builder.Property(x => x.Telefone)
-            .IsRequired()
-            .HasDefaultValue("00 000000000");
+            .IsRequired();
         
         builder.Property(x => x.EstadoCivil)
             .IsRequired()
@@ -50,29 +41,5 @@ public class CurriculoMapping : IEntityTypeConfiguration<Curriculo>
 
         builder.Property(x => x.Estado)
             .HasMaxLength(50);
-          
-        builder.Property(x => x.EPessoaComDeficiencia)
-            .IsRequired()
-            .HasMaxLength(3);
-        
-        builder.Property(x => x.EDeficienciaAuditiva)
-            .IsRequired()
-            .HasMaxLength(3);
-        
-        builder.Property(x => x.EDeficienciaFisica)
-            .IsRequired()
-            .HasMaxLength(3);
-        
-        builder.Property(x => x.EDeficienciaIntelectual)
-            .IsRequired()
-            .HasMaxLength(3);
-        
-        builder.Property(x => x.EDeficienciaMotora)
-            .IsRequired()
-            .HasMaxLength(3);
-        
-        builder.Property(x => x.EDeficienciaVisual)
-            .IsRequired()
-            .HasMaxLength(3);
     }
 }

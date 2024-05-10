@@ -2,16 +2,16 @@ using AutoMapper;
 using Senium.Application.Contracts.Services;
 using Senium.Application.Dto.V1.Curriculo;
 using Senium.Application.Notifications;
+using Senium.Domain.Contracts.Repositories;
 using Senium.Domain.Entities;
-using Senium.Infra.Data.Repositories;
 
 namespace Senium.Application.Services;
 
 public class CurriculoService : BaseService, ICurriculoService
 {
-    private readonly CurriculoRepository _curriculoRepository;
+    private readonly ICurriculoRepository _curriculoRepository; //Após a mudança o erro continua, possivél erro na máquina. Migrations para fazer.
     
-    protected CurriculoService(INotificator notificator, IMapper mapper, CurriculoRepository curriculoRepository) : base(notificator, mapper)
+    public CurriculoService(INotificator notificator, IMapper mapper, ICurriculoRepository curriculoRepository) : base(notificator, mapper) 
     {
         _curriculoRepository = curriculoRepository;
     }
@@ -40,48 +40,52 @@ public class CurriculoService : BaseService, ICurriculoService
     {
         if (id != curriculoDto.Id)
         {
-            Notificator.Handle("Os id não conferem");
+            Notificator.Handle("Os IDs não conferem");
             return null;
         }
-
+        
         var curriculo = await _curriculoRepository.ObterPorId(id);
         if (curriculo == null)
         {
             Notificator.HandleNotFoundResource();
             return null;
         }
+      
+        Mapper.Map(curriculoDto, curriculo);
 
-        Mapper.Map(curriculoDto, curriculo); 
         _curriculoRepository.Editar(curriculo);
 
         if (await _curriculoRepository.UnitOfWork.Commit())
         {
+          
             return Mapper.Map<CurriculoDto>(curriculo);
         }
-       
-        Notificator.Handle("Não foi possivel auterar o curriculo");
+        
+        Notificator.Handle("Não foi possível alterar o currículo");
         return null;
     }
-
+    
     public Task<CurriculoDto?> Remove(int id)
     {
         throw new NotImplementedException();
     }
   
-    private async Task<bool> Validar(Curriculo curriculo)
+    public async Task<bool?> Validar(Curriculo curriculo)
     {
+        // Valida o currículo
         if (!curriculo.Validar(out var validationResult))
         {
             Notificator.Handle(validationResult.Errors);
+            return false; 
         }
         
-        var curriculoExistente = await _curriculoRepository.FirstOrDefault(a => 
-            a.Id != curriculo.Id);
+        var curriculoExistente = await _curriculoRepository.FirstOrDefault(a => a.Id != curriculo.Id);
         if (curriculoExistente != null)
         {
-            Notificator.Handle($"Já existe um usuario cadastrado com esse e-mail!");
+            Notificator.Handle("Já existe um usuário cadastrado com esse e-mail!");
+            return false; 
         }
-
+        
         return !Notificator.HasNotification;
     }
 }

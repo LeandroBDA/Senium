@@ -48,49 +48,40 @@ public class CurriculoValidation : AbstractValidator<Curriculo>
             .MaximumLength(50)
             .WithMessage("O campo estado deve ter no máximo 50 caracteres");
 
-      
-      
-        // _____________________________________________________________________________________________________
 
         RuleFor(x => x.EstadoCivil).NotEmpty().WithMessage("Estado Civil é necessário");
         
-        // _____________________________________________________________________________________________________
-
+      
         RuleFor(x => x.Genero).NotEmpty().WithMessage("Genero é necessário");
-       
-        // _____________________________________________________________________________________________________
-
+    
         RuleFor(x => x.RacaEtnia).NotEmpty().WithMessage("RacaEtnia é necessário");
             
-        // _____________________________________________________________________________________________________
-
+      
         RuleFor(x => x.GrauDeFormacao).NotEmpty().WithMessage("Grau de formação necessário");
-           
-        // _____________________________________________________________________________________________________
 
-        RuleFor(x => x.Cep).Empty().When(x => x.Cep != null)
-            .When(x => !string.IsNullOrEmpty(x.Cep));
-       
-        // _____________________________________________________________________________________________________
 
-        RuleFor(x => x.EPessoaComDeficiencia).Empty().When(x => x.EPessoaComDeficiencia != null || x.EPessoaComDeficiencia == null);
-       
-        var Epcd =  new Curriculo();
+        RuleFor(x => x.Cep).NotEmpty();
 
-        if (Epcd.EPessoaComDeficiencia != null)
-        {
-            RuleFor(x => x.EDeficienciaAuditiva).NotEmpty();
-            RuleFor(x => x.EDeficienciaFisica).NotEmpty();
-            RuleFor(x => x.EDeficienciaIntelectual).NotEmpty();
-            RuleFor(x => x.EDeficienciaMotora).NotEmpty();
-            RuleFor(x => x.EDeficienciaVisual).NotEmpty();
-        } 
+        RuleFor(x => x.EPessoaComDeficiencia).Empty();
 
-        RuleFor(x => x.ELgbtqia).Empty().When(x => x.ELgbtqia != null || x.ELgbtqia == null);
-       
-        RuleFor(x => x.EBaixaRenda).Empty().When(x => x.EBaixaRenda != null || x.EBaixaRenda == null);
-        
-        
-        // _____________________________________________________________________________________________________
-    }  
+        RuleFor(x => x)
+            .Custom((obj, context) =>
+            {
+                if (obj.EPessoaComDeficiencia)
+                {
+                    if (!obj.EDeficienciaAuditiva &&
+                        !obj.EDeficienciaFisica &&
+                        !obj.EDeficienciaIntelectual &&
+                        !obj.EDeficienciaMotora &&
+                        !obj.EDeficienciaVisual)
+                    {
+                        context.AddFailure("Pelo menos uma deficiência deve ser selecionada.");
+                    }
+                }
+            });
+
+        RuleFor(x => x.ELgbtqia).Empty();
+
+        RuleFor(x => x.EBaixaRenda).Empty();
+    }
 }

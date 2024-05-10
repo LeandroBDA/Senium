@@ -7,7 +7,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace Senium.API.Controllers.V1.Curriculo;
 
-[AllowAnonymous]
+[Authorize]
 [Route("v{version:apiVersion}/[controller]")]
 public class CurriculoController : BaseController
 {
