@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Senium.Infra.Data.Context;
 
@@ -10,9 +11,11 @@ using Senium.Infra.Data.Context;
 namespace Senium.Infra.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240509171807_AddPropsEmpresa")]
+    partial class AddPropsEmpresa
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -110,39 +113,12 @@ namespace Senium.Infra.Data.Migrations
                         .HasColumnType("timestamp")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.Property<string>("Cargo")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
                     b.Property<DateTime>("CriadoEm")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.Property<int>("CurriculoId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("DataDeInicio")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime>("DataDeTermino")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("Descricao")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("varchar(300)");
-
-                    b.Property<string>("Empresa")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<bool>("TrabalhoAtual")
-                        .HasColumnType("tinyint(1)");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("CurriculoId");
 
                     b.ToTable("Experiencias");
                 });
@@ -184,17 +160,6 @@ namespace Senium.Infra.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Usuarios");
-                });
-
-            modelBuilder.Entity("Senium.Domain.Entities.Experiencia", b =>
-                {
-                    b.HasOne("Senium.Domain.Entities.Curriculo", "Curriculo")
-                        .WithMany()
-                        .HasForeignKey("CurriculoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Curriculo");
                 });
 #pragma warning restore 612, 618
         }
