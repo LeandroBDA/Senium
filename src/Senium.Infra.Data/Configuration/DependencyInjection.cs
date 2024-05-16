@@ -36,6 +36,9 @@ public static class DependencyInjection
     
     public static void AddDependencyRepositories(this IServiceCollection service)
     {
-        service.AddScoped<IUsuarioRepository, UsuarioRepository>();
+        service
+            .AddScoped<IUsuarioRepository, UsuarioRepository>()
+            .AddScoped<IEmpresaRepository, EmpresaRepository>()
+            .AddScoped<IExperienciaRepository, ExperienciaRepository>();
     }
 }
