@@ -38,6 +38,7 @@ public static class DependencyInjection
     {
         service
             .AddScoped<IUsuarioRepository, UsuarioRepository>()
-            .AddScoped<IEmpresaRepository, EmpresaRepository>();
+            .AddScoped<IEmpresaRepository, EmpresaRepository>()
+            .AddScoped<ICurriculoRepository, CurriculoRepository>();
     }
 }
