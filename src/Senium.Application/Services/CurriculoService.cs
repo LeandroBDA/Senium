@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Senium.Application.Contracts.Services;
 using Senium.Application.Dto.V1.Curriculo;
 using Senium.Application.Notifications;
@@ -11,7 +12,8 @@ public class CurriculoService : BaseService, ICurriculoService
 {
     private readonly ICurriculoRepository _curriculoRepository; //Após a mudança o erro continua, possivél erro na máquina. Migrations para fazer.
     
-    public CurriculoService(INotificator notificator, IMapper mapper, ICurriculoRepository curriculoRepository) : base(notificator, mapper) 
+    public CurriculoService(INotificator notificator, IMapper mapper, ICurriculoRepository curriculoRepository,
+        IPasswordHasher<Curriculo> passwordHasher) : base(notificator, mapper) 
     {
         _curriculoRepository = curriculoRepository;
     }
@@ -31,8 +33,13 @@ public class CurriculoService : BaseService, ICurriculoService
         {
             return Mapper.Map<CurriculoDto>(curriculo);
         }
+      
+        if ((bool)!await Validar(curriculo))
+        {
+            return null;
+        }
         
-        Notificator.Handle("Não foi possível dicionar um curriculo.");
+        Notificator.Handle("Não foi possível adicionar um curriculo.");
         return null;
     }
 
@@ -70,9 +77,9 @@ public class CurriculoService : BaseService, ICurriculoService
         throw new NotImplementedException();
     }
   
-    public async Task<bool?> Validar(Curriculo curriculo)
+    public async Task<bool?> Validar( Curriculo curriculo)
     {
-        // Valida o currículo
+       
         if (!curriculo.Validar(out var validationResult))
         {
             Notificator.Handle(validationResult.Errors);
@@ -82,7 +89,7 @@ public class CurriculoService : BaseService, ICurriculoService
         var curriculoExistente = await _curriculoRepository.FirstOrDefault(a => a.Id != curriculo.Id);
         if (curriculoExistente != null)
         {
-            Notificator.Handle("Já existe um usuário cadastrado com esse e-mail!");
+            Notificator.Handle("Já existe um curriculo com esses dados!");
             return false; 
         }
         

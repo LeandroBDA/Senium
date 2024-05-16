@@ -9,7 +9,9 @@ public class CurriculoMapping : IEntityTypeConfiguration<Curriculo>
     public void Configure(EntityTypeBuilder<Curriculo> builder)
     {
         builder.Property(x => x.Telefone)
-            .IsRequired();
+            .IsRequired()
+            .HasDefaultValue("(85) 9 99999999")
+            .HasMaxLength(15);
         
         builder.Property(x => x.EstadoCivil)
             .IsRequired()
@@ -29,7 +31,7 @@ public class CurriculoMapping : IEntityTypeConfiguration<Curriculo>
 
         builder.Property(x => x.Cep)
             .IsRequired()
-            .HasDefaultValue("00000-00");
+            .HasDefaultValue(8);
 
         builder.Property(x => x.Endereco)
             .IsRequired()

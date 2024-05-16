@@ -12,10 +12,10 @@ public class CurriculoValidation : AbstractValidator<Curriculo>
             .NotEmpty()
             .WithMessage("O campo telefone não pode ser vazio.")
 
-            .MinimumLength(8)
+            .MinimumLength(11)
             .WithMessage("O número deve ter no mínimo 8 caracteres.")
 
-            .MaximumLength(11)
+            .MaximumLength(15)
             .WithMessage("O número deve ter no máximo 11 caracteres.");
 
         RuleFor(x => x.Cidade)
@@ -62,8 +62,6 @@ public class CurriculoValidation : AbstractValidator<Curriculo>
 
         RuleFor(x => x.Cep).NotEmpty();
 
-        RuleFor(x => x.EPessoaComDeficiencia).Empty();
-
         RuleFor(x => x)
             .Custom((obj, context) =>
             {
@@ -79,9 +77,6 @@ public class CurriculoValidation : AbstractValidator<Curriculo>
                     }
                 }
             });
-
-        RuleFor(x => x.ELgbtqia).Empty();
-
-        RuleFor(x => x.EBaixaRenda).Empty();
+        
     }
 }
