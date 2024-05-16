@@ -1,11 +1,8 @@
-﻿using FluentValidation.Results;
-using Senium.Domain.Contracts.Interfaces;
-using Senium.Domain.Validations;
+namespace Senium.Application.Dto.V1.Curriculo;
 
-namespace Senium.Domain.Entities;
-
-public class Curriculo : Entity, IAggregateRoot
+public class CurriculoDto
 {
+    public int Id { get; set; }
     public string Telefone { get; set; } = null!;
     public string EstadoCivil { get; set; } = null!;
     public string Genero { get; set; } = null!;
@@ -16,7 +13,7 @@ public class Curriculo : Entity, IAggregateRoot
     public string Cidade { get; set; } = null!;
     public string Estado { get; set; } = null!;
 
-    public bool EPessoaComDeficiencia { get; set; } 
+    public string EPessoaComDeficiencia { get; set; } = null!;
        
     public bool EDeficienciaAuditiva { get; set; } 
         
@@ -27,13 +24,8 @@ public class Curriculo : Entity, IAggregateRoot
     public bool EDeficienciaMotora { get; set; }
        
     public bool EDeficienciaVisual { get; set; }
-
+        
+       
     public bool ELgbtqia { get; set; }
     public bool EBaixaRenda { get; set; }
-    
-    public override bool Validar(out ValidationResult validationResult)
-    {
-        validationResult = new CurriculoValidation().Validate(this);
-        return validationResult.IsValid;
-    }
 }
