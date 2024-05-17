@@ -1,5 +1,4 @@
 using AutoMapper;
-using Microsoft.AspNetCore.Identity;
 using Senium.Application.Contracts.Services;
 using Senium.Application.Dto.V1.Curriculo;
 using Senium.Application.Notifications;
@@ -10,10 +9,9 @@ namespace Senium.Application.Services;
 
 public class CurriculoService : BaseService, ICurriculoService
 {
-    private readonly ICurriculoRepository _curriculoRepository; //Após a mudança o erro continua, possivél erro na máquina. Migrations para fazer.
+    private readonly ICurriculoRepository _curriculoRepository;
     
-    public CurriculoService(INotificator notificator, IMapper mapper, ICurriculoRepository curriculoRepository,
-        IPasswordHasher<Curriculo> passwordHasher) : base(notificator, mapper) 
+    public CurriculoService(INotificator notificator, IMapper mapper, ICurriculoRepository curriculoRepository) : base(notificator, mapper) 
     {
         _curriculoRepository = curriculoRepository;
     }
