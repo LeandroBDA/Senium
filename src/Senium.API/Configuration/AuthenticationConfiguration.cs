@@ -57,7 +57,7 @@ public static class AuthenticationConfiguration
             services
                 .AddDataProtection()
                 .PersistKeysToStackExchangeRedis(ConnectionMultiplexer.Connect(redisConnection),
-                    $"SysAvisos-{environment.EnvironmentName}-DataProtection-Keys-");
+                    $"Senium-{environment.EnvironmentName}-DataProtection-Keys-");
         }
         else
         {
