@@ -16,8 +16,8 @@ default:
   cache: &global_cache
     key: $CI_COMMIT_REF_SLUG
     paths:
-      - Src/*/bin/
-      - Src/*/obj/
+      - src/*/bin/
+      - src/*/obj/
       - $OUTPUT_PUBLISH
       - $NUGET_PACKAGES_DIRECTORY
     policy: pull
