@@ -52,7 +52,7 @@ var app = builder.Build();
 
 app.UseApiConfiguration(app.Services, app.Environment);
 
-if (!app.Environment.IsProduction())
+if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
