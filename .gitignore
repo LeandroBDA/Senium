@@ -403,6 +403,13 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 .idea
+.idea/**
+
+appsettings.Development.json
+
+dotCover.Output.xml
+coverage
+coverage/**
 
 ##
 ## Visual studio for Mac
