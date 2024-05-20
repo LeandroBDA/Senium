@@ -4,7 +4,7 @@ using Senium.Domain.Entities;
 
 namespace Senium.Domain.Contracts.Repositories;
 
-public interface IRepository<T> : IDisposable where T : BaseEntity, IAggregateRoot
+public interface IRepository<T> : IDisposable where T : IAggregateRoot
 {
     IUnitOfWork UnitOfWork { get; }
     Task<T?> FirstOrDefault(Expression<Func<T, bool>> expression);

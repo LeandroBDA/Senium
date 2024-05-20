@@ -30,7 +30,7 @@ public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
     {
         var info = new OpenApiInfo
         {
-            Title = "Avisos API",
+            Title = "Senium API",
             Version = description.ApiVersion.ToString()
         };
 

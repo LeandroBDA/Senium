@@ -43,7 +43,7 @@ public static class DependecyInjection
             .AddScoped<IUsuarioAuthService, UsuarioAuthService>()
             .AddScoped<IUsuarioService, UsuarioService>()
             .AddScoped<IEmpresaService, EmpresaService>()
-            .AddScoped<IExperienciaService, ExperienciaService>();
+            .AddScoped<ICurriculoService, CurriculoService>();
     }
     
 }

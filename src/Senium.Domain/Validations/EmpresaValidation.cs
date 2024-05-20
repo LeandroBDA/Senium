@@ -8,8 +8,8 @@ public class EmpresaValidation : AbstractValidator<Empresa>
     public EmpresaValidation()
     {
         RuleFor(e => e.Nome)
-            .NotEmpty().WithMessage("O campo Nome é obritgatório.")
-            .Matches("^[a-zA-Z]+$").WithMessage("O campo Nome deve conter apenas letras.")
+            .NotEmpty().WithMessage("O campo Nome é obrigatório.")
+            .Matches("^[a-zA-ZÀ-ÿ\\s]+$").WithMessage("O campo Nome deve conter apenas letras.")
             .MaximumLength(100).WithMessage("O campo Nome deve conter no máximo 100 caracteres.");
         
         RuleFor(e => e.Email)
