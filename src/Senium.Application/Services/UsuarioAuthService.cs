@@ -39,7 +39,7 @@ public class UsuarioAuthService : BaseService, IUsuarioAuthService
             return null;
         }
 
-        var usuario = await _usuarioRepository.ObterPorEmail(loginUsuario.Email);
+        var usuario = await _usuarioRepository.ObterUsuarioPorEmail(loginUsuario.Email);
         if (usuario == null )
         {
             Notificator.HandleNotFoundResource();

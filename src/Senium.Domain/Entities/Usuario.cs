@@ -11,6 +11,8 @@ public class Usuario : Entity, IAggregateRoot
     public string Senha { get; set; } = null!;
     public DateTime DataDeNascimento { get; set; }
 
+    public Curriculo Curriculo { get; set; } = null!;
+
     public override bool Validar(out ValidationResult validationResult)
     {
         validationResult = new UsuarioValidation().Validate(this);

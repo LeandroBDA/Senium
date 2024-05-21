@@ -8,9 +8,9 @@ public class CurriculoMapping : IEntityTypeConfiguration<Curriculo>
 {
     public void Configure(EntityTypeBuilder<Curriculo> builder)
     {
+        // Dados Pessoais
         builder.Property(x => x.Telefone)
             .IsRequired()
-            .HasDefaultValue("(85) 9 99999999")
             .HasMaxLength(15);
         
         builder.Property(x => x.EstadoCivil)
@@ -43,5 +43,22 @@ public class CurriculoMapping : IEntityTypeConfiguration<Curriculo>
 
         builder.Property(x => x.Estado)
             .HasMaxLength(50);
+        
+        //Dados Profissionais
+
+        builder.Property(x => x.Titulo)
+            .IsRequired();
+
+        builder.Property(x => x.AreaDeAtuacao)
+            .IsRequired();
+
+        builder.Property(x => x.ResumoProfissional)
+            .IsRequired()
+            .HasMaxLength(300);
+        
+        builder.HasMany(c => c.Experiencias)
+            .WithOne(e => e.Curriculo)
+            .HasForeignKey(e => e.CurriculoId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
