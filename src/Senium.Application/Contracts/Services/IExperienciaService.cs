@@ -4,5 +4,6 @@ namespace Senium.Application.Contracts.Services;
 
 public interface IExperienciaService
 {
-    Task<ExperienciaDto?> Adicionar(AdicionarExperienciaDto dto);
+    Task<ExperienciaDto?> AdicionarExperiencia(AdicionarExperienciaDto dto);
+    Task<List<ExperienciaDto>?> ObterExperiencia(int curriculoId);
 }

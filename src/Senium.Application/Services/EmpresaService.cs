@@ -19,7 +19,7 @@ public class EmpresaService : BaseService, IEmpresaService
         _empresaRepository = empresaRepository;
     }
 
-    public async Task<EmpresaDto?> Adicionar(AdicionarEmpresaDto dto)
+    public async Task<EmpresaDto?> AdicionarEmpresa(AdicionarEmpresaDto dto)
     {
         var empresa = Mapper.Map<Empresa>(dto);
 
@@ -28,7 +28,7 @@ public class EmpresaService : BaseService, IEmpresaService
             return null;
         }
         
-        _empresaRepository.Cadastrar(empresa);
+        _empresaRepository.CadastrarEmpresa(empresa);
 
         if (await _empresaRepository.UnitOfWork.Commit())
         {

@@ -25,6 +25,6 @@ public class EmpresaController : MainController
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> Cadastrar([FromBody] AdicionarEmpresaDto dto)
     {
-        return CreatedResponse("", await _empresaService.Adicionar(dto));
+        return CreatedResponse("", await _empresaService.AdicionarEmpresa(dto));
     }
 }

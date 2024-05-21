@@ -4,5 +4,5 @@ namespace Senium.Application.Contracts.Services;
 
 public interface IEmpresaService
 {
-    Task<EmpresaDto?> Adicionar(AdicionarEmpresaDto dto);
+    Task<EmpresaDto?> AdicionarEmpresa(AdicionarEmpresaDto dto);
 }

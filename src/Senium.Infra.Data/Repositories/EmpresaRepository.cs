@@ -11,7 +11,7 @@ public class EmpresaRepository : Repository<Empresa>, IEmpresaRepository
     {
     }
 
-    public void Cadastrar(Empresa empresa)
+    public void CadastrarEmpresa(Empresa empresa)
     {
         Context.Empresas.Add(empresa);
     }

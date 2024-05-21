@@ -25,6 +25,6 @@ public class UsuariosController : MainController
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> Cadastrar([FromBody] AdicionarUsuarioDto dto)
     {
-        return CreatedResponse("", await _usuarioService.Adicionar(dto));
+        return CreatedResponse("", await _usuarioService.AdicionarUsuario(dto));
     }
 }

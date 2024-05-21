@@ -10,29 +10,52 @@ namespace Senium.Application.Services;
 public class ExperienciaService : BaseService, IExperienciaService
 {
     private readonly IExperienciaRepository _experienciaRepository;
-    
-    public ExperienciaService(INotificator notificator, IMapper mapper, IExperienciaRepository experienciaRepository) : base(notificator, mapper)
+    private readonly ICurriculoRepository _curriculoRepository;
+
+    public ExperienciaService(INotificator notificator, IMapper mapper, IExperienciaRepository experienciaRepository, ICurriculoRepository curriculoRepository) 
+        : base(notificator, mapper)
     {
         _experienciaRepository = experienciaRepository;
+        _curriculoRepository = curriculoRepository;
     }
 
-    public async Task<ExperienciaDto?> Adicionar(AdicionarExperienciaDto dto)
+    public async Task<ExperienciaDto?> AdicionarExperiencia(AdicionarExperienciaDto dto)
     {
+        var curriculo = await _curriculoRepository.ObterCurriculoPorId(dto.CurriculoId);
+        if (curriculo == null)
+        {
+            Notificator.Handle("Currículo não encontrado.");
+            return null;
+        }
+
         var experiencia = Mapper.Map<Experiencia>(dto);
-        
+        experiencia.CurriculoId = curriculo.Id;
+
         if (!await Validar(experiencia))
         {
             return null;
         }
-        
-        _experienciaRepository.Adicionar(experiencia);
+
+        _experienciaRepository.AdicionarExperiencia(experiencia);
         if (await _experienciaRepository.UnitOfWork.Commit())
         {
             return Mapper.Map<ExperienciaDto>(experiencia);
         }
-        
+
         Notificator.Handle("Não foi possível cadastrar experiência");
         return null;
+    }
+
+    public async Task<List<ExperienciaDto>?> ObterExperiencia(int curriculoId)
+    {
+        var experiencias = await _experienciaRepository.ObterExperienciaPorId(curriculoId);
+
+        if (experiencias != null)
+            return Mapper.Map<List<ExperienciaDto>>(experiencias);
+        
+        Notificator.HandleNotFoundResource();
+        return null;
+
     }
 
     private async Task<bool> Validar(Experiencia experiencia)
@@ -41,12 +64,13 @@ public class ExperienciaService : BaseService, IExperienciaService
         {
             Notificator.Handle(validationResult.Errors);
         }
-        
+
         var experienciaExistente = await _experienciaRepository.FirstOrDefault(a => 
             a.Cargo == experiencia.Cargo
             && a.Empresa == experiencia.Empresa
-            && a.Descricao == experiencia.Descricao);
-        
+            && a.Descricao == experiencia.Descricao
+            && a.CurriculoId == experiencia.CurriculoId);
+
         if (experienciaExistente != null)
         {
             Notificator.Handle($"Já existe uma experiência como esta cadastrada!");

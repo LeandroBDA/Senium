@@ -43,7 +43,7 @@ public class UsuarioServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
         };
 
         //Act
-        var usuario = await _usuarioService.Adicionar(dto);
+        var usuario = await _usuarioService.AdicionarUsuario(dto);
 
         //Assert
         using (new AssertionScope())
@@ -55,7 +55,7 @@ public class UsuarioServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
             NotificatorMock
                 .Verify(c => c.Handle(It.IsAny<string>()), Times.Never);
             
-            _usuarioRepositoryMock.Verify(c => c.Cadastrar(It.IsAny<Usuario>()), Times.Never);
+            _usuarioRepositoryMock.Verify(c => c.CadastrarUsuario(It.IsAny<Usuario>()), Times.Never);
             _usuarioRepositoryMock.Verify(c => c.UnitOfWork.Commit(), Times.Never);
         }
     }
@@ -77,7 +77,7 @@ public class UsuarioServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
         };
 
         //Act
-        var usuario = await _usuarioService.Adicionar(dto);
+        var usuario = await _usuarioService.AdicionarUsuario(dto);
 
         //Assert
         using (new AssertionScope())
@@ -90,7 +90,7 @@ public class UsuarioServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
                 .Verify(c => c.Handle(It.IsAny<string>()), Times.Once);
             
             _usuarioRepositoryMock
-                .Verify(c => c.Cadastrar(It.IsAny<Usuario>()), Times.Never);
+                .Verify(c => c.CadastrarUsuario(It.IsAny<Usuario>()), Times.Never);
             _usuarioRepositoryMock
                 .Verify(c => c.UnitOfWork.Commit(), Times.Never);
         }
@@ -112,7 +112,7 @@ public class UsuarioServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
         };
 
         //Act
-        var usuario = await _usuarioService.Adicionar(dto);
+        var usuario = await _usuarioService.AdicionarUsuario(dto);
 
         //Assert
         using (new AssertionScope())
@@ -125,7 +125,7 @@ public class UsuarioServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
                 .Verify(c => c.Handle(It.IsAny<string>()), Times.Once);
             
             _usuarioRepositoryMock
-                .Verify(c => c.Cadastrar(It.IsAny<Usuario>()), Times.Once);
+                .Verify(c => c.CadastrarUsuario(It.IsAny<Usuario>()), Times.Once);
             _usuarioRepositoryMock
                 .Verify(c => c.UnitOfWork.Commit(), Times.Once);
         }
@@ -147,7 +147,7 @@ public class UsuarioServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
         };
 
         //Act
-        var usuario = await _usuarioService.Adicionar(dto);
+        var usuario = await _usuarioService.AdicionarUsuario(dto);
 
         //Assert
         using (new AssertionScope())
@@ -161,7 +161,7 @@ public class UsuarioServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
                 .Verify(c => c.Handle(It.IsAny<string>()), Times.Never);
             
             _usuarioRepositoryMock
-                .Verify(c => c.Cadastrar(It.IsAny<Usuario>()), Times.Once);
+                .Verify(c => c.CadastrarUsuario(It.IsAny<Usuario>()), Times.Once);
             _usuarioRepositoryMock
                 .Verify(c => c.UnitOfWork.Commit(), Times.Once);
         }
@@ -183,7 +183,7 @@ public class UsuarioServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
         };
 
         // Act
-        var usuario = await _usuarioService.Adicionar(dto);
+        var usuario = await _usuarioService.AdicionarUsuario(dto);
 
         // Assert
         using (new AssertionScope())
@@ -195,7 +195,7 @@ public class UsuarioServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
             NotificatorMock
             .Verify(c => c.Handle(It.IsAny<string>()), Times.Never);
 
-            _usuarioRepositoryMock.Verify(c => c.Cadastrar(It.IsAny<Usuario>()), Times.Never);
+            _usuarioRepositoryMock.Verify(c => c.CadastrarUsuario(It.IsAny<Usuario>()), Times.Never);
             _usuarioRepositoryMock.Verify(c => c.UnitOfWork.Commit(), Times.Never);
         }
     }
@@ -216,7 +216,7 @@ public class UsuarioServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
         };
 
         // Act
-        var usuario = await _usuarioService.Adicionar(dto);
+        var usuario = await _usuarioService.AdicionarUsuario(dto);
 
         // Assert
         using (new AssertionScope())
@@ -244,7 +244,7 @@ public class UsuarioServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
         };
 
         // Act
-        var usuario = await _usuarioService.Adicionar(dto);
+        var usuario = await _usuarioService.AdicionarUsuario(dto);
 
         // Assert
          using (new AssertionScope())
@@ -256,7 +256,7 @@ public class UsuarioServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
             NotificatorMock
             .Verify(c => c.Handle(It.IsAny<string>()), Times.Never);
 
-            _usuarioRepositoryMock.Verify(c => c.Cadastrar(It.IsAny<Usuario>()), Times.Never);
+            _usuarioRepositoryMock.Verify(c => c.CadastrarUsuario(It.IsAny<Usuario>()), Times.Never);
             _usuarioRepositoryMock.Verify(c => c.UnitOfWork.Commit(), Times.Never);
         }
     }
@@ -277,7 +277,7 @@ public class UsuarioServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
         };
 
         // Act
-        var usuario = await _usuarioService.Adicionar(dto);
+        var usuario = await _usuarioService.AdicionarUsuario(dto);
 
         // Assert
         using (new AssertionScope())
@@ -289,7 +289,7 @@ public class UsuarioServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
             NotificatorMock
             .Verify(c => c.Handle(It.IsAny<string>()), Times.Never);
 
-            _usuarioRepositoryMock.Verify(c => c.Cadastrar(It.IsAny<Usuario>()), Times.Never);
+            _usuarioRepositoryMock.Verify(c => c.CadastrarUsuario(It.IsAny<Usuario>()), Times.Never);
             _usuarioRepositoryMock.Verify(c => c.UnitOfWork.Commit(), Times.Never);
         }
     }
@@ -308,7 +308,7 @@ public class UsuarioServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
         const int id = 2;
     
         // Act
-        var usuarioDto = await _usuarioService.ObterPorId(id);
+        var usuarioDto = await _usuarioService.ObterUsuarioPorId(id);
 
         // Assert
         using (new AssertionScope())
@@ -327,7 +327,7 @@ public class UsuarioServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
         const int id = 1;
     
         // Act
-        var usuarioDto = await _usuarioService.ObterPorId(id);
+        var usuarioDto = await _usuarioService.ObterUsuarioPorId(id);
 
         // Assert
         using (new AssertionScope())
@@ -352,7 +352,7 @@ public class UsuarioServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
         const string email = "email123@teste.com";
     
         //Act
-        var usuario = await _usuarioService.ObterPorEmail(email);
+        var usuario = await _usuarioService.ObterUsuarioPorEmail(email);
 
         //Assert
         using (new AssertionScope())
@@ -371,7 +371,7 @@ public class UsuarioServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
         const string email = "email@teste.com";
     
         //Act
-        var usuario = await _usuarioService.ObterPorEmail(email);
+        var usuario = await _usuarioService.ObterUsuarioPorEmail(email);
 
         //Assert
         using (new AssertionScope())
@@ -393,7 +393,7 @@ public class UsuarioServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
         SetupMocks(possuiUsuario: true);
 
         //Act
-        var usuarios = await _usuarioService.ObterTodos();
+        var usuarios = await _usuarioService.ObterTodosUsuarios();
 
         //Assert
         using (new AssertionScope())
@@ -428,16 +428,16 @@ public class UsuarioServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
             .ReturnsAsync(commit);
         
         _usuarioRepositoryMock
-            .Setup(c => c.ObterPorId(It.Is<int>(id => id == 1)))
+            .Setup(c => c.ObterUsuarioPorId(It.Is<int>(id => id == 1)))
             .ReturnsAsync(usuario);
         
         
         _usuarioRepositoryMock
-            .Setup(c => c.ObterPorEmail(It.Is<string>(email => email == "email@teste.com")))
+            .Setup(c => c.ObterUsuarioPorEmail(It.Is<string>(email => email == "email@teste.com")))
             .ReturnsAsync(usuario);
         
         _usuarioRepositoryMock
-            .Setup(c => c.ObterTodos())!
+            .Setup(c => c.ObterTodosUsuarios())!
             .ReturnsAsync(possuiUsuario ? new List<Usuario> { usuario } : null);
     
         _passwordHasherMock

@@ -12,27 +12,27 @@ public class UsuarioRepository : Repository<Usuario>, IUsuarioRepository
     {
     }
 
-    public void Cadastrar(Usuario usuario)
+    public void CadastrarUsuario(Usuario usuario)
     {
         Context.Usuarios.Add(usuario);
     }
 
-    public void Atualizar(Usuario usuario)
+    public void AtualizarUsuario(Usuario usuario)
     {
         Context.Usuarios.Update(usuario);
     }
 
-    public async Task<Usuario?> ObterPorId(int id)
+    public async Task<Usuario?> ObterUsuarioPorId(int id)
     {
         return await Context.Usuarios.AsNoTrackingWithIdentityResolution().FirstOrDefaultAsync(u => u.Id == id);
     }
 
-    public async Task<Usuario?> ObterPorEmail(string email)
+    public async Task<Usuario?> ObterUsuarioPorEmail(string email)
     {
         return await Context.Usuarios.AsNoTrackingWithIdentityResolution().FirstOrDefaultAsync(u => u.Email == email);
     }
 
-    public async Task<List<Usuario>> ObterTodos()
+    public async Task<List<Usuario>> ObterTodosUsuarios()
     {
         return await Context.Usuarios.AsNoTrackingWithIdentityResolution().ToListAsync();
     }

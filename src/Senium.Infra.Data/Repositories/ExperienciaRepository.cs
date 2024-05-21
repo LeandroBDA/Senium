@@ -12,25 +12,26 @@ public class ExperienciaRepository : Repository<Experiencia>, IExperienciaReposi
     {
     }
 
-    public void Adicionar(Experiencia experiencia)
+    public void AdicionarExperiencia(Experiencia experiencia)
     {
         Context.Experiencias.Add(experiencia);
     }
 
-    public void Atualizar(Experiencia experiencia)
+    public void AtualizarExperiencia(Experiencia experiencia)
     {
         Context.Experiencias.Update(experiencia);
     }
 
-    public void Remover(Experiencia experiencia)
+    public void RemoverExperiencia(Experiencia experiencia)
     {
         Context.Experiencias.Remove(experiencia);
     }
 
-    public async Task<Experiencia?> ObterExperienciaPorId(int id, int curriculoId)
+    public async Task<List<Experiencia>> ObterExperienciaPorId(int curriculoId)
     {
         return await Context.Experiencias
             .Include(x => x.Curriculo)
-            .FirstOrDefaultAsync(x => x.Id == id && x.CurriculoId == curriculoId);
+            .Where(x => x.CurriculoId == curriculoId)
+            .ToListAsync();
     }
 }
