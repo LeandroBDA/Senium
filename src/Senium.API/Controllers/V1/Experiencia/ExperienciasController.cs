@@ -29,13 +29,36 @@ public class ExperienciasController : MainController
     }
     
     [HttpGet("{id}")]
-    [SwaggerOperation(Summary = "Obter experiencia(s)", Tags = new[] { " Experiência - Experiências" })]
+    [SwaggerOperation(Summary = "Obter experiencia(s) por Curriculo", Tags = new[] { " Experiência - Experiências" })]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ObterPorId(int id)
     {
-        return OkResponse(await _experienciaService.ObterExperiencia(id));
+        return OkResponse(await _experienciaService.ObterExperienciaPorCurriculoId(id));
+    }
+
+    [HttpPut("{id}")]
+    [SwaggerOperation(Summary = "Atualizar experiencia", Tags = new[] { " Experiência - Experiências" })]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType( StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Atualizar(int id, [FromBody] AtualizarExperienciaDto dto)
+    {
+        return OkResponse(await _experienciaService.AtualizarExperiencia(id, dto));
+    }
+
+    [HttpDelete("{id}")]
+    [SwaggerOperation(Summary = "Deletar experiência", Tags = new[] { " Experiência - Experiências" })]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType( StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Deletar(int id)
+    {
+        await _experienciaService.DeletarExperiencia(id);
+        return NoContentResponse();
     }
 }

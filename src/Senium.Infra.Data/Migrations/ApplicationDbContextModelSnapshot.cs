@@ -48,7 +48,8 @@ namespace Senium.Infra.Data.Migrations
 
                     b.Property<string>("AreaDeAtuacao")
                         .IsRequired()
-                        .HasColumnType("longtext");
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<DateTime>("AtualizadoEm")
                         .ValueGeneratedOnAdd()
@@ -59,7 +60,7 @@ namespace Senium.Infra.Data.Migrations
                         .IsRequired()
                         .ValueGeneratedOnAdd()
                         .HasColumnType("longtext")
-                        .HasDefaultValue("8");
+                        .HasDefaultValue("9");
 
                     b.Property<string>("Cidade")
                         .IsRequired()
@@ -110,8 +111,8 @@ namespace Senium.Infra.Data.Migrations
 
                     b.Property<string>("EstadoCivil")
                         .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("varchar(10)");
+                        .HasMaxLength(13)
+                        .HasColumnType("varchar(13)");
 
                     b.Property<string>("Genero")
                         .IsRequired()
@@ -142,8 +143,8 @@ namespace Senium.Infra.Data.Migrations
 
                     b.Property<string>("RacaEtnia")
                         .IsRequired()
-                        .HasMaxLength(7)
-                        .HasColumnType("varchar(7)");
+                        .HasMaxLength(21)
+                        .HasColumnType("varchar(21)");
 
                     b.Property<bool>("Remoto")
                         .HasColumnType("tinyint(1)");

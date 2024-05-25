@@ -1,7 +1,8 @@
 ﻿namespace Senium.Application.Dto.V1.Experiencia;
 
-public class ExperienciaDto
+public class AtualizarExperienciaDto
 {
+    public int Id { get; set; }
     public string Cargo { get; set; } = null!;
     public string Empresa { get; set; } = null!;
     public string Descricao { get; set; } = null!;

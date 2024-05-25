@@ -23,7 +23,13 @@ public class CurriculoService : BaseService, ICurriculoService
     public async Task<CurriculoDto?> ObterCurriculoPorId(int id)
     {
         var curriculo = await _curriculoRepository.ObterCurriculoPorId(id);
-        return curriculo != null ? Mapper.Map<CurriculoDto>(curriculo) : null;
+        if (curriculo != null)
+        {
+            return Mapper.Map<CurriculoDto>(curriculo);
+        }
+        
+        Notificator.HandleNotFoundResource();
+        return null;
     }
 
     public async Task<CurriculoDto?> AdicionarCurriculo(AdicionarCurriculoDto curriculodto)
@@ -46,7 +52,7 @@ public class CurriculoService : BaseService, ICurriculoService
         return null;
     }
 
-    public async Task<CurriculoDto?> AtualizarCurriculo(int id, CurriculoDto curriculoDto)
+    public async Task<CurriculoDto?> AtualizarCurriculo(int id, AtualizarCurriculoDto curriculoDto)
     {
         if (id != curriculoDto.Id)
         {
@@ -63,6 +69,11 @@ public class CurriculoService : BaseService, ICurriculoService
       
         Mapper.Map(curriculoDto, curriculo);
 
+        if (!await ValidarAtualizacao(curriculo))
+        {
+            return null;
+        }
+
         _curriculoRepository.AtualizarCurriculo(curriculo);
 
         if (await _curriculoRepository.UnitOfWork.Commit())
@@ -74,28 +85,33 @@ public class CurriculoService : BaseService, ICurriculoService
         Notificator.Handle("Não foi possível alterar o currículo");
         return null;
     }
-    
-    public Task<CurriculoDto?> RemoveCurriculo(int id)
+    public async Task<bool> Validar(Curriculo curriculo)
     {
-        throw new NotImplementedException();
-    }
-  
-    public async Task<bool> Validar( Curriculo curriculo)
-    {
-       
         if (!curriculo.Validar(out var validationResult))
         {
             Notificator.Handle(validationResult.Errors);
             return false; 
         }
         
-        var curriculoExistente = await _curriculoRepository.FirstOrDefault(a => a.Id != curriculo.Id);
+        var curriculoExistente = await _curriculoRepository.FirstOrDefault(a => a.UsuarioId == curriculo.UsuarioId);
         if (curriculoExistente != null)
         {
-            Notificator.Handle("Já existe um curriculo com esses dados!");
+            Notificator.Handle("Já existe um currículo para este usuário!");
             return false; 
         }
-        
+
+
+        return !Notificator.HasNotification;
+    }
+    
+    public async Task<bool> ValidarAtualizacao(Curriculo curriculo)
+    {
+        if (!curriculo.Validar(out var validationResult))
+        {
+            Notificator.Handle(validationResult.Errors);
+            return false;
+        }
+
         return !Notificator.HasNotification;
     }
 }

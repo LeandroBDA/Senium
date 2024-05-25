@@ -29,6 +29,7 @@ public class AutoMapperProfile : Profile
 
         CreateMap<CurriculoDto, Curriculo>().ReverseMap();
         CreateMap<AdicionarCurriculoDto, Curriculo>().ReverseMap();
+        CreateMap<AtualizarCurriculoDto, Curriculo>();
         
         #endregion
         
@@ -36,7 +37,8 @@ public class AutoMapperProfile : Profile
 
         CreateMap<ExperienciaDto, Experiencia>().ReverseMap();
         CreateMap<AdicionarExperienciaDto, Experiencia>().ReverseMap();
-        
+        CreateMap<AtualizarExperienciaDto, Experiencia>().ReverseMap();
+
         #endregion
 
     }

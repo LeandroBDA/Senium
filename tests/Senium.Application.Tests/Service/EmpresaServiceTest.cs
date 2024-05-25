@@ -160,7 +160,6 @@ public class EmpresaServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
 
     
     #region SetupMocks
-
     
     private void SetupMocks(bool empresaExistente = false, bool commit = false)
     {

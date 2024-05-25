@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace Senium.Infra.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class AppPropsCurriculoERelacionamentos : Migration
+    public partial class AddPropsCurriculoRelacionamentos : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -13,8 +14,10 @@ namespace Senium.Infra.Data.Migrations
             migrationBuilder.AddColumn<string>(
                 name: "AreaDeAtuacao",
                 table: "Curriculos",
-                type: "longtext",
-                nullable: false)
+                type: "varchar(50)",
+                maxLength: 50,
+                nullable: false,
+                defaultValue: "")
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.AddColumn<string>(
@@ -22,7 +25,7 @@ namespace Senium.Infra.Data.Migrations
                 table: "Curriculos",
                 type: "longtext",
                 nullable: false,
-                defaultValue: "8")
+                defaultValue: "9")
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.AddColumn<string>(
@@ -118,8 +121,8 @@ namespace Senium.Infra.Data.Migrations
             migrationBuilder.AddColumn<string>(
                 name: "EstadoCivil",
                 table: "Curriculos",
-                type: "varchar(10)",
-                maxLength: 10,
+                type: "varchar(13)",
+                maxLength: 13,
                 nullable: false,
                 defaultValue: "")
                 .Annotation("MySql:CharSet", "utf8mb4");
@@ -180,8 +183,8 @@ namespace Senium.Infra.Data.Migrations
             migrationBuilder.AddColumn<string>(
                 name: "RacaEtnia",
                 table: "Curriculos",
-                type: "varchar(7)",
-                maxLength: 7,
+                type: "varchar(21)",
+                maxLength: 21,
                 nullable: false,
                 defaultValue: "")
                 .Annotation("MySql:CharSet", "utf8mb4");
@@ -245,6 +248,14 @@ namespace Senium.Infra.Data.Migrations
                 principalTable: "Usuarios",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
+
+           /* migrationBuilder.AddForeignKey(
+                name: "FK_Experiencias_Curriculos_CurriculoId",
+                table: "Experiencias",
+                column: "CurriculoId",
+                principalTable: "Curriculos",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade); */
         }
 
         /// <inheritdoc />
@@ -254,9 +265,45 @@ namespace Senium.Infra.Data.Migrations
                 name: "FK_Curriculos_Usuarios_UsuarioId",
                 table: "Curriculos");
 
+            migrationBuilder.DropForeignKey(
+                name: "FK_Experiencias_Curriculos_CurriculoId",
+                table: "Experiencias");
+
+            migrationBuilder.DropIndex(
+                name: "IX_Experiencias_CurriculoId",
+                table: "Experiencias");
+
             migrationBuilder.DropIndex(
                 name: "IX_Curriculos_UsuarioId",
                 table: "Curriculos");
+
+            migrationBuilder.DropColumn(
+                name: "Cargo",
+                table: "Experiencias");
+
+            migrationBuilder.DropColumn(
+                name: "CurriculoId",
+                table: "Experiencias");
+
+            migrationBuilder.DropColumn(
+                name: "DataDeInicio",
+                table: "Experiencias");
+
+            migrationBuilder.DropColumn(
+                name: "DataDeTermino",
+                table: "Experiencias");
+
+            migrationBuilder.DropColumn(
+                name: "Descricao",
+                table: "Experiencias");
+
+            migrationBuilder.DropColumn(
+                name: "Empresa",
+                table: "Experiencias");
+
+            migrationBuilder.DropColumn(
+                name: "TrabalhoAtual",
+                table: "Experiencias");
 
             migrationBuilder.DropColumn(
                 name: "AreaDeAtuacao",

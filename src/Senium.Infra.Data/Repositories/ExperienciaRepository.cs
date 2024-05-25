@@ -27,7 +27,12 @@ public class ExperienciaRepository : Repository<Experiencia>, IExperienciaReposi
         Context.Experiencias.Remove(experiencia);
     }
 
-    public async Task<List<Experiencia>> ObterExperienciaPorId(int curriculoId)
+    public async Task<Experiencia?> ObterExperienciaPorId(int id)
+    {
+        return await Context.Experiencias.FirstOrDefaultAsync(c => c.Id == id);
+    }
+
+    public async Task<List<Experiencia>> ObterExperienciaDoCurriculo(int curriculoId)
     {
         return await Context.Experiencias
             .Include(x => x.Curriculo)

@@ -46,14 +46,66 @@ public class ExperienciaService : BaseService, IExperienciaService
         return null;
     }
 
-    public async Task<List<ExperienciaDto>?> ObterExperiencia(int curriculoId)
+    public async Task<ExperienciaDto?> AtualizarExperiencia(int id, AtualizarExperienciaDto dto)
     {
-        var experiencias = await _experienciaRepository.ObterExperienciaPorId(curriculoId);
+        if (id != dto.Id)
+        {
+            Notificator.Handle("Os Ids não conferem");
+            return null;
+        }
 
-        if (experiencias != null)
-            return Mapper.Map<List<ExperienciaDto>>(experiencias);
+        var experiencia = await _experienciaRepository.ObterExperienciaPorId(id);
+        if (experiencia == null)
+        {
+            Notificator.HandleNotFoundResource();
+            return null;
+        }
         
-        Notificator.HandleNotFoundResource();
+        Mapper.Map(dto, experiencia);
+        
+        if (!await Validar(experiencia))
+        {
+            return null;
+        }
+        
+        _experienciaRepository.AtualizarExperiencia(experiencia);
+        
+        if (await _experienciaRepository.UnitOfWork.Commit())
+        {
+            return Mapper.Map<ExperienciaDto>(experiencia);
+        }
+
+        Notificator.Handle("Não foi possível cadastrar experiência");
+        return null;
+
+    }
+
+    public async Task DeletarExperiencia(int id)
+    {
+        var experiencia = await _experienciaRepository.ObterExperienciaPorId(id);
+
+        if (experiencia == null)
+        {
+            Notificator.HandleNotFoundResource();
+            return;
+        }
+        
+        _experienciaRepository.RemoverExperiencia(experiencia);
+
+        if (!await _experienciaRepository.UnitOfWork.Commit())
+        {
+            Notificator.Handle("Não foi possível remover experiência.");
+        }
+    }
+
+    public async Task<List<ExperienciaDto>?> ObterExperienciaPorCurriculoId(int curriculoId)
+    {
+        var experiencias = await _experienciaRepository.ObterExperienciaDoCurriculo(curriculoId);
+
+        if (experiencias != null && experiencias.Any()) 
+            return Mapper.Map<List<ExperienciaDto>>(experiencias);
+    
+        Notificator.HandleNotFoundResource(); 
         return null;
 
     }
