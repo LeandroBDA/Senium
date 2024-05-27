@@ -4,8 +4,8 @@ namespace Senium.Application.Contracts.Services;
 
 public interface IUsuarioService
 {
-    Task<UsuarioDto?> Adicionar(AdicionarUsuarioDto dto);
-    Task<UsuarioDto?> ObterPorId(int id);
-    Task<UsuarioDto?> ObterPorEmail(string email);
-    Task<List<UsuarioDto>> ObterTodos();
+    Task<UsuarioDto?> AdicionarUsuario(AdicionarUsuarioDto dto);
+    Task<UsuarioDto?> ObterUsuarioPorId(int id);
+    Task<UsuarioDto?> ObterUsuarioPorEmail(string email);
+    Task<List<UsuarioDto>> ObterTodosUsuarios();
 }

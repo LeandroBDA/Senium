@@ -211,7 +211,7 @@ public class UsuarioAuthServiceTest : BaseServiceTest, IClassFixture<ServicesFix
         } : null;
 
         _usuarioRepositoryMock
-            .Setup(c => c.ObterPorEmail(It.IsAny<string>()))
+            .Setup(c => c.ObterUsuarioPorEmail(It.IsAny<string>()))
             .ReturnsAsync(usuario);
 
         _passwordHasherMock

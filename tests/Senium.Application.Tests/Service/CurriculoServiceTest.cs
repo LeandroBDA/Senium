@@ -1,0 +1,606 @@
+﻿using System.Linq.Expressions;
+using FluentAssertions;
+using FluentAssertions.Execution;
+using FluentValidation.Results;
+using Microsoft.AspNetCore.Http;
+using Moq;
+using Senium.Application.Dto.V1.Curriculo;
+using Senium.Application.Services;
+using Senium.Application.Tests.Fixtures;
+using Senium.Domain.Contracts.Repositories;
+using Senium.Domain.Entities;
+
+namespace Senium.Application.Tests.Service;
+
+public class CurriculoServiceTest : BaseServiceTest, IClassFixture<ServicesFixture>
+{
+    private readonly CurriculoService _curriculoService;
+    private readonly Mock<ICurriculoRepository> _curriculoRepositoryMock = new();
+    private readonly Mock<IHttpContextAccessor> _httpContextAccessorMock = new();
+
+    public CurriculoServiceTest(ServicesFixture fixture)
+    {
+        _curriculoService = new CurriculoService(NotificatorMock.Object, fixture.Mapper,_httpContextAccessorMock.Object,
+            _curriculoRepositoryMock.Object);
+    }
+
+    #region ObterCurriculoPorId
+
+    [Fact]
+    public async Task ObterPorId_CurriculoInexistente_HandleNotFoundResource()
+    {
+        // Arrange
+        SetupMocks();
+
+        const int id = 2;
+    
+        // Act
+        var curriculoDto = await _curriculoService.ObterCurriculoPorId(id);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            curriculoDto.Should().BeNull();
+            NotificatorMock.Verify(c => c.HandleNotFoundResource(), Times.Once);
+        }
+    }
+
+    [Fact]
+    public async Task ObterPorId_CurriculoExistente_Sucesso()
+    {
+        // Arrange
+        SetupMocks(curriculoExistente: true);
+
+        const int id = 1;
+    
+        // Act
+        var curriculoDto = await _curriculoService.ObterCurriculoPorId(id);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            curriculoDto.Should().NotBeNull();
+            curriculoDto.Should().BeOfType<CurriculoDto>();
+            NotificatorMock.Verify(c => c.HandleNotFoundResource(), Times.Never);
+        }
+    }
+
+
+    #endregion
+    
+    #region AdicionarCurriculo
+
+    [Fact]
+    public async Task Adicionar_CurriculoInvalida_HandleErros()
+    {
+        // Arrange
+        SetupMocks();
+
+        var dto = new AdicionarCurriculoDto
+        {
+            Telefone = "",
+            EstadoCivil = "",
+            Genero = "",
+            RacaEtnia = "",
+            GrauDeFormacao = "",
+            Cep = "",
+            Endereco = "",
+            Cidade = "",
+            Estado = "",
+            EPessoaComDeficiencia = false,
+            EDeficienciaAuditiva = false,
+            EDeficienciaFisica = false,
+            EDeficienciaIntelectual = false,
+            EDeficienciaMotora = false,
+            EDeficienciaVisual = false,
+            ELgbtqia = false,
+            EBaixaRenda = false,
+            Titulo = "",
+            AreaDeAtuacao = "",
+            ResumoProfissional = "",
+            Linkedin = "invalid_url",
+            Portfolio = "invalid_url",
+            Clt = false,
+            Pj = false,
+            Temporario = false,
+            Presencial = false,
+            Remoto = false,
+            Hibrido = false
+        };
+
+
+        // Act
+        var curriculo = await _curriculoService.AdicionarCurriculo(dto);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            curriculo.Should().BeNull();
+
+            NotificatorMock
+                .Verify(c => c.Handle(It.IsAny<List<ValidationFailure>>()), Times.Once);
+
+            _curriculoRepositoryMock
+                .Verify(c => c.AdicionarCurriculo(It.IsAny<Curriculo>()), Times.Never);
+        
+            _curriculoRepositoryMock
+                .Verify(c => c.UnitOfWork.Commit(), Times.Never);
+        }
+    }
+
+    [Fact]
+    public async Task Adicionar_CurriculoExistente_Handle()
+    {
+        // Arrange
+        SetupMocks(curriculoExistente: true);
+
+        var dto = new AdicionarCurriculoDto
+        {
+            Telefone = "85 988888888",
+            EstadoCivil = "Solteiro",
+            Genero = "Masculino",
+            RacaEtnia = "Branco",
+            GrauDeFormacao = "Graduação",
+            Cep = "12345678",
+            Endereco = "Rua Teste, 123",
+            Cidade = "Cidade Teste",
+            Estado = "CE",
+            EPessoaComDeficiencia = false,
+            EDeficienciaAuditiva = false,
+            EDeficienciaFisica = false,
+            EDeficienciaIntelectual = false,
+            EDeficienciaMotora = false,
+            EDeficienciaVisual = false,
+            ELgbtqia = false,
+            EBaixaRenda = false,
+            Titulo = "Desenvolvedor Full Stack",
+            AreaDeAtuacao = "Tecnologia da Informação",
+            ResumoProfissional = "Profissional com experiência em desenvolvimento web.",
+            Linkedin = "https://www.linkedin.com/in/seuperfil",
+            Portfolio = "https://www.portfolio.com",
+            Clt = true,
+            Pj = false,
+            Temporario = false,
+            Presencial = true,
+            Remoto = false,
+            Hibrido = false
+        };
+
+        // Act
+        var curriculo = await _curriculoService.AdicionarCurriculo(dto);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            curriculo.Should().BeNull();
+
+            NotificatorMock
+                .Verify(c => c.Handle(It.IsAny<string>()), Times.Once);
+
+            _curriculoRepositoryMock
+                .Verify(c => c.AdicionarCurriculo(It.IsAny<Curriculo>()), Times.Never);
+    
+            _curriculoRepositoryMock
+                .Verify(c => c.UnitOfWork.Commit(), Times.Never);
+        }
+    }
+
+    [Fact]
+    public async Task Adicionar_ErroAoSalvar_Handle()
+    {
+        // Arrange
+        SetupMocks();
+
+        var dto = new AdicionarCurriculoDto
+        {
+            Telefone = "85 988888888",
+            EstadoCivil = "Solteiro",
+            Genero = "Masculino",
+            RacaEtnia = "Branco",
+            GrauDeFormacao = "Graduação",
+            Cep = "12345678",
+            Endereco = "Rua Teste, 123",
+            Cidade = "Cidade Teste",
+            Estado = "CE",
+            EPessoaComDeficiencia = false,
+            EDeficienciaAuditiva = false,
+            EDeficienciaFisica = false,
+            EDeficienciaIntelectual = false,
+            EDeficienciaMotora = false,
+            EDeficienciaVisual = false,
+            ELgbtqia = false,
+            EBaixaRenda = false,
+            Titulo = "Desenvolvedor Full Stack",
+            AreaDeAtuacao = "Tecnologia da Informação",
+            ResumoProfissional = "Profissional com experiência em desenvolvimento web.",
+            Linkedin = "https://www.linkedin.com/in/teste/",
+            Portfolio = "https://www.portfolio.com",
+            Clt = true,
+            Pj = false,
+            Temporario = false,
+            Presencial = true,
+            Remoto = false,
+            Hibrido = false
+        };
+
+        // Act
+        var curriculo = await _curriculoService.AdicionarCurriculo(dto);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            curriculo.Should().BeNull();
+
+            NotificatorMock
+                .Verify(c => c.Handle(It.IsAny<string>()), Times.Once);
+
+            _curriculoRepositoryMock
+                .Verify(c => c.AdicionarCurriculo(It.IsAny<Curriculo>()), Times.Once);
+
+            _curriculoRepositoryMock
+                .Verify(c => c.UnitOfWork.Commit(), Times.Once);
+        }
+    }
+
+    [Fact]
+    public async Task Adicionar_SucessoAoSalvar_CurriculoDto()
+    {
+        // Arrange
+        SetupMocks(commit: true);
+
+        var dto = new AdicionarCurriculoDto
+        {
+            Telefone = "85 988888888",
+            EstadoCivil = "Solteiro",
+            Genero = "Masculino",
+            RacaEtnia = "Branco",
+            GrauDeFormacao = "Graduação",
+            Cep = "12345678",
+            Endereco = "Rua Teste, 123",
+            Cidade = "Cidade Teste",
+            Estado = "CE",
+            EPessoaComDeficiencia = false,
+            EDeficienciaAuditiva = false,
+            EDeficienciaFisica = false,
+            EDeficienciaIntelectual = false,
+            EDeficienciaMotora = false,
+            EDeficienciaVisual = false,
+            ELgbtqia = false,
+            EBaixaRenda = false,
+            Titulo = "Desenvolvedor Full Stack",
+            AreaDeAtuacao = "Tecnologia da Informação",
+            ResumoProfissional = "Profissional com experiência em desenvolvimento web.",
+            Linkedin = "https://www.linkedin.com/in/teste/",
+            Portfolio = "https://www.portfolio.com",
+            Clt = true,
+            Pj = false,
+            Temporario = false,
+            Presencial = true,
+            Remoto = false,
+            Hibrido = false
+        };
+
+        // Act
+        var curriculo = await _curriculoService.AdicionarCurriculo(dto);
+
+        // Assert
+        using (new AssertionScope())
+        { 
+            curriculo.Should().NotBeNull();
+
+            NotificatorMock
+                .Verify(c => c.Handle(It.IsAny<string>()), Times.Never);
+
+            _curriculoRepositoryMock
+                .Verify(c => c.AdicionarCurriculo(It.IsAny<Curriculo>()), Times.Once);
+
+            _curriculoRepositoryMock
+                .Verify(c => c.UnitOfWork.Commit(), Times.Once);
+        }
+    }
+
+    #endregion
+
+    #region AtualizarCurriculo
+
+    [Fact]
+    public async Task Atualizar_IdsNaoConferem_Handle()
+    {
+        //Arrange
+        SetupMocks();
+        
+        const int id = 2;
+        var dto = new AtualizarCurriculoDto
+        {
+            Id = 1
+        };
+        
+        //Act
+        var curriculo = await _curriculoService.AtualizarCurriculo(id, dto);
+
+        //Assert
+        using (new AssertionScope())
+        {
+            curriculo.Should().BeNull();
+            
+            NotificatorMock
+                .Verify(c => c.Handle(It.IsAny<string>()), Times.Once);
+            NotificatorMock
+                .Verify(c => c.Handle(It.IsAny<List<ValidationFailure>>()), Times.Never);
+            
+            _curriculoRepositoryMock
+                .Verify(c => c.AtualizarCurriculo(It.IsAny<Curriculo>()), Times.Never);
+            _curriculoRepositoryMock
+                .Verify(c => c.UnitOfWork.Commit(), Times.Never);
+        }
+    }
+
+    [Fact]
+    public async Task Atualizar_CurriculoInexistente_HandleNotFoundResourse()
+    {
+        //Arrange
+        SetupMocks();
+        
+        const int id = 2;
+        var dto = new AtualizarCurriculoDto
+        {
+            Id = 2
+        };
+        
+        //Act
+        var curriculo = await _curriculoService.AtualizarCurriculo(id, dto);
+
+        //Assert
+        using (new AssertionScope())
+        {
+            curriculo.Should().BeNull();
+            
+            NotificatorMock
+                .Verify(c => c.Handle(It.IsAny<string>()), Times.Never);
+            NotificatorMock
+                .Verify(c => c.Handle(It.IsAny<List<ValidationFailure>>()), Times.Never);
+            NotificatorMock.
+                Verify(c => c.HandleNotFoundResource(), Times.Once);
+            
+            _curriculoRepositoryMock
+                .Verify(c => c.AtualizarCurriculo(It.IsAny<Curriculo>()), Times.Never);
+            _curriculoRepositoryMock
+                .Verify(c => c.UnitOfWork.Commit(), Times.Never);
+        }
+    }
+    
+    [Fact]
+    public async Task Atualizar_ErroAoComitar_Handle()
+    {
+        //Arrange
+        SetupMocks();
+        
+        const int id = 1;
+        var dto = new AtualizarCurriculoDto
+        {
+            Id = 1,
+            Telefone = "85 988888888",
+            EstadoCivil = "Solteiro",
+            Genero = "Masculino",
+            RacaEtnia = "Branco",
+            GrauDeFormacao = "Graduação",
+            Cep = "12345678",
+            Endereco = "Rua Teste, 123",
+            Cidade = "Cidade Teste",
+            Estado = "CE",
+            EPessoaComDeficiencia = false,
+            EDeficienciaAuditiva = false,
+            EDeficienciaFisica = false,
+            EDeficienciaIntelectual = false,
+            EDeficienciaMotora = false,
+            EDeficienciaVisual = false,
+            ELgbtqia = false,
+            EBaixaRenda = false,
+            Titulo = "Desenvolvedor Full Stack",
+            AreaDeAtuacao = "Tecnologia da Informação",
+            ResumoProfissional = "Profissional com experiência em desenvolvimento web.",
+            Linkedin = "https://www.linkedin.com/in/seuperfil/",
+            Portfolio = "https://www.portfolio.com",
+            Clt = true,
+            Pj = false,
+            Temporario = false,
+            Presencial = true,
+            Remoto = false,
+            Hibrido = false
+        };
+        
+        //Act
+        var curriculo = await _curriculoService.AtualizarCurriculo(id, dto);
+        
+        //Assert
+        using (new AssertionScope())
+        {
+            curriculo.Should().BeNull();
+            
+            NotificatorMock
+                .Verify(c => c.Handle(It.IsAny<string>()), Times.Once);
+            NotificatorMock
+                .Verify(c => c.Handle(It.IsAny<List<ValidationFailure>>()), Times.Never);
+            
+            _curriculoRepositoryMock
+                .Verify(c => c.AtualizarCurriculo(It.IsAny<Curriculo>()), Times.Once);
+            _curriculoRepositoryMock
+                .Verify(c => c.UnitOfWork.Commit(), Times.Once);
+        }
+    }
+    
+    [Fact]
+    public async Task Atualizar_CurriculoInvalida_HandleErros()
+    {
+        // Arrange
+        SetupMocks(true);
+        
+        const int id = 1;
+        var dto = new AtualizarCurriculoDto
+        {
+            Id = 1,
+            Telefone = "85 988888888",
+            EstadoCivil = "Solteiro",
+            Genero = "Masculino",
+            RacaEtnia = "Branco",
+            GrauDeFormacao = "Graduação",
+            Cep = "12345678",
+            Endereco = "Rua Teste, 123",
+            Cidade = "Cidade Teste",
+            Estado = "CE",
+            EPessoaComDeficiencia = false,
+            EDeficienciaAuditiva = false,
+            EDeficienciaFisica = false,
+            EDeficienciaIntelectual = false,
+            EDeficienciaMotora = false,
+            EDeficienciaVisual = false,
+            ELgbtqia = false,
+            EBaixaRenda = false,
+            Titulo = "Desenvolvedor Full Stack",
+            AreaDeAtuacao = "Tecnologia da Informação",
+            ResumoProfissional = "Profissional com experiência em desenvolvimento web.",
+            Linkedin = "invalid-url", 
+            Portfolio = "https://www.portfolio.com",
+            Clt = true,
+            Pj = false,
+            Temporario = false,
+            Presencial = true,
+            Remoto = false,
+            Hibrido = false
+        };
+        
+        // Act
+        var curriculo = await _curriculoService.AtualizarCurriculo( id, dto);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            curriculo.Should().BeNull();
+
+            NotificatorMock
+                .Verify(c => c.Handle(It.IsAny<List<ValidationFailure>>()), Times.Once);
+
+            _curriculoRepositoryMock
+                .Verify(c => c.AdicionarCurriculo(It.IsAny<Curriculo>()), Times.Never);
+        
+            _curriculoRepositoryMock
+                .Verify(c => c.UnitOfWork.Commit(), Times.Never);
+        }
+    }
+    
+    [Fact]
+    public async Task Atualizar_SucessoAoComitar_CurriculoDto()
+    {
+        //Arrange
+        SetupMocks(commit: true);
+
+        const int id = 1;
+        var dto = new AtualizarCurriculoDto
+        {
+            Id = 1,
+            Telefone = "85 988888888",
+            EstadoCivil = "Solteiro",
+            Genero = "Masculino",
+            RacaEtnia = "Branco",
+            GrauDeFormacao = "Graduação",
+            Cep = "12345678",
+            Endereco = "Rua Teste, 123",
+            Cidade = "Cidade Teste",
+            Estado = "CE",
+            EPessoaComDeficiencia = false,
+            EDeficienciaAuditiva = false,
+            EDeficienciaFisica = false,
+            EDeficienciaIntelectual = false,
+            EDeficienciaMotora = false,
+            EDeficienciaVisual = false,
+            ELgbtqia = false,
+            EBaixaRenda = false,
+            Titulo = "Desenvolvedor Full Stack",
+            AreaDeAtuacao = "Tecnologia da Informação",
+            ResumoProfissional = "Profissional com experiência em desenvolvimento web.",
+            Linkedin = "https://www.linkedin.com/in/seuperfil",
+            Portfolio = "https://www.portfolio.com",
+            Clt = true,
+            Pj = false,
+            Temporario = false,
+            Presencial = true,
+            Remoto = false,
+            Hibrido = false
+        };
+        
+        //Act
+        var curriculo = await _curriculoService.AtualizarCurriculo(id, dto);
+        
+        //Assert
+        using (new AssertionScope())
+        {
+            curriculo.Should().NotBeNull();
+
+            NotificatorMock
+                .Verify(c => c.Handle(It.IsAny<string>()), Times.Never);
+            NotificatorMock
+                .Verify(c => c.Handle(It.IsAny<List<ValidationFailure>>()), Times.Never);
+
+            _curriculoRepositoryMock
+                .Verify(c => c.AtualizarCurriculo(It.IsAny<Curriculo>()), Times.Once);
+            _curriculoRepositoryMock
+                .Verify(c => c.UnitOfWork.Commit(), Times.Once);
+        }
+    }
+
+
+    #endregion
+    
+    #region SetupMocks
+    
+    private void SetupMocks(bool curriculoExistente = false, bool commit = false)
+    {
+        var curriculo = new Curriculo
+        {
+            UsuarioId = 1,
+            Telefone = "85 988888888",
+            EstadoCivil = "Solteiro",
+            Genero = "Masculino",
+            RacaEtnia = "Branco",
+            GrauDeFormacao = "Graduação",
+            Cep = "12345678",
+            Endereco = "Rua Teste, 123",
+            Cidade = "Cidade Teste",
+            Estado = "CE",
+            EPessoaComDeficiencia = false,
+            EDeficienciaAuditiva = false,
+            EDeficienciaFisica = false,
+            EDeficienciaIntelectual = false,
+            EDeficienciaMotora = false,
+            EDeficienciaVisual = false,
+            ELgbtqia = false,
+            EBaixaRenda = false,
+            Titulo = "Desenvolvedor Full Stack",
+            AreaDeAtuacao = "Tecnologia da Informação",
+            ResumoProfissional = "Profissional com experiência em desenvolvimento web.",
+            Linkedin = "https://www.linkedin.com/in/seuperfil",
+            Portfolio = "https://www.portfolio.com",
+            Clt = true,
+            Pj = false,
+            Temporario = false,
+            Presencial = true,
+            Remoto = false,
+            Hibrido = false
+        };
+
+        _curriculoRepositoryMock
+            .Setup(c => c.FirstOrDefault(It.IsAny<Expression<Func<Curriculo, bool>>>()))
+            .ReturnsAsync(curriculoExistente ? curriculo : null);
+
+        _curriculoRepositoryMock
+            .Setup(c => c.UnitOfWork.Commit())
+            .ReturnsAsync(commit);
+    
+        _curriculoRepositoryMock
+            .Setup(c => c.ObterCurriculoPorId(It.Is<int>(id => id == 1)))
+            .ReturnsAsync(curriculo);
+    }
+
+
+    #endregion
+}

@@ -22,5 +22,10 @@ public class UsuarioMapping : IEntityTypeConfiguration<Usuario>
             .Property(u => u.Senha)
             .HasMaxLength(255)
             .IsRequired();
+
+        builder.HasOne(u => u.Curriculo)
+            .WithOne(c => c.Usuario)
+            .HasForeignKey<Curriculo>(c => c.UsuarioId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

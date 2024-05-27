@@ -22,7 +22,7 @@ public class UsuarioService : BaseService, IUsuarioService
         _passwordHasher = passwordHasher;
     }
 
-    public async Task<UsuarioDto?> Adicionar(AdicionarUsuarioDto dto)
+    public async Task<UsuarioDto?> AdicionarUsuario(AdicionarUsuarioDto dto)
     {
         var usuario = Mapper.Map<Usuario>(dto);
         
@@ -38,7 +38,7 @@ public class UsuarioService : BaseService, IUsuarioService
         }
 
         usuario.Senha = _passwordHasher.HashPassword(usuario, usuario.Senha);
-        _usuarioRepository.Cadastrar(usuario);
+        _usuarioRepository.CadastrarUsuario(usuario);
         
         if (await _usuarioRepository.UnitOfWork.Commit())
         {
@@ -48,9 +48,9 @@ public class UsuarioService : BaseService, IUsuarioService
         return null;
     }
 
-    public async Task<UsuarioDto?> ObterPorId(int id)
+    public async Task<UsuarioDto?> ObterUsuarioPorId(int id)
     {
-        var usuario = await _usuarioRepository.ObterPorId(id);
+        var usuario = await _usuarioRepository.ObterUsuarioPorId(id);
         if (usuario != null)
         {
             return Mapper.Map<UsuarioDto>(usuario);
@@ -60,9 +60,9 @@ public class UsuarioService : BaseService, IUsuarioService
         return null;
     }
 
-    public async Task<UsuarioDto?> ObterPorEmail(string email)
+    public async Task<UsuarioDto?> ObterUsuarioPorEmail(string email)
     {
-        var usuario = await _usuarioRepository.ObterPorEmail(email);
+        var usuario = await _usuarioRepository.ObterUsuarioPorEmail(email);
         if (usuario != null)
         {
             return Mapper.Map<UsuarioDto>(usuario);
@@ -72,9 +72,9 @@ public class UsuarioService : BaseService, IUsuarioService
         return null;
     }
 
-    public async Task<List<UsuarioDto>> ObterTodos()
+    public async Task<List<UsuarioDto>> ObterTodosUsuarios()
     {
-        var usuarios = await _usuarioRepository.ObterTodos();
+        var usuarios = await _usuarioRepository.ObterTodosUsuarios();
         return Mapper.Map<List<UsuarioDto>>(usuarios);
     }
     

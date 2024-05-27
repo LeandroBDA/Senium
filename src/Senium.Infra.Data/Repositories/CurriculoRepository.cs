@@ -12,23 +12,23 @@ public class CurriculoRepository : Repository<Curriculo>, ICurriculoRepository
     {
     }
     
-    public async Task<Curriculo?> ObterPorId(int id)
+    public async Task<Curriculo?> ObterCurriculoPorId(int id)
     {
-        return await Context.Curriculos
+        return await Context.Curriculos.AsNoTrackingWithIdentityResolution()
             .FirstOrDefaultAsync(c => c.Id == id);
     }
 
-    public void Adicionar(Curriculo curriculo)
+    public void AdicionarCurriculo(Curriculo curriculo)
     { 
         Context.Curriculos.Add(curriculo);
     }
 
-    public void Editar(Curriculo curriculo)
+    public void AtualizarCurriculo(Curriculo curriculo)
     {
         Context.Curriculos.Update(curriculo);
     }
 
-    public void Remover(Curriculo curriculo)
+    public void RemoverCurriculo(Curriculo curriculo)
     {
         Context.Curriculos.Remove(curriculo);
     }

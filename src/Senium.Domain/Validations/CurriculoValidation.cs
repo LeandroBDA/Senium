@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using FluentValidation;
 using Senium.Domain.Entities;
 
@@ -7,7 +8,7 @@ public class CurriculoValidation : AbstractValidator<Curriculo>
 {
     public CurriculoValidation()
     {
-       
+       // Dados pessoais
         RuleFor(x => x.Telefone)
             .NotEmpty()
             .WithMessage("O campo telefone não pode ser vazio.")
@@ -42,7 +43,7 @@ public class CurriculoValidation : AbstractValidator<Curriculo>
             .NotEmpty()
             .WithMessage("O campo estado é necessário.")
             
-            .MinimumLength(3)
+            .MinimumLength(2)
             .WithMessage("O campo estado deve ter no mínimo 3 caracteres")
            
             .MaximumLength(50)
@@ -78,5 +79,46 @@ public class CurriculoValidation : AbstractValidator<Curriculo>
                 }
             });
         
+        // Dados Profissionais
+
+        RuleFor(c => c.Titulo)
+            .NotEmpty().WithMessage("O campo Título é obrigatório.");
+
+        RuleFor(c => c.AreaDeAtuacao)
+            .NotEmpty().WithMessage("O campo Área de atuação é obrigatório.");
+
+        RuleFor(c => c.ResumoProfissional)
+            .NotEmpty().WithMessage("O campo Resumo profissional é obrigatório.")
+            .MaximumLength(300).WithMessage("O campo Resumo profissional deve conter 300 caracteres.");
+        
+        RuleFor(c => c.Linkedin)
+            .Must(SerUmaUrlValida).WithMessage("Por favor, insira uma URL válida.")
+            .Must(SerUmaUrlValidaDoLinkedIn).WithMessage("Por favor, insira um link válido do LinkedIn.");
+
+        RuleFor(c => c.Portfolio)
+            .Must(SerUmaUrlValida).WithMessage("Por favor, insira uma URL válida.");
+        
+        RuleFor(curriculo => curriculo)
+            .Must(c => c.Clt || c.Pj || c.Temporario)
+            .WithMessage("Selecione pelo menos um tipo de contrato pretendido (CLT, PJ, Temporário).");
+        
+        RuleFor(curriculo => curriculo)
+            .Must(c => c.Presencial || c.Remoto || c.Hibrido)
+            .WithMessage("Selecione pelo menos uma modalidade de trabalho pretendida (Presencial, Remoto, Híbrido).");
+    }
+    
+    private bool SerUmaUrlValida(string url)
+    {
+        if (Uri.TryCreate(url, UriKind.Absolute, out Uri? resultado))
+        {
+            return resultado.Scheme == Uri.UriSchemeHttp || resultado.Scheme == Uri.UriSchemeHttps;
+        }
+        return false;
+    }
+
+    private bool SerUmaUrlValidaDoLinkedIn(string url)
+    {
+        var regex = new Regex(@"^https:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9-]+\/?$");
+        return regex.IsMatch(url);
     }
 }

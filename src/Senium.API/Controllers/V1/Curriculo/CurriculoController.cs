@@ -19,35 +19,35 @@ public class CurriculoController : BaseController
     }
 
     [HttpPost]
-    [SwaggerOperation(Summary = "Formulário de Dados Pessoais.", Tags = new[] { " Curriculo - Curriculos" })]
+    [SwaggerOperation(Summary = "Adicionar Curriculo do Usuário", Tags = new[] { " Curriculo - Curriculos" })]
     [ProducesResponseType(typeof(CurriculoDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> Adicionar([FromBody] AdicionarCurriculoDto curriculoDto)
+    public async Task<IActionResult> Adicionar([FromBody] AdicionarCurriculoDto dto)
     {
-        return CreatedResponse("", await _curriculoService.Adicionar(curriculoDto));
+        return CreatedResponse("", await _curriculoService.AdicionarCurriculo(dto));
     }
     
     [HttpPut]
-    [SwaggerOperation(Summary = "Alterar Formulário de Dados Pessoais.", Tags = new[] { " Curriculo - Curriculos" })]
+    [SwaggerOperation(Summary = "Atualizar Curriculo do Usuário", Tags = new[] { " Curriculo - Curriculos" })]
     [ProducesResponseType(typeof(CurriculoDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Editar(int id,CurriculoDto curriculoDto)
+    public async Task<IActionResult> Atualizar(int id, AtualizarCurriculoDto dto)
     {
-        var curriculo = await _curriculoService.Editar(id, curriculoDto);
+        var curriculo = await _curriculoService.AtualizarCurriculo(id, dto);
         return OkResponse(curriculo);
     }
     
     [HttpGet]
-    [SwaggerOperation(Summary = "Buscar Formulário de Dados Pessoais.", Tags = new[] { " Curriculo - Curriculos" })]
+    [SwaggerOperation(Summary = "Obter Curriculo do Usuário por Id", Tags = new[] { " Curriculo - Curriculos" })]
     [ProducesResponseType(typeof(CurriculoDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> BuscarPorId(int id)
+    public async Task<IActionResult> ObterCurriculoPorId(int id)
     {
-        var curriculo = await _curriculoService.ObterPorId(id);
+        var curriculo = await _curriculoService.ObterCurriculoPorId(id);
         return OkResponse(curriculo);
     }
     

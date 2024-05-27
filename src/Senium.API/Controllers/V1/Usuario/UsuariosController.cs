@@ -7,7 +7,6 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace Senium.API.Controllers.V1.Usuario;
 
-[AllowAnonymous]
 [Route("v{version:apiVersion}/[controller]")]
 public class UsuariosController : MainController
 {
@@ -17,7 +16,8 @@ public class UsuariosController : MainController
     {
         _usuarioService = usuarioService;
     }
-
+    
+    [AllowAnonymous]
     [HttpPost]
     [SwaggerOperation(Summary = "Cadastro de Usuario.", Tags = new[] { " Usuário - Usuários" })]
     [ProducesResponseType(typeof(UsuarioDto), StatusCodes.Status201Created)]
@@ -25,6 +25,18 @@ public class UsuariosController : MainController
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> Cadastrar([FromBody] AdicionarUsuarioDto dto)
     {
-        return CreatedResponse("", await _usuarioService.Adicionar(dto));
+        return CreatedResponse("", await _usuarioService.AdicionarUsuario(dto));
+    }
+    
+    [Authorize]
+    [HttpGet("{id}")]
+    [SwaggerOperation(Summary = "Obter um Usuário", Tags = new[] { " Usuário - Usuários" })]
+    [ProducesResponseType(typeof(UsuarioDto),StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ObterPorId(int id)
+    {
+        return OkResponse(await _usuarioService.ObterUsuarioPorId(id));
     }
 }

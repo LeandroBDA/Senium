@@ -8,14 +8,14 @@ public class CurriculoMapping : IEntityTypeConfiguration<Curriculo>
 {
     public void Configure(EntityTypeBuilder<Curriculo> builder)
     {
+        // Dados Pessoais
         builder.Property(x => x.Telefone)
             .IsRequired()
-            .HasDefaultValue("(85) 9 99999999")
             .HasMaxLength(15);
         
         builder.Property(x => x.EstadoCivil)
             .IsRequired()
-            .HasMaxLength(10);
+            .HasMaxLength(13);
         
         builder.Property(x => x.Genero)
             .IsRequired()
@@ -23,7 +23,7 @@ public class CurriculoMapping : IEntityTypeConfiguration<Curriculo>
         
         builder.Property(x => x.RacaEtnia)
             .IsRequired()
-            .HasMaxLength(7);
+            .HasMaxLength(21);
         
         builder.Property(x => x.GrauDeFormacao)
             .IsRequired()
@@ -31,7 +31,7 @@ public class CurriculoMapping : IEntityTypeConfiguration<Curriculo>
 
         builder.Property(x => x.Cep)
             .IsRequired()
-            .HasDefaultValue(8);
+            .HasDefaultValue(9);
 
         builder.Property(x => x.Endereco)
             .IsRequired()
@@ -42,6 +42,25 @@ public class CurriculoMapping : IEntityTypeConfiguration<Curriculo>
             .HasMaxLength(50);
 
         builder.Property(x => x.Estado)
+            .IsRequired()
             .HasMaxLength(50);
+        
+        //Dados Profissionais
+
+        builder.Property(x => x.Titulo)
+            .IsRequired();
+
+        builder.Property(x => x.AreaDeAtuacao)
+            .IsRequired()
+            .HasMaxLength(50);
+
+        builder.Property(x => x.ResumoProfissional)
+            .IsRequired()
+            .HasMaxLength(300);
+        
+        builder.HasMany(c => c.Experiencias)
+            .WithOne(e => e.Curriculo)
+            .HasForeignKey(e => e.CurriculoId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

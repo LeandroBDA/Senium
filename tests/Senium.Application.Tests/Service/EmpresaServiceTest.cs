@@ -39,7 +39,7 @@ public class EmpresaServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
         };
 
         // Act
-        var empresa = await _empresaService.Adicionar(dto);
+        var empresa = await _empresaService.AdicionarEmpresa(dto);
 
         // Assert
         using (new AssertionScope())
@@ -50,7 +50,7 @@ public class EmpresaServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
                 .Verify(c => c.Handle(It.IsAny<List<ValidationFailure>>()), Times.Once);
 
             _empresaRepositoryMock
-                .Verify(c => c.Cadastrar(It.IsAny<Empresa>()), Times.Never);
+                .Verify(c => c.CadastrarEmpresa(It.IsAny<Empresa>()), Times.Never);
         
             _empresaRepositoryMock
                 .Verify(c => c.UnitOfWork.Commit(), Times.Never);
@@ -72,7 +72,7 @@ public class EmpresaServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
         };
 
         // Act
-        var empresa = await _empresaService.Adicionar(dto);
+        var empresa = await _empresaService.AdicionarEmpresa(dto);
 
         // Assert
         using (new AssertionScope())
@@ -83,7 +83,7 @@ public class EmpresaServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
                 .Verify(c => c.Handle(It.IsAny<string>()), Times.Once);
 
             _empresaRepositoryMock
-                .Verify(c => c.Cadastrar(It.IsAny<Empresa>()), Times.Never);
+                .Verify(c => c.CadastrarEmpresa(It.IsAny<Empresa>()), Times.Never);
         
             _empresaRepositoryMock
                 .Verify(c => c.UnitOfWork.Commit(), Times.Never);
@@ -105,7 +105,7 @@ public class EmpresaServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
         };
 
         // Act
-        var empresa = await _empresaService.Adicionar(dto);
+        var empresa = await _empresaService.AdicionarEmpresa(dto);
 
         // Assert
         using (new AssertionScope())
@@ -116,7 +116,7 @@ public class EmpresaServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
                 .Verify(c => c.Handle(It.IsAny<string>()), Times.Once);
 
             _empresaRepositoryMock
-                .Verify(c => c.Cadastrar(It.IsAny<Empresa>()), Times.Once);
+                .Verify(c => c.CadastrarEmpresa(It.IsAny<Empresa>()), Times.Once);
 
             _empresaRepositoryMock
                 .Verify(c => c.UnitOfWork.Commit(), Times.Once);
@@ -138,7 +138,7 @@ public class EmpresaServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
         };
 
         // Act
-        var empresa = await _empresaService.Adicionar(dto);
+        var empresa = await _empresaService.AdicionarEmpresa(dto);
 
         // Assert
         using (new AssertionScope())
@@ -149,7 +149,7 @@ public class EmpresaServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
                 .Verify(c => c.Handle(It.IsAny<string>()), Times.Never);
 
             _empresaRepositoryMock
-                .Verify(c => c.Cadastrar(It.IsAny<Empresa>()), Times.Once);
+                .Verify(c => c.CadastrarEmpresa(It.IsAny<Empresa>()), Times.Once);
 
             _empresaRepositoryMock
                 .Verify(c => c.UnitOfWork.Commit(), Times.Once);
@@ -160,7 +160,6 @@ public class EmpresaServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
 
     
     #region SetupMocks
-
     
     private void SetupMocks(bool empresaExistente = false, bool commit = false)
     {
