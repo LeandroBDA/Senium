@@ -14,7 +14,7 @@ public class UsuarioValidation : AbstractValidator<Usuario>
 
         RuleFor(u => u.Email)
             .NotEmpty().WithMessage("O campo E-mail é obrigatório.")
-            .EmailAddress().WithMessage("O campo E-mail deve ser um endereço de e-mail válido.");
+            .Matches(@"^[^@\s]+@[^@\s]+\.[^@\s]+$").WithMessage("O campo E-mail deve ser um endereço de e-mail válido.");
 
         RuleFor(u => u.DataDeNascimento)
             .NotEmpty().WithMessage("O campo Data de Nascimento é obrigatório.")
