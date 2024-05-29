@@ -18,9 +18,9 @@ public class EmpresaValidation : AbstractValidator<Empresa>
 
         RuleFor(e => e.Telefone)
             .NotEmpty().WithMessage("O campo Telefone é obrigatório.")
-            .Matches(@"^\(\d{2}\)\d{8}$").WithMessage("O campo Telefone deve estar no formato correto: (XX)XXXXXXXX")
-            .Length(12, 13).WithMessage("O campo Telefone deve conter entre 12 e 13 caracteres incluindo o DDD: (XX)XXXXXXXX");
-
+            .Matches(@"^[\d\(\)]+$").WithMessage("O campo Telefone deve conter apenas números e parênteses.")
+            .Length(12, 13).WithMessage("O campo Telefone deve conter entre 12 e 13 caracteres incluindo o DDD: (XX)9XXXXXXXX ou (XX)XXXXXXXX");
+        
         RuleFor(e => e.NomeDaEmpresa)
             .NotEmpty().WithMessage("O campo Nome da Empresa é obritgatório.");
     }
