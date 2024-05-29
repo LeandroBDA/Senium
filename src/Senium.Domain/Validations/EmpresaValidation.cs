@@ -14,7 +14,7 @@ public class EmpresaValidation : AbstractValidator<Empresa>
         
         RuleFor(u => u.Email)
             .NotEmpty().WithMessage("O campo E-mail é obrigatório.")
-            .EmailAddress().WithMessage("O campo E-mail deve ser um endereço de e-mail válido.");
+            .Matches(@"^[^@\s]+@[^@\s]+\.[^@\s]+$").WithMessage("O campo E-mail deve ser um endereço de e-mail válido.");
 
         RuleFor(e => e.Telefone)
             .NotEmpty().WithMessage("O campo Telefone é obrigatório.")
