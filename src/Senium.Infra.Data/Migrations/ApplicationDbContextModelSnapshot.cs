@@ -131,6 +131,9 @@ namespace Senium.Infra.Data.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("Pdf")
+                        .HasColumnType("longtext");
+
                     b.Property<bool>("Pj")
                         .HasColumnType("tinyint(1)");
 
@@ -241,7 +244,7 @@ namespace Senium.Infra.Data.Migrations
                     b.Property<DateTime>("DataDeInicio")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<DateTime>("DataDeTermino")
+                    b.Property<DateTime?>("DataDeTermino")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("Descricao")

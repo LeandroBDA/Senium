@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Http;
+
 namespace Senium.Application.Dto.V1.Curriculo;
 
 public class AdicionarCurriculoDto
@@ -24,6 +26,7 @@ public class AdicionarCurriculoDto
     public string ResumoProfissional { get; set; } = null!;
     public string Linkedin { get; set; } = null!;
     public string Portfolio { get; set; } = null!;
+    public IFormFile? Pdf { get; set; } = null;
     public bool Clt { get; set; }
     public bool Pj { get; set; }
     public bool Temporario { get; set; }

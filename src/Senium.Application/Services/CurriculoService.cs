@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Senium.Application.Contracts.Services;
 using Senium.Application.Dto.V1.Curriculo;
 using Senium.Application.Notifications;
+using Senium.Core.Enums;
 using Senium.Core.Extensions;
 using Senium.Domain.Contracts.Repositories;
 using Senium.Domain.Entities;
@@ -13,11 +14,13 @@ public class CurriculoService : BaseService, ICurriculoService
 {
     private readonly ICurriculoRepository _curriculoRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IFileService _fileService;
     
-    public CurriculoService(INotificator notificator, IMapper mapper, IHttpContextAccessor httpContextAccessor,ICurriculoRepository curriculoRepository) : base(notificator, mapper) 
+    public CurriculoService(INotificator notificator, IMapper mapper, IHttpContextAccessor httpContextAccessor,ICurriculoRepository curriculoRepository, IFileService fileService) : base(notificator, mapper) 
     {
         _httpContextAccessor = httpContextAccessor;
         _curriculoRepository = curriculoRepository;
+        _fileService = fileService;
     }
     
     public async Task<CurriculoDto?> ObterCurriculoPorId(int id)
@@ -40,6 +43,11 @@ public class CurriculoService : BaseService, ICurriculoService
         if (!await Validar(curriculo))
         {
             return null;
+        }
+        
+        if (curriculodto.Pdf is not null)
+        {
+            curriculo.Pdf = await _fileService.UploadPdf(curriculodto.Pdf, EUploadPath.PdfUsuarios);
         }
         
         _curriculoRepository.AdicionarCurriculo(curriculo);
@@ -113,5 +121,17 @@ public class CurriculoService : BaseService, ICurriculoService
         }
 
         return !Notificator.HasNotification;
+    }
+    
+    private async Task<bool> ManterPdf(IFormFile pdf, Curriculo curriculo)
+    {
+        if (!string.IsNullOrWhiteSpace(curriculo.Pdf) && Uri.TryCreate(curriculo.Pdf, UriKind.Absolute, out Uri? pdfUri) && !_fileService.Apagar(pdfUri))
+        {
+            Notificator.Handle("Não foi possível remover o PDF anterior.");
+            return false;
+        }
+
+        curriculo.Pdf = await _fileService.UploadPdf(pdf, EUploadPath.FotoUsuarios);
+        return true;
     }
 }

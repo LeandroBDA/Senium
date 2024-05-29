@@ -29,7 +29,7 @@ public class Curriculo : Entity, IAggregateRoot
     public bool EDeficienciaMotora { get; set; }
        
     public bool EDeficienciaVisual { get; set; }
-
+    public string? Pdf { get; set; }
     public bool ELgbtqia { get; set; }
     public bool EBaixaRenda { get; set; }
     
@@ -39,6 +39,7 @@ public class Curriculo : Entity, IAggregateRoot
     public string ResumoProfissional { get; set; } = null!;
     public string Linkedin { get; set; } = null!;
     public string Portfolio { get; set; } = null!;
+    
     public bool Clt { get; set; }
     public bool Pj { get; set; }
     public bool Temporario { get; set; }

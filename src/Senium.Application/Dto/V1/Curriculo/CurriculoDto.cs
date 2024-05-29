@@ -30,6 +30,7 @@ public class CurriculoDto
     public string ResumoProfissional { get; set; } = null!;
     public string Linkedin { get; set; } = null!;
     public string Portfolio { get; set; } = null!;
+    public string? Pdf { get; set; }
     public bool Clt { get; set; }
     public bool Pj { get; set; }
     public bool Temporario { get; set; }

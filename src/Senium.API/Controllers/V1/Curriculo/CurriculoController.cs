@@ -23,7 +23,7 @@ public class CurriculoController : BaseController
     [ProducesResponseType(typeof(CurriculoDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> Adicionar([FromBody] AdicionarCurriculoDto dto)
+    public async Task<IActionResult> Adicionar([FromForm] AdicionarCurriculoDto dto)
     {
         return CreatedResponse("", await _curriculoService.AdicionarCurriculo(dto));
     }
