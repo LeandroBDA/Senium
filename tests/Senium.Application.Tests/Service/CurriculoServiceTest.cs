@@ -4,9 +4,11 @@ using FluentAssertions.Execution;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Http;
 using Moq;
+using Senium.Application.Contracts.Services;
 using Senium.Application.Dto.V1.Curriculo;
 using Senium.Application.Services;
 using Senium.Application.Tests.Fixtures;
+using Senium.Core.Enums;
 using Senium.Domain.Contracts.Repositories;
 using Senium.Domain.Entities;
 
@@ -17,11 +19,12 @@ public class CurriculoServiceTest : BaseServiceTest, IClassFixture<ServicesFixtu
     private readonly CurriculoService _curriculoService;
     private readonly Mock<ICurriculoRepository> _curriculoRepositoryMock = new();
     private readonly Mock<IHttpContextAccessor> _httpContextAccessorMock = new();
+    private readonly Mock<IFileService> _fileServiceMock = new();
 
     public CurriculoServiceTest(ServicesFixture fixture)
     {
         _curriculoService = new CurriculoService(NotificatorMock.Object, fixture.Mapper,_httpContextAccessorMock.Object,
-            _curriculoRepositoryMock.Object);
+            _curriculoRepositoryMock.Object, _fileServiceMock.Object);
     }
 
     #region ObterCurriculoPorId
@@ -298,6 +301,115 @@ public class CurriculoServiceTest : BaseServiceTest, IClassFixture<ServicesFixtu
                 .Verify(c => c.UnitOfWork.Commit(), Times.Once);
         }
     }
+    
+    [Fact]
+    public async Task Adicionar_SucessoComPdf_CurriculoDto()
+    {
+        SetupMocks(false, true);
+
+        var file = new Mock<IFormFile>();
+        file.Setup(c => c.Length).Returns(56);
+        var dto = new AdicionarCurriculoDto
+        {
+            Telefone = "85 988888888",
+            EstadoCivil = "Solteiro",
+            Genero = "Masculino",
+            RacaEtnia = "Branco",
+            GrauDeFormacao = "Graduação",
+            Cep = "12345678",
+            Endereco = "Rua Teste, 123",
+            Cidade = "Cidade Teste",
+            Estado = "CE",
+            EPessoaComDeficiencia = false,
+            EDeficienciaAuditiva = false,
+            EDeficienciaFisica = false,
+            EDeficienciaIntelectual = false,
+            EDeficienciaMotora = false,
+            EDeficienciaVisual = false,
+            ELgbtqia = false,
+            EBaixaRenda = false,
+            Titulo = "Desenvolvedor Full Stack",
+            AreaDeAtuacao = "Tecnologia da Informação",
+            ResumoProfissional = "Profissional com experiência em desenvolvimento web.",
+            Linkedin = "https://www.linkedin.com/in/teste/",
+            Portfolio = "https://www.portfolio.com",
+            Pdf = file.Object,
+            Clt = true,
+            Pj = false,
+            Temporario = false,
+            Presencial = true,
+            Remoto = false,
+            Hibrido = false
+        };
+
+        var curriculo = await _curriculoService.AdicionarCurriculo(dto);
+
+        using (new AssertionScope())
+        {
+            curriculo.Should().NotBeNull();
+            
+            NotificatorMock
+                .Verify(c => c.Handle(It.IsAny<List<ValidationFailure>>()), Times.Never);
+            NotificatorMock
+                .Verify(c => c.Handle(It.IsAny<string>()), Times.Never);
+            
+            _curriculoRepositoryMock.Verify(c => c.AdicionarCurriculo(It.IsAny<Curriculo>()), Times.Once);
+            _curriculoRepositoryMock.Verify(c => c.UnitOfWork.Commit(), Times.Once);
+        }
+    }
+    
+    [Fact]
+    public async Task Adicionar_SucessoSemPdf_CurriculoDto()
+    {
+        SetupMocks(false, true);
+
+        var dto = new AdicionarCurriculoDto
+        {
+            Telefone = "85 988888888",
+            EstadoCivil = "Solteiro",
+            Genero = "Masculino",
+            RacaEtnia = "Branco",
+            GrauDeFormacao = "Graduação",
+            Cep = "12345678",
+            Endereco = "Rua Teste, 123",
+            Cidade = "Cidade Teste",
+            Estado = "CE",
+            EPessoaComDeficiencia = false,
+            EDeficienciaAuditiva = false,
+            EDeficienciaFisica = false,
+            EDeficienciaIntelectual = false,
+            EDeficienciaMotora = false,
+            EDeficienciaVisual = false,
+            ELgbtqia = false,
+            EBaixaRenda = false,
+            Titulo = "Desenvolvedor Full Stack",
+            AreaDeAtuacao = "Tecnologia da Informação",
+            ResumoProfissional = "Profissional com experiência em desenvolvimento web.",
+            Linkedin = "https://www.linkedin.com/in/teste/",
+            Portfolio = "https://www.portfolio.com",
+            Clt = true,
+            Pj = false,
+            Temporario = false,
+            Presencial = true,
+            Remoto = false,
+            Hibrido = false
+        };
+
+        var curriculo = await _curriculoService.AdicionarCurriculo(dto);
+
+        using (new AssertionScope())
+        {
+            curriculo.Should().NotBeNull();
+            
+            NotificatorMock
+                .Verify(c => c.Handle(It.IsAny<List<ValidationFailure>>()), Times.Never);
+            NotificatorMock
+                .Verify(c => c.Handle(It.IsAny<string>()), Times.Never);
+            
+            _curriculoRepositoryMock.Verify(c => c.AdicionarCurriculo(It.IsAny<Curriculo>()), Times.Once);
+            _curriculoRepositoryMock.Verify(c => c.UnitOfWork.Commit(), Times.Once);
+        }
+    }
 
     #endregion
 
@@ -548,16 +660,70 @@ public class CurriculoServiceTest : BaseServiceTest, IClassFixture<ServicesFixtu
         }
     }
 
-
-    #endregion
-    
-    #region SetupMocks
-    
-    private void SetupMocks(bool curriculoExistente = false, bool commit = false)
+    [Fact]
+    public async Task Atualizar_CurriculoComPdf_Sucesso()
     {
-        var curriculo = new Curriculo
+        SetupMocks(commit: true);
+        
+        var file = new Mock<IFormFile>();
+        file.Setup(c => c.Length).Returns(56);
+        const int id = 1;
+        var dto = new AtualizarCurriculoDto
         {
-            UsuarioId = 1,
+            Id = 1,
+            Telefone = "85 988888888",
+            EstadoCivil = "Solteiro",
+            Genero = "Masculino",
+            RacaEtnia = "Branco",
+            GrauDeFormacao = "Graduação",
+            Cep = "12345678",
+            Endereco = "Rua Teste, 123",
+            Cidade = "Cidade Teste",
+            Estado = "CE",
+            EPessoaComDeficiencia = false,
+            EDeficienciaAuditiva = false,
+            EDeficienciaFisica = false,
+            EDeficienciaIntelectual = false,
+            EDeficienciaMotora = false,
+            EDeficienciaVisual = false,
+            ELgbtqia = false,
+            EBaixaRenda = false,
+            Titulo = "Desenvolvedor Full Stack",
+            AreaDeAtuacao = "Tecnologia da Informação",
+            ResumoProfissional = "Profissional com experiência em desenvolvimento web.",
+            Linkedin = "https://www.linkedin.com/in/seuperfil",
+            Portfolio = "https://www.portfolio.com",
+            Pdf = file.Object,
+            Clt = true,
+            Pj = false,
+            Temporario = false,
+            Presencial = true,
+            Remoto = false,
+            Hibrido = false
+        };
+        
+        var curriculo = await _curriculoService.AtualizarCurriculo(id, dto);
+
+        using (new AssertionScope())
+        {
+            curriculo.Should().NotBeNull();
+            
+            NotificatorMock.Verify(c => c.Handle(It.IsAny<string>()), Times.Never);
+            NotificatorMock.Verify(c => c.Handle(It.IsAny<List<ValidationFailure>>()), Times.Never);
+            _curriculoRepositoryMock.Verify(c => c.AtualizarCurriculo(It.IsAny<Curriculo>()), Times.Once);
+            _curriculoRepositoryMock.Verify(c => c.UnitOfWork.Commit(), Times.Once);
+        }
+    }
+    
+    [Fact]
+    public async Task Atualizar_CurriculoSemPdf_Sucesso()
+    {
+        SetupMocks(commit: true);
+        
+        const int id = 1;
+        var dto = new AtualizarCurriculoDto
+        {
+            Id = 1,
             Telefone = "85 988888888",
             EstadoCivil = "Solteiro",
             Genero = "Masculino",
@@ -587,6 +753,59 @@ public class CurriculoServiceTest : BaseServiceTest, IClassFixture<ServicesFixtu
             Remoto = false,
             Hibrido = false
         };
+        
+        var curriculo = await _curriculoService.AtualizarCurriculo(id, dto);
+
+        using (new AssertionScope())
+        {
+            curriculo.Should().NotBeNull();
+            
+            NotificatorMock.Verify(c => c.Handle(It.IsAny<string>()), Times.Never);
+            NotificatorMock.Verify(c => c.Handle(It.IsAny<List<ValidationFailure>>()), Times.Never);
+            _curriculoRepositoryMock.Verify(c => c.AtualizarCurriculo(It.IsAny<Curriculo>()), Times.Once);
+            _curriculoRepositoryMock.Verify(c => c.UnitOfWork.Commit(), Times.Once);
+        }
+    }
+
+    #endregion
+    
+    #region SetupMocks
+    
+    private void SetupMocks(bool curriculoExistente = false, bool commit = false, bool retornaComPdf = false)
+    {
+        var curriculo = new Curriculo
+        {
+            UsuarioId = 1,
+            Telefone = "85 988888888",
+            EstadoCivil = "Solteiro",
+            Genero = "Masculino",
+            RacaEtnia = "Branco",
+            GrauDeFormacao = "Graduação",
+            Cep = "12345678",
+            Endereco = "Rua Teste, 123",
+            Cidade = "Cidade Teste",
+            Estado = "CE",
+            EPessoaComDeficiencia = false,
+            EDeficienciaAuditiva = false,
+            EDeficienciaFisica = false,
+            EDeficienciaIntelectual = false,
+            EDeficienciaMotora = false,
+            EDeficienciaVisual = false,
+            ELgbtqia = false,
+            EBaixaRenda = false,
+            Titulo = "Desenvolvedor Full Stack",
+            AreaDeAtuacao = "Tecnologia da Informação",
+            ResumoProfissional = "Profissional com experiência em desenvolvimento web.",
+            Linkedin = "https://www.linkedin.com/in/seuperfil",
+            Portfolio = "https://www.portfolio.com",
+            Pdf = retornaComPdf ? "https://pdf.com/pdfteste.pdf" : null,
+            Clt = true,
+            Pj = false,
+            Temporario = false,
+            Presencial = true,
+            Remoto = false,
+            Hibrido = false
+        };
 
         _curriculoRepositoryMock
             .Setup(c => c.FirstOrDefault(It.IsAny<Expression<Func<Curriculo, bool>>>()))
@@ -599,6 +818,11 @@ public class CurriculoServiceTest : BaseServiceTest, IClassFixture<ServicesFixtu
         _curriculoRepositoryMock
             .Setup(c => c.ObterCurriculoPorId(It.Is<int>(id => id == 1)))
             .ReturnsAsync(curriculo);
+        
+        _fileServiceMock
+            .Setup(c => c.UploadPdf(It.IsAny<IFormFile>(), It.IsAny<EUploadPath>(), It.IsAny<EPathAccess>(),
+                It.IsAny<int>()))
+            .ReturnsAsync("path");
     }
 
 

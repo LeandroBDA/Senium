@@ -34,7 +34,7 @@ public class CurriculoController : BaseController
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Atualizar(int id, AtualizarCurriculoDto dto)
+    public async Task<IActionResult> Atualizar(int id, [FromForm] AtualizarCurriculoDto dto)
     {
         var curriculo = await _curriculoService.AtualizarCurriculo(id, dto);
         return OkResponse(curriculo);

@@ -1,23 +1,27 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Senium.Application.Contracts.Services;
+using Senium.Application.Notifications;
 using Senium.Core.Enums;
 using Senium.Core.Extensions;
 using Senium.Core.Settings;
 
 namespace Senium.Application.Services;
 
-public class FileService : IFileService
+public class FileService : BaseService, IFileService
 {
-     private readonly AppSettings _appSettings;
+    private readonly AppSettings _appSettings;
     private readonly UploadSettings _uploadSettings;
-
-    public FileService(IOptions<AppSettings> appSettings, IOptions<UploadSettings> uploadSettings)
+    
+    private const long MaxFileSizeInBytes = 5 * 1024 * 1024; // 5 MB
+    
+    public FileService(INotificator notificator, IMapper mapper, IOptions<AppSettings> appSettings, IOptions<UploadSettings> uploadSettings) : base(notificator, mapper)
     {
         _appSettings = appSettings.Value;
         _uploadSettings = uploadSettings.Value;
     }
-
+    
     public async Task<string> UploadPhoto(IFormFile arquivo, EUploadPath uploadPath,
         EPathAccess pathAccess = EPathAccess.Private, int urlLimitLength = 255)
     {
@@ -38,8 +42,15 @@ public class FileService : IFileService
         return GetFileUrl(fileName, pathAccess, uploadPath);
     }
 
-    public async Task<string> UploadPdf(IFormFile arquivo, EUploadPath uploadPath, EPathAccess pathAccess = EPathAccess.Private, int urlLimitLength = 255)
+    public async Task<string?> UploadPdf(IFormFile arquivo, EUploadPath uploadPath, EPathAccess pathAccess = EPathAccess.Private, int urlLimitLength = 255)
     {
+        
+        if (arquivo.Length > MaxFileSizeInBytes)
+        {
+            Notificator.Handle($"O arquivo deve ter no máximo {MaxFileSizeInBytes / (1024 * 1024)} MB.");
+            return null; // Retorna null para indicar que o upload não foi realizado
+        }
+
         var fileName = GenerateNewFileName(arquivo.FileName, pathAccess, EUploadPath.PdfUsuarios, urlLimitLength);
         var filePath = MountFilePath(fileName, pathAccess, EUploadPath.PdfUsuarios);
 
@@ -56,6 +67,7 @@ public class FileService : IFileService
 
         return GetFileUrl(fileName, pathAccess, EUploadPath.PdfUsuarios);
     }
+
 
     public string ObterPath(Uri uri)
     {
@@ -141,4 +153,6 @@ public class FileService : IFileService
         file.CopyTo(memoryStream);
         return memoryStream.ToArray();
     }
+
+
 }
