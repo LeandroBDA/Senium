@@ -410,6 +410,118 @@ public class CurriculoServiceTest : BaseServiceTest, IClassFixture<ServicesFixtu
             _curriculoRepositoryMock.Verify(c => c.UnitOfWork.Commit(), Times.Once);
         }
     }
+    
+    [Fact]
+    public async Task Adicionar_PdfMaiorQue5MB_DeveRetornarErro()
+    {
+        SetupMocks(false, true);
+
+        var file = new Mock<IFormFile>();
+        file.Setup(c => c.Length).Returns(6 * 1024 * 1024); // 6 MB
+        var dto = new AdicionarCurriculoDto
+        {
+            Telefone = "85 988888888",
+            EstadoCivil = "Solteiro",
+            Genero = "Masculino",
+            RacaEtnia = "Branco",
+            GrauDeFormacao = "Graduação",
+            Cep = "12345678",
+            Endereco = "Rua Teste, 123",
+            Cidade = "Cidade Teste",
+            Estado = "CE",
+            EPessoaComDeficiencia = false,
+            EDeficienciaAuditiva = false,
+            EDeficienciaFisica = false,
+            EDeficienciaIntelectual = false,
+            EDeficienciaMotora = false,
+            EDeficienciaVisual = false,
+            ELgbtqia = false,
+            EBaixaRenda = false,
+            Titulo = "Desenvolvedor Full Stack",
+            AreaDeAtuacao = "Tecnologia da Informação",
+            ResumoProfissional = "Profissional com experiência em desenvolvimento web.",
+            Linkedin = "https://www.linkedin.com/in/teste/",
+            Portfolio = "https://www.portfolio.com",
+            Pdf = file.Object,
+            Clt = true,
+            Pj = false,
+            Temporario = false,
+            Presencial = true,
+            Remoto = false,
+            Hibrido = false
+        };
+
+        var curriculo = await _curriculoService.AdicionarCurriculo(dto);
+
+        using (new AssertionScope())
+        {
+            curriculo.Should().BeNull();
+        
+            NotificatorMock
+                .Verify(c => c.Handle(It.Is<string>(msg => msg == "O arquivo deve ter no máximo 5 MB.")), Times.Once);
+        
+            _curriculoRepositoryMock.Verify(c => c.AdicionarCurriculo(It.IsAny<Curriculo>()), Times.Never);
+            _curriculoRepositoryMock.Verify(c => c.UnitOfWork.Commit(), Times.Never);
+        }
+    }
+
+    [Fact]
+    public async Task Adicionar_ErroAoFazerUploadPdf_DeveRetornarErro()
+    {
+        SetupMocks(false, true);
+
+        var file = new Mock<IFormFile>();
+        file.Setup(c => c.Length).Returns(56);
+        _fileServiceMock.Setup(f => f.UploadPdf(It.IsAny<IFormFile>(), It.IsAny<EUploadPath>(), It.IsAny<EPathAccess>(), It.IsAny<int>()))
+            .ThrowsAsync(new Exception("Erro simulado ao fazer upload"));
+
+        var dto = new AdicionarCurriculoDto
+        {
+            Telefone = "85 988888888",
+            EstadoCivil = "Solteiro",
+            Genero = "Masculino",
+            RacaEtnia = "Branco",
+            GrauDeFormacao = "Graduação",
+            Cep = "12345678",
+            Endereco = "Rua Teste, 123",
+            Cidade = "Cidade Teste",
+            Estado = "CE",
+            EPessoaComDeficiencia = false,
+            EDeficienciaAuditiva = false,
+            EDeficienciaFisica = false,
+            EDeficienciaIntelectual = false,
+            EDeficienciaMotora = false,
+            EDeficienciaVisual = false,
+            ELgbtqia = false,
+            EBaixaRenda = false,
+            Titulo = "Desenvolvedor Full Stack",
+            AreaDeAtuacao = "Tecnologia da Informação",
+            ResumoProfissional = "Profissional com experiência em desenvolvimento web.",
+            Linkedin = "https://www.linkedin.com/in/teste/",
+            Portfolio = "https://www.portfolio.com",
+            Pdf = file.Object,
+            Clt = true,
+            Pj = false,
+            Temporario = false,
+            Presencial = true,
+            Remoto = false,
+            Hibrido = false
+        };
+
+        var curriculo = await _curriculoService.AdicionarCurriculo(dto);
+
+        using (new AssertionScope())
+        {
+            curriculo.Should().BeNull();
+        
+            NotificatorMock
+                .Verify(c => c.Handle(It.Is<string>(msg => msg.Contains("Erro ao fazer upload do PDF: Erro simulado ao fazer upload"))), Times.Once);
+        
+            _curriculoRepositoryMock.Verify(c => c.AdicionarCurriculo(It.IsAny<Curriculo>()), Times.Never);
+            _curriculoRepositoryMock.Verify(c => c.UnitOfWork.Commit(), Times.Never);
+        }
+    }
+
 
     #endregion
 
@@ -766,7 +878,147 @@ public class CurriculoServiceTest : BaseServiceTest, IClassFixture<ServicesFixtu
             _curriculoRepositoryMock.Verify(c => c.UnitOfWork.Commit(), Times.Once);
         }
     }
+    
+    [Fact]
+public async Task Atualizar_CurriculoComPdf_MaiorQueLimite_NotificacaoErro()
+{
+    // Arrange
+    SetupMocks(commit: false);
+    var file = new Mock<IFormFile>();
+    file.Setup(c => c.Length).Returns(6 * 1024 * 1024 + 1); // Define um tamanho maior que 5MB
+    const int id = 1;
+    var dto = new AtualizarCurriculoDto
+    {
+        Id = id,
+        Telefone = "85 988888888",
+        EstadoCivil = "Solteiro",
+        Genero = "Masculino",
+        RacaEtnia = "Branco",
+        GrauDeFormacao = "Graduação",
+        Cep = "12345678",
+        Endereco = "Rua Teste, 123",
+        Cidade = "Cidade Teste",
+        Estado = "CE",
+        EPessoaComDeficiencia = false,
+        EDeficienciaAuditiva = false,
+        EDeficienciaFisica = false,
+        EDeficienciaIntelectual = false,
+        EDeficienciaMotora = false,
+        EDeficienciaVisual = false,
+        ELgbtqia = false,
+        EBaixaRenda = false,
+        Titulo = "Desenvolvedor Full Stack",
+        AreaDeAtuacao = "Tecnologia da Informação",
+        ResumoProfissional = "Profissional com experiência em desenvolvimento web.",
+        Linkedin = "https://www.linkedin.com/in/seuperfil",
+        Portfolio = "https://www.portfolio.com",
+        Pdf = file.Object,
+        Clt = true,
+        Pj = false,
+        Temporario = false,
+        Presencial = true,
+        Remoto = false,
+        Hibrido = false
+    };
 
+    // Act
+    var curriculo = await _curriculoService.AtualizarCurriculo(id, dto);
+
+    // Assert
+    using (new AssertionScope())
+    {
+        curriculo.Should().BeNull(); 
+        NotificatorMock.Verify(c => c.Handle(It.Is<string>(msg => msg.Contains("O arquivo deve ter no máximo"))), Times.Once); 
+        _curriculoRepositoryMock.Verify(c => c.AtualizarCurriculo(It.IsAny<Curriculo>()), Times.Never); 
+        _curriculoRepositoryMock.Verify(c => c.UnitOfWork.Commit(), Times.Never); 
+    }
+}
+
+    
+    [Fact]
+    public async Task Atualizar_Curriculo_TamanhoPdfExcedido_NotificacaoErro()
+    {
+        // Arrange
+        SetupMocks(commit: false);
+        var maxSizeInBytes = 5 * 1024 * 1024; // 5 MB
+        var file = new Mock<IFormFile>();
+        file.Setup(c => c.Length).Returns(maxSizeInBytes + 1); // Excede o limite de tamanho
+        const int id = 1;
+        var dto = new AtualizarCurriculoDto
+        {
+            Id = id,
+            Telefone = "85 988888888",
+            EstadoCivil = "Solteiro",
+            Genero = "Masculino",
+            RacaEtnia = "Branco",
+            GrauDeFormacao = "Graduação",
+            Cep = "12345678",
+            Endereco = "Rua Teste, 123",
+            Cidade = "Cidade Teste",
+            Estado = "CE",
+            EPessoaComDeficiencia = false,
+            EDeficienciaAuditiva = false,
+            EDeficienciaFisica = false,
+            EDeficienciaIntelectual = false,
+            EDeficienciaMotora = false,
+            EDeficienciaVisual = false,
+            ELgbtqia = false,
+            EBaixaRenda = false,
+            Titulo = "Desenvolvedor Full Stack",
+            AreaDeAtuacao = "Tecnologia da Informação",
+            ResumoProfissional = "Profissional com experiência em desenvolvimento web.",
+            Linkedin = "https://www.linkedin.com/in/seuperfil",
+            Portfolio = "https://www.portfolio.com",
+            Pdf = file.Object,
+            Clt = true,
+            Pj = false,
+            Temporario = false,
+            Presencial = true,
+            Remoto = false,
+            Hibrido = false
+        };
+
+        // Act
+        var curriculo = await _curriculoService.AtualizarCurriculo(id, dto);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            curriculo.Should().BeNull();
+            NotificatorMock.Verify(c => c.Handle($"O arquivo deve ter no máximo {maxSizeInBytes / (1024 * 1024)} MB."), Times.Once);
+            _curriculoRepositoryMock.Verify(c => c.AtualizarCurriculo(It.IsAny<Curriculo>()), Times.Never);
+            _curriculoRepositoryMock.Verify(c => c.UnitOfWork.Commit(), Times.Never);
+        }
+    }
+    
+    [Fact]
+    public async Task AtualizarCurriculo_PdfExcedeTamanhoMaximo_NotificacaoErro()
+    {
+        // Arrange
+        SetupMocks(commit: false);
+        var file = new Mock<IFormFile>();
+        file.Setup(c => c.Length).Returns(6 * 1024 * 1024); // Define um tamanho maior que o permitido
+        const int id = 1;
+        var dto = new AtualizarCurriculoDto
+        {
+            Id = id,
+            Pdf = file.Object // Este é o objeto do arquivo PDF, fornecido pelo mock
+        };
+
+        // Act
+        var curriculo = await _curriculoService.AtualizarCurriculo(id, dto);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            curriculo.Should().BeNull();
+            NotificatorMock.Verify(c => c.Handle(It.Is<string>(msg => msg.Contains("O arquivo deve ter no máximo 5 MB."))), Times.Once);
+            _curriculoRepositoryMock.Verify(c => c.AtualizarCurriculo(It.IsAny<Curriculo>()), Times.Never);
+            _curriculoRepositoryMock.Verify(c => c.UnitOfWork.Commit(), Times.Never);
+        }
+    }
+    
+    
     #endregion
     
     #region SetupMocks
