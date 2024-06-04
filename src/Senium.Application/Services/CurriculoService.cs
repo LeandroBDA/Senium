@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Senium.Application.Contracts.Services;
 using Senium.Application.Dto.V1.Curriculo;
 using Senium.Application.Notifications;
+using Senium.Core.Enums;
 using Senium.Core.Extensions;
 using Senium.Domain.Contracts.Repositories;
 using Senium.Domain.Entities;
@@ -13,11 +14,13 @@ public class CurriculoService : BaseService, ICurriculoService
 {
     private readonly ICurriculoRepository _curriculoRepository;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IFileService _fileService;
     
-    public CurriculoService(INotificator notificator, IMapper mapper, IHttpContextAccessor httpContextAccessor,ICurriculoRepository curriculoRepository) : base(notificator, mapper) 
+    public CurriculoService(INotificator notificator, IMapper mapper, IHttpContextAccessor httpContextAccessor,ICurriculoRepository curriculoRepository, IFileService fileService) : base(notificator, mapper) 
     {
         _httpContextAccessor = httpContextAccessor;
         _curriculoRepository = curriculoRepository;
+        _fileService = fileService;
     }
     
     public async Task<CurriculoDto?> ObterCurriculoPorId(int id)
@@ -36,21 +39,43 @@ public class CurriculoService : BaseService, ICurriculoService
     {
         var curriculo = Mapper.Map<Curriculo>(curriculodto);
         curriculo.UsuarioId = _httpContextAccessor.ObterUsuarioId() ?? 0;
-        
+
         if (!await Validar(curriculo))
         {
             return null;
         }
-        
+
+        if (curriculodto.Pdf is not null)
+        {
+            const long maxSizeInBytes = 5 * 1024 * 1024;
+            if (curriculodto.Pdf.Length > maxSizeInBytes)
+            {
+                Notificator.Handle($"O arquivo deve ter no máximo {maxSizeInBytes / (1024 * 1024)} MB.");
+                return null;
+            }
+
+            try
+            {
+                curriculo.Pdf = await _fileService.UploadPdf(curriculodto.Pdf, EUploadPath.PdfUsuarios);
+            }
+            catch (Exception ex)
+            {
+                Notificator.Handle($"Erro ao fazer upload do PDF: {ex.Message}");
+                return null;
+            }
+        }
+
         _curriculoRepository.AdicionarCurriculo(curriculo);
-        
+
         if (await _curriculoRepository.UnitOfWork.Commit())
         {
             return Mapper.Map<CurriculoDto>(curriculo);
         }
+
         Notificator.Handle("Não foi possível adicionar um curriculo.");
         return null;
     }
+
 
     public async Task<CurriculoDto?> AtualizarCurriculo(int id, AtualizarCurriculoDto curriculoDto)
     {
@@ -59,15 +84,30 @@ public class CurriculoService : BaseService, ICurriculoService
             Notificator.Handle("Os IDs não conferem");
             return null;
         }
-        
+
         var curriculo = await _curriculoRepository.ObterCurriculoPorId(id);
         if (curriculo == null)
         {
             Notificator.HandleNotFoundResource();
             return null;
         }
-      
+        
         Mapper.Map(curriculoDto, curriculo);
+        
+        if (curriculoDto.Pdf is not null)
+        {
+            const long maxSizeInBytes = 5 * 1024 * 1024;
+            if (curriculoDto.Pdf.Length > maxSizeInBytes)
+            {
+                Notificator.Handle($"O arquivo deve ter no máximo {maxSizeInBytes / (1024 * 1024)} MB.");
+                return null;
+            }
+            
+            if (!await ManterPdf(curriculoDto.Pdf, curriculo))
+            {
+                return null;
+            }
+        }
 
         if (!await ValidarAtualizacao(curriculo))
         {
@@ -78,13 +118,13 @@ public class CurriculoService : BaseService, ICurriculoService
 
         if (await _curriculoRepository.UnitOfWork.Commit())
         {
-          
             return Mapper.Map<CurriculoDto>(curriculo);
         }
-        
+
         Notificator.Handle("Não foi possível alterar o currículo");
         return null;
     }
+    
     public async Task<bool> Validar(Curriculo curriculo)
     {
         if (!curriculo.Validar(out var validationResult))
@@ -113,5 +153,17 @@ public class CurriculoService : BaseService, ICurriculoService
         }
 
         return !Notificator.HasNotification;
+    }
+    
+    private async Task<bool> ManterPdf(IFormFile pdf, Curriculo curriculo)
+    {
+        if (!string.IsNullOrWhiteSpace(curriculo.Pdf) && Uri.TryCreate(curriculo.Pdf, UriKind.Absolute, out Uri? pdfUri) && !_fileService.Apagar(pdfUri))
+        {
+            Notificator.Handle("Não foi possível remover o PDF anterior.");
+            return false;
+        }
+
+        curriculo.Pdf = await _fileService.UploadPdf(pdf, EUploadPath.FotoUsuarios);
+        return true;
     }
 }

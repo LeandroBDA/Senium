@@ -1,4 +1,6 @@
-﻿namespace Senium.Application.Dto.V1.Curriculo;
+﻿using Microsoft.AspNetCore.Http;
+
+namespace Senium.Application.Dto.V1.Curriculo;
 
 public class AtualizarCurriculoDto
 {
@@ -23,8 +25,9 @@ public class AtualizarCurriculoDto
     public string Titulo { get; set; } = null!;
     public string AreaDeAtuacao { get; set; } = null!;
     public string ResumoProfissional { get; set; } = null!;
-    public string Linkedin { get; set; } = null!;
-    public string Portfolio { get; set; } = null!;
+    public string? Linkedin { get; set; }
+    public string? Portfolio { get; set; }
+    public IFormFile? Pdf { get; set; } = null;
     public bool Clt { get; set; }
     public bool Pj { get; set; }
     public bool Temporario { get; set; }

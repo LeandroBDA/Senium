@@ -62,6 +62,10 @@ app.UseHttpsRedirection();
 
 app.UseAuthenticationConfig();
 
+app.UseStaticFileConfiguration(builder.Configuration);
+
+app.UseStaticFileConfiguration(app.Configuration);
+
 app.MapControllers();
 
 app.Run();
