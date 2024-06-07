@@ -64,6 +64,26 @@ public class CurriculoService : BaseService, ICurriculoService
                 return null;
             }
         }
+        
+        if (curriculodto.Photo is not null)
+        {
+            const long MaxFileSizeInBytes = 2 * 1024 * 1024;
+            if (curriculodto.Photo.Length > MaxFileSizeInBytes)
+            {
+                Notificator.Handle($"O arquivo deve ter no máximo 2MB {MaxFileSizeInBytes / (1024 * 1024)} MB.");
+                return null;
+            }
+            
+            try
+            {
+                curriculo.Photo = await _fileService.UploadPhoto(curriculodto.Photo, EUploadPath.FotoUsuarios);
+            }
+            catch (Exception ex)
+            {
+                Notificator.Handle($"Erro ao fazer upload da Foto: {ex.Message}");
+                return null;
+            }
+        }
 
         _curriculoRepository.AdicionarCurriculo(curriculo);
 
@@ -104,6 +124,21 @@ public class CurriculoService : BaseService, ICurriculoService
             }
             
             if (!await ManterPdf(curriculoDto.Pdf, curriculo))
+            {
+                return null;
+            }
+        }
+        
+        if (curriculoDto.Photo is not null)
+        {
+            const long maxSizeInBytes = 2 * 1024 * 1024;
+            if (curriculoDto.Photo.Length > maxSizeInBytes)
+            {
+                Notificator.Handle($"O arquivo deve ter no máximo 2MG {maxSizeInBytes / (1024 * 1024)} MB.");
+                return null;
+            }
+            
+            if (!await ManterPhoto(curriculoDto.Photo, curriculo))
             {
                 return null;
             }
@@ -163,7 +198,19 @@ public class CurriculoService : BaseService, ICurriculoService
             return false;
         }
 
-        curriculo.Pdf = await _fileService.UploadPdf(pdf, EUploadPath.FotoUsuarios);
+        curriculo.Pdf = await _fileService.UploadPdf(pdf, EUploadPath.PdfUsuarios);
+        return true;
+    }
+    
+    private async Task<bool> ManterPhoto(IFormFile photo, Curriculo curriculo)
+    {
+        if (!string.IsNullOrWhiteSpace(curriculo.Photo) && Uri.TryCreate(curriculo.Photo, UriKind.Absolute, out Uri? photoUri) && !_fileService.Apagar(photoUri))
+        {
+            Notificator.Handle("Não foi possível remover a Foto anterior.");
+            return false;
+        }
+
+        curriculo.Photo = await _fileService.UploadPhoto(photo, EUploadPath.FotoUsuarios);
         return true;
     }
 }

@@ -521,10 +521,231 @@ public class CurriculoServiceTest : BaseServiceTest, IClassFixture<ServicesFixtu
             _curriculoRepositoryMock.Verify(c => c.UnitOfWork.Commit(), Times.Never);
         }
     }
+    
+        public async Task Adicionar_SucessoComPhoto_CurriculoDto()
+    {
+        SetupMocks(false, true);
 
+        var file = new Mock<IFormFile>();
+        file.Setup(c => c.Length).Returns(56);
+        var dto = new AdicionarCurriculoDto
+        {
+            Telefone = "85 988888888",
+            EstadoCivil = "Solteiro",
+            Genero = "Masculino",
+            RacaEtnia = "Branco",
+            GrauDeFormacao = "Graduação",
+            Cep = "12345678",
+            Endereco = "Rua Teste, 123",
+            Cidade = "Cidade Teste",
+            Estado = "CE",
+            EPessoaComDeficiencia = false,
+            EDeficienciaAuditiva = false,
+            EDeficienciaFisica = false,
+            EDeficienciaIntelectual = false,
+            EDeficienciaMotora = false,
+            EDeficienciaVisual = false,
+            ELgbtqia = false,
+            EBaixaRenda = false,
+            Titulo = "Desenvolvedor Full Stack",
+            AreaDeAtuacao = "Tecnologia da Informação",
+            ResumoProfissional = "Profissional com experiência em desenvolvimento web.",
+            Linkedin = "https://www.linkedin.com/in/teste/",
+            Portfolio = "https://www.portfolio.com",
+            Pdf = file.Object,
+            Photo = file.Object,
+            Clt = true,
+            Pj = false,
+            Temporario = false,
+            Presencial = true,
+            Remoto = false,
+            Hibrido = false
+        };
 
+        var curriculo = await _curriculoService.AdicionarCurriculo(dto);
+
+        using (new AssertionScope())
+        {
+            curriculo.Should().NotBeNull();
+            
+            NotificatorMock
+                .Verify(c => c.Handle(It.IsAny<List<ValidationFailure>>()), Times.Never);
+            NotificatorMock
+                .Verify(c => c.Handle(It.IsAny<string>()), Times.Never);
+            
+            _curriculoRepositoryMock.Verify(c => c.AdicionarCurriculo(It.IsAny<Curriculo>()), Times.Once);
+            _curriculoRepositoryMock.Verify(c => c.UnitOfWork.Commit(), Times.Once);
+        }
+    }
+    
+    [Fact]
+    public async Task Adicionar_SucessoSemPhoto_CurriculoDto()
+    {
+        SetupMocks(false, true);
+
+        var dto = new AdicionarCurriculoDto
+        {
+            Telefone = "85 988888888",
+            EstadoCivil = "Solteiro",
+            Genero = "Masculino",
+            RacaEtnia = "Branco",
+            GrauDeFormacao = "Graduação",
+            Cep = "12345678",
+            Endereco = "Rua Teste, 123",
+            Cidade = "Cidade Teste",
+            Estado = "CE",
+            EPessoaComDeficiencia = false,
+            EDeficienciaAuditiva = false,
+            EDeficienciaFisica = false,
+            EDeficienciaIntelectual = false,
+            EDeficienciaMotora = false,
+            EDeficienciaVisual = false,
+            ELgbtqia = false,
+            EBaixaRenda = false,
+            Titulo = "Desenvolvedor Full Stack",
+            AreaDeAtuacao = "Tecnologia da Informação",
+            ResumoProfissional = "Profissional com experiência em desenvolvimento web.",
+            Linkedin = "https://www.linkedin.com/in/teste/",
+            Portfolio = "https://www.portfolio.com",
+            Clt = true,
+            Pj = false,
+            Temporario = false,
+            Presencial = true,
+            Remoto = false,
+            Hibrido = false
+        };
+
+        var curriculo = await _curriculoService.AdicionarCurriculo(dto);
+
+        using (new AssertionScope())
+        {
+            curriculo.Should().NotBeNull();
+            
+            NotificatorMock
+                .Verify(c => c.Handle(It.IsAny<List<ValidationFailure>>()), Times.Never);
+            NotificatorMock
+                .Verify(c => c.Handle(It.IsAny<string>()), Times.Never);
+            
+            _curriculoRepositoryMock.Verify(c => c.AdicionarCurriculo(It.IsAny<Curriculo>()), Times.Once);
+            _curriculoRepositoryMock.Verify(c => c.UnitOfWork.Commit(), Times.Once);
+        }
+    }
+    
+    [Fact]
+    public async Task Adicionar_PhotoMaiorQue2MB_DeveRetornarErro()
+    {
+        SetupMocks(false, true);
+
+        var file = new Mock<IFormFile>();
+        file.Setup(c => c.Length).Returns(3 * 1024 * 1024); // Teste com o arquivo sendo 3 MB.
+        var dto = new AdicionarCurriculoDto
+        {
+            Telefone = "85 988888888",
+            EstadoCivil = "Solteiro",
+            Genero = "Masculino",
+            RacaEtnia = "Branco",
+            GrauDeFormacao = "Graduação",
+            Cep = "12345678",
+            Endereco = "Rua Teste, 123",
+            Cidade = "Cidade Teste",
+            Estado = "CE",
+            EPessoaComDeficiencia = false,
+            EDeficienciaAuditiva = false,
+            EDeficienciaFisica = false,
+            EDeficienciaIntelectual = false,
+            EDeficienciaMotora = false,
+            EDeficienciaVisual = false,
+            ELgbtqia = false,
+            EBaixaRenda = false,
+            Titulo = "Desenvolvedor Full Stack",
+            AreaDeAtuacao = "Tecnologia da Informação",
+            ResumoProfissional = "Profissional com experiência em desenvolvimento web.",
+            Linkedin = "https://www.linkedin.com/in/teste/",
+            Portfolio = "https://www.portfolio.com",
+            Pdf = file.Object,
+            Photo = file.Object,
+            Clt = true,
+            Pj = false,
+            Temporario = false,
+            Presencial = true,
+            Remoto = false,
+            Hibrido = false
+        };
+
+        var curriculo = await _curriculoService.AdicionarCurriculo(dto);
+
+        using (new AssertionScope())
+        {
+            curriculo.Should().BeNull();
+        
+            NotificatorMock
+                .Verify(c => c.Handle(It.Is<string>(msg => msg == "O arquivo deve ter no máximo 2 MB.")), Times.Once);
+        
+            _curriculoRepositoryMock.Verify(c => c.AdicionarCurriculo(It.IsAny<Curriculo>()), Times.Never);
+            _curriculoRepositoryMock.Verify(c => c.UnitOfWork.Commit(), Times.Never);
+        }
+    }
+
+    [Fact]
+    public async Task Adicionar_ErroAoFazerUploadPhoto_DeveRetornarErro()
+    {
+        SetupMocks(false, true);
+
+        var file = new Mock<IFormFile>();
+        file.Setup(c => c.Length).Returns(56);
+        _fileServiceMock.Setup(f => f.UploadPhoto(It.IsAny<IFormFile>(), It.IsAny<EUploadPath>(), It.IsAny<EPathAccess>(), It.IsAny<int>()))
+            .ThrowsAsync(new Exception("Erro simulado ao fazer upload de Photo"));
+
+        var dto = new AdicionarCurriculoDto
+        {
+            Telefone = "85 988888888",
+            EstadoCivil = "Solteiro",
+            Genero = "Masculino",
+            RacaEtnia = "Branco",
+            GrauDeFormacao = "Graduação",
+            Cep = "12345678",
+            Endereco = "Rua Teste, 123",
+            Cidade = "Cidade Teste",
+            Estado = "CE",
+            EPessoaComDeficiencia = false,
+            EDeficienciaAuditiva = false,
+            EDeficienciaFisica = false,
+            EDeficienciaIntelectual = false,
+            EDeficienciaMotora = false,
+            EDeficienciaVisual = false,
+            ELgbtqia = false,
+            EBaixaRenda = false,
+            Titulo = "Desenvolvedor Full Stack",
+            AreaDeAtuacao = "Tecnologia da Informação",
+            ResumoProfissional = "Profissional com experiência em desenvolvimento web.",
+            Linkedin = "https://www.linkedin.com/in/teste/",
+            Portfolio = "https://www.portfolio.com",
+            Pdf = file.Object,
+            Photo = file.Object,
+            Clt = true,
+            Pj = false,
+            Temporario = false,
+            Presencial = true,
+            Remoto = false,
+            Hibrido = false
+        };
+
+        var curriculo = await _curriculoService.AdicionarCurriculo(dto);
+
+        using (new AssertionScope())
+        {
+            curriculo.Should().BeNull();
+        
+            NotificatorMock
+                .Verify(c => c.Handle(It.Is<string>(msg => msg.Contains("Erro ao fazer upload de Photo: Erro simulado ao fazer upload de Photo"))), Times.Once);
+        
+            _curriculoRepositoryMock.Verify(c => c.AdicionarCurriculo(It.IsAny<Curriculo>()), Times.Never);
+            _curriculoRepositoryMock.Verify(c => c.UnitOfWork.Commit(), Times.Never);
+        }
+    }
+    
     #endregion
-
+    
     #region AtualizarCurriculo
 
     [Fact]
@@ -1023,7 +1244,7 @@ public async Task Atualizar_CurriculoComPdf_MaiorQueLimite_NotificacaoErro()
     
     #region SetupMocks
     
-    private void SetupMocks(bool curriculoExistente = false, bool commit = false, bool retornaComPdf = false)
+    private void SetupMocks(bool curriculoExistente = false, bool commit = false, bool retornaComPdf = false, bool retornaComPhoto = false)
     {
         var curriculo = new Curriculo
         {
@@ -1051,6 +1272,7 @@ public async Task Atualizar_CurriculoComPdf_MaiorQueLimite_NotificacaoErro()
             Linkedin = "https://www.linkedin.com/in/seuperfil",
             Portfolio = "https://www.portfolio.com",
             Pdf = retornaComPdf ? "https://pdf.com/pdfteste.pdf" : null,
+            Photo = retornaComPhoto? "https://photo.com/phototeste.photo" : null,
             Clt = true,
             Pj = false,
             Temporario = false,
@@ -1073,6 +1295,11 @@ public async Task Atualizar_CurriculoComPdf_MaiorQueLimite_NotificacaoErro()
         
         _fileServiceMock
             .Setup(c => c.UploadPdf(It.IsAny<IFormFile>(), It.IsAny<EUploadPath>(), It.IsAny<EPathAccess>(),
+                It.IsAny<int>()))
+            .ReturnsAsync("path");
+        
+        _fileServiceMock
+            .Setup(c => c.UploadPhoto(It.IsAny<IFormFile>(), It.IsAny<EUploadPath>(), It.IsAny<EPathAccess>(),
                 It.IsAny<int>()))
             .ReturnsAsync("path");
     }
