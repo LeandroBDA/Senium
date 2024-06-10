@@ -40,6 +40,7 @@ public static class DependencyInjection
             .AddScoped<IUsuarioRepository, UsuarioRepository>()
             .AddScoped<IEmpresaRepository, EmpresaRepository>()
             .AddScoped<ICurriculoRepository, CurriculoRepository>()
-            .AddScoped<IExperienciaRepository, ExperienciaRepository>();
+            .AddScoped<IExperienciaRepository, ExperienciaRepository>()
+            .AddScoped<IAdministradorRepository, AdministradorRepository>();
     }
 }

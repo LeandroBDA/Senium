@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Senium.Application.Dto.V1.Administrador;
 using Senium.Application.Dto.V1.Curriculo;
 using Senium.Application.Dto.V1.Empresa;
 using Senium.Application.Dto.V1.Experiencia;
@@ -38,6 +39,15 @@ public class AutoMapperProfile : Profile
         CreateMap<ExperienciaDto, Experiencia>().ReverseMap();
         CreateMap<AdicionarExperienciaDto, Experiencia>().ReverseMap();
         CreateMap<AtualizarExperienciaDto, Experiencia>().ReverseMap();
+
+        #endregion
+
+        #region Administrador
+
+
+        CreateMap<AdicionarUsuarioDto, Administrador>().ReverseMap();
+        CreateMap<AdicionarAdministradorDto, Administrador>().ReverseMap();
+        CreateMap<AtualizarAdministradorDto, Administrador>().ReverseMap();
 
         #endregion
 
