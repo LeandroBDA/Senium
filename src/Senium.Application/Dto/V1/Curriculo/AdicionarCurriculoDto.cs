@@ -27,6 +27,7 @@ public class AdicionarCurriculoDto
     public string? Linkedin { get; set; }
     public string? Portfolio { get; set; }
     public IFormFile? Pdf { get; set; } = null;
+    public IFormFile? Photo { get; set; } = null;
     public bool Clt { get; set; }
     public bool Pj { get; set; }
     public bool Temporario { get; set; }

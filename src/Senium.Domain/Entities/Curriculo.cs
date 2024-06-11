@@ -30,6 +30,8 @@ public class Curriculo : Entity, IAggregateRoot
        
     public bool EDeficienciaVisual { get; set; }
     public string? Pdf { get; set; }
+    
+    public string? Photo { get; set; }
     public bool ELgbtqia { get; set; }
     public bool EBaixaRenda { get; set; }
     

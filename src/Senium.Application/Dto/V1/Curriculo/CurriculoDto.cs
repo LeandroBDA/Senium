@@ -31,6 +31,7 @@ public class CurriculoDto
     public string? Linkedin { get; set; }
     public string? Portfolio { get; set; }
     public string? Pdf { get; set; }
+    public string? Photo { get; set; }
     public bool Clt { get; set; }
     public bool Pj { get; set; }
     public bool Temporario { get; set; }
