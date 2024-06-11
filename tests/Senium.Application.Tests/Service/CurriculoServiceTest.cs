@@ -1345,68 +1345,12 @@ public async Task Atualizar_CurriculoComPdf_MaiorQueLimite_NotificacaoErro()
     }
     
     [Fact]
-public async Task Atualizar_CurriculoComPhoto_MaiorQueLimite_NotificacaoErro()
-{
-    // Arrange
-    SetupMocks(commit: false);
-    var file = new Mock<IFormFile>();
-    file.Setup(c => c.Length).Returns(3 * 1024 * 1024 + 1); // 3MG
-    const int id = 1;
-    var dto = new AtualizarCurriculoDto
-    {
-        Id = id,
-        Telefone = "85 988888888",
-        EstadoCivil = "Solteiro",
-        Genero = "Masculino",
-        RacaEtnia = "Branco",
-        GrauDeFormacao = "Graduação",
-        Cep = "12345678",
-        Endereco = "Rua Teste, 123",
-        Cidade = "Cidade Teste",
-        Estado = "CE",
-        EPessoaComDeficiencia = false,
-        EDeficienciaAuditiva = false,
-        EDeficienciaFisica = false,
-        EDeficienciaIntelectual = false,
-        EDeficienciaMotora = false,
-        EDeficienciaVisual = false,
-        ELgbtqia = false,
-        EBaixaRenda = false,
-        Titulo = "Desenvolvedor Full Stack",
-        AreaDeAtuacao = "Tecnologia da Informação",
-        ResumoProfissional = "Profissional com experiência em desenvolvimento web.",
-        Linkedin = "https://www.linkedin.com/in/seuperfil",
-        Portfolio = "https://www.portfolio.com",
-        Pdf = file.Object,
-        Photo = file.Object,
-        Clt = true,
-        Pj = false,
-        Temporario = false,
-        Presencial = true,
-        Remoto = false,
-        Hibrido = false
-    };
-
-    // Act
-    var curriculo = await _curriculoService.AtualizarCurriculo(id, dto);
-
-    // Assert
-    using (new AssertionScope())
-    {
-        curriculo.Should().BeNull(); 
-        NotificatorMock.Verify(c => c.Handle(It.Is<string>(msg => msg.Contains("O arquivo deve ter no máximo 2MG"))), Times.Once); 
-        _curriculoRepositoryMock.Verify(c => c.AtualizarCurriculo(It.IsAny<Curriculo>()), Times.Never); 
-        _curriculoRepositoryMock.Verify(c => c.UnitOfWork.Commit(), Times.Never); 
-    }
-}
-    [Fact]
-    public async Task Atualizar_Curriculo_TamanhoPhotoExcedido_NotificacaoErro()
+    public async Task Atualizar_CurriculoComPhoto_MaiorQueLimite_NotificacaoErro()
     {
         // Arrange
         SetupMocks(commit: false);
-        var maxSizeInBytes = 3 * 1024 * 1024; // 3MB
         var file = new Mock<IFormFile>();
-        file.Setup(c => c.Length).Returns(maxSizeInBytes + 1); 
+        file.Setup(c => c.Length).Returns(3 * 1024 * 1024 + 1); // Define um tamanho maior que 3MB
         const int id = 1;
         var dto = new AtualizarCurriculoDto
         {
@@ -1433,7 +1377,62 @@ public async Task Atualizar_CurriculoComPhoto_MaiorQueLimite_NotificacaoErro()
             ResumoProfissional = "Profissional com experiência em desenvolvimento web.",
             Linkedin = "https://www.linkedin.com/in/seuperfil",
             Portfolio = "https://www.portfolio.com",
-            Pdf = file.Object,
+            Photo = file.Object,
+            Clt = true,
+            Pj = false,
+            Temporario = false,
+            Presencial = true,
+            Remoto = false,
+            Hibrido = false
+        };
+
+        // Act
+        var curriculo = await _curriculoService.AtualizarCurriculo(id, dto);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            curriculo.Should().BeNull(); 
+            NotificatorMock.Verify(c => c.Handle(It.Is<string>(msg => msg.Contains("O arquivo deve ter no máximo"))), Times.Once); 
+            _curriculoRepositoryMock.Verify(c => c.AtualizarCurriculo(It.IsAny<Curriculo>()), Times.Never); 
+            _curriculoRepositoryMock.Verify(c => c.UnitOfWork.Commit(), Times.Never); 
+        }
+    }
+    
+    [Fact]
+    public async Task Atualizar_Curriculo_TamanhoPhotoExcedido_NotificacaoErro()
+    {
+        // Arrange
+        SetupMocks(commit: false);
+        var maxSizeInBytes = 2 * 1024 * 1024; // 5 MB
+        var file = new Mock<IFormFile>();
+        file.Setup(c => c.Length).Returns(maxSizeInBytes + 1); // Excede o limite de tamanho
+        const int id = 1;
+        var dto = new AtualizarCurriculoDto
+        {
+            Id = id,
+            Telefone = "85 988888888",
+            EstadoCivil = "Solteiro",
+            Genero = "Masculino",
+            RacaEtnia = "Branco",
+            GrauDeFormacao = "Graduação",
+            Cep = "12345678",
+            Endereco = "Rua Teste, 123",
+            Cidade = "Cidade Teste",
+            Estado = "CE",
+            EPessoaComDeficiencia = false,
+            EDeficienciaAuditiva = false,
+            EDeficienciaFisica = false,
+            EDeficienciaIntelectual = false,
+            EDeficienciaMotora = false,
+            EDeficienciaVisual = false,
+            ELgbtqia = false,
+            EBaixaRenda = false,
+            Titulo = "Desenvolvedor Full Stack",
+            AreaDeAtuacao = "Tecnologia da Informação",
+            ResumoProfissional = "Profissional com experiência em desenvolvimento web.",
+            Linkedin = "https://www.linkedin.com/in/seuperfil",
+            Portfolio = "https://www.portfolio.com",
             Photo = file.Object,
             Clt = true,
             Pj = false,
@@ -1450,7 +1449,7 @@ public async Task Atualizar_CurriculoComPhoto_MaiorQueLimite_NotificacaoErro()
         using (new AssertionScope())
         {
             curriculo.Should().BeNull();
-            NotificatorMock.Verify(c => c.Handle($"O arquivo deve ter no máximo {maxSizeInBytes / (1024 * 1024)} 2MB."), Times.Once);
+            NotificatorMock.Verify(c => c.Handle($"O arquivo deve ter no máximo {maxSizeInBytes / (1024 * 1024)} MB."), Times.Once);
             _curriculoRepositoryMock.Verify(c => c.AtualizarCurriculo(It.IsAny<Curriculo>()), Times.Never);
             _curriculoRepositoryMock.Verify(c => c.UnitOfWork.Commit(), Times.Never);
         }
