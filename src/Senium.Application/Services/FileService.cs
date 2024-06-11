@@ -32,7 +32,7 @@ public class FileService : BaseService, IFileService
 
         if (string.IsNullOrEmpty(ext) || !permittedExtensions.Contains(ext))
         {
-            Notificator.Handle("Apenas aequivos JPEG e PNG são permitidos");
+            Notificator.Handle("Apenas arquivos JPEG e PNG são permitidos");
             return null;
         }
         

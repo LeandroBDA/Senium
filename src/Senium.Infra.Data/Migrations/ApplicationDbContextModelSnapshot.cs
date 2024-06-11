@@ -134,6 +134,9 @@ namespace Senium.Infra.Data.Migrations
                     b.Property<string>("Pdf")
                         .HasColumnType("longtext");
 
+                    b.Property<string>("Photo")
+                        .HasColumnType("longtext");
+
                     b.Property<bool>("Pj")
                         .HasColumnType("tinyint(1)");
 

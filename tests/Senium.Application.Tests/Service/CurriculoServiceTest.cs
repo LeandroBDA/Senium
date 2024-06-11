@@ -632,12 +632,12 @@ public class CurriculoServiceTest : BaseServiceTest, IClassFixture<ServicesFixtu
     }
     
     [Fact]
-    public async Task Adicionar_PhotoMaiorQue2MB_DeveRetornarErro()
+    public async Task Adicionar_FotoMaiorQue2MB_DeveRetornarErro()
     {
         SetupMocks(false, true);
 
         var file = new Mock<IFormFile>();
-        file.Setup(c => c.Length).Returns(3 * 1024 * 1024); // Teste com o arquivo sendo 3 MB.
+        file.Setup(c => c.Length).Returns(3 * 1024 * 1024); // 6 MB
         var dto = new AdicionarCurriculoDto
         {
             Telefone = "85 988888888",
@@ -662,7 +662,6 @@ public class CurriculoServiceTest : BaseServiceTest, IClassFixture<ServicesFixtu
             ResumoProfissional = "Profissional com experiência em desenvolvimento web.",
             Linkedin = "https://www.linkedin.com/in/teste/",
             Portfolio = "https://www.portfolio.com",
-            Pdf = file.Object,
             Photo = file.Object,
             Clt = true,
             Pj = false,
@@ -685,16 +684,16 @@ public class CurriculoServiceTest : BaseServiceTest, IClassFixture<ServicesFixtu
             _curriculoRepositoryMock.Verify(c => c.UnitOfWork.Commit(), Times.Never);
         }
     }
-
+    
     [Fact]
-    public async Task Adicionar_ErroAoFazerUploadPhoto_DeveRetornarErro()
+    public async Task Adicionar_ErroAoFazerUploadFoto_DeveRetornarErro()
     {
         SetupMocks(false, true);
 
         var file = new Mock<IFormFile>();
         file.Setup(c => c.Length).Returns(56);
         _fileServiceMock.Setup(f => f.UploadPhoto(It.IsAny<IFormFile>(), It.IsAny<EUploadPath>(), It.IsAny<EPathAccess>(), It.IsAny<int>()))
-            .ThrowsAsync(new Exception("Erro simulado ao fazer upload de Photo"));
+            .ThrowsAsync(new Exception("Erro simulado ao fazer upload"));
 
         var dto = new AdicionarCurriculoDto
         {
@@ -720,7 +719,6 @@ public class CurriculoServiceTest : BaseServiceTest, IClassFixture<ServicesFixtu
             ResumoProfissional = "Profissional com experiência em desenvolvimento web.",
             Linkedin = "https://www.linkedin.com/in/teste/",
             Portfolio = "https://www.portfolio.com",
-            Pdf = file.Object,
             Photo = file.Object,
             Clt = true,
             Pj = false,
@@ -737,7 +735,7 @@ public class CurriculoServiceTest : BaseServiceTest, IClassFixture<ServicesFixtu
             curriculo.Should().BeNull();
         
             NotificatorMock
-                .Verify(c => c.Handle(It.Is<string>(msg => msg.Contains("Erro ao fazer upload de Photo: Erro simulado ao fazer upload de Photo"))), Times.Once);
+                .Verify(c => c.Handle(It.Is<string>(msg => msg.Contains("Erro ao fazer upload da Foto: Erro simulado ao fazer upload"))), Times.Once);
         
             _curriculoRepositoryMock.Verify(c => c.AdicionarCurriculo(It.IsAny<Curriculo>()), Times.Never);
             _curriculoRepositoryMock.Verify(c => c.UnitOfWork.Commit(), Times.Never);
@@ -1511,7 +1509,7 @@ public async Task Atualizar_CurriculoComPhoto_MaiorQueLimite_NotificacaoErro()
             EDeficienciaVisual = false,
             ELgbtqia = false,
             EBaixaRenda = false,
-            Titulo = "Desenvolvedor Full Stack",
+            Titulo = "Desenvolvedor Full Stack 2",
             AreaDeAtuacao = "Tecnologia da Informação",
             ResumoProfissional = "Profissional com experiência em desenvolvimento web.",
             Linkedin = "https://www.linkedin.com/in/seuperfil",

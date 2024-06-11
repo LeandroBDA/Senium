@@ -67,10 +67,10 @@ public class CurriculoService : BaseService, ICurriculoService
         
         if (curriculodto.Photo is not null)
         {
-            const long MaxFileSizeInBytes = 2 * 1024 * 1024;
-            if (curriculodto.Photo.Length > MaxFileSizeInBytes)
+            const long maxFileSizeInBytes = 2 * 1024 * 1024;
+            if (curriculodto.Photo.Length > maxFileSizeInBytes)
             {
-                Notificator.Handle($"O arquivo deve ter no máximo 2MB {MaxFileSizeInBytes / (1024 * 1024)} MB.");
+                Notificator.Handle($"O arquivo deve ter no máximo {maxFileSizeInBytes / (1024 * 1024)} MB.");
                 return null;
             }
             
@@ -134,7 +134,7 @@ public class CurriculoService : BaseService, ICurriculoService
             const long maxSizeInBytes = 2 * 1024 * 1024;
             if (curriculoDto.Photo.Length > maxSizeInBytes)
             {
-                Notificator.Handle($"O arquivo deve ter no máximo 2MG {maxSizeInBytes / (1024 * 1024)} MB.");
+                Notificator.Handle($"O arquivo deve ter no máximo {maxSizeInBytes / (1024 * 1024)} MB.");
                 return null;
             }
             
