@@ -25,8 +25,25 @@ public class FileService : BaseService, IFileService
     public async Task<string> UploadPhoto(IFormFile arquivo, EUploadPath uploadPath,
         EPathAccess pathAccess = EPathAccess.Private, int urlLimitLength = 255)
     {
-        var fileName = GenerateNewFileName(arquivo.FileName, pathAccess, uploadPath, urlLimitLength);
-        var filePath = MountFilePath(fileName, pathAccess, uploadPath);
+        const long MaxFileSizeInBytes = 2 * 1024 * 1024;
+       
+        var permittedExtensions = new[] { ".jpg", ".jpeg", ".png" };
+        var ext = Path.GetExtension(arquivo.FileName).ToLowerInvariant();
+
+        if (string.IsNullOrEmpty(ext) || !permittedExtensions.Contains(ext))
+        {
+            Notificator.Handle("Apenas arquivos JPEG e PNG são permitidos");
+            return null;
+        }
+        
+        if (arquivo.Length > MaxFileSizeInBytes)
+        {
+            Notificator.Handle($"O arquivo deve ter no máximo {MaxFileSizeInBytes / (1024 * 1024)} MB (2 MB).");
+            return null; 
+        }
+        
+        var fileName = GenerateNewFileName(arquivo.FileName, pathAccess, EUploadPath.FotoUsuarios, urlLimitLength);
+        var filePath = MountFilePath(fileName, pathAccess, EUploadPath.FotoUsuarios);
 
         try
         {
@@ -39,7 +56,7 @@ public class FileService : BaseService, IFileService
             await File.WriteAllBytesAsync(filePath, ConvertFileInByteArray(arquivo));
         }
 
-        return GetFileUrl(fileName, pathAccess, uploadPath);
+        return GetFileUrl(fileName, pathAccess, EUploadPath.FotoUsuarios);
     }
 
     public async Task<string?> UploadPdf(IFormFile arquivo, EUploadPath uploadPath, EPathAccess pathAccess = EPathAccess.Private, int urlLimitLength = 255)
