@@ -36,11 +36,18 @@ public static class AuthenticationConfiguration
 
         services.AddAuthorization(options =>
         {
-            options.AddPolicy(ETipoUsuario.Administrador.ToString(), builder =>
+            options.AddPolicy(ETipoUsuario.AdministradorComum.ToString(), builder =>
             {
                 builder
                     .RequireAuthenticatedUser()
-                    .RequireClaim("TipoUsuario", ETipoUsuario.Administrador.ToString());
+                    .RequireClaim("TipoUsuario", ETipoUsuario.AdministradorComum.ToString());
+            });
+            
+            options.AddPolicy(ETipoUsuario.AdministradorGeral.ToString(), builder =>
+            {
+                builder
+                    .RequireAuthenticatedUser()
+                    .RequireClaim("TipoUsuario", ETipoUsuario.AdministradorGeral.ToString());
             });
 
             options.AddPolicy(ETipoUsuario.Comum.ToString(), builder =>

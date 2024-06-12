@@ -8,5 +8,6 @@ public interface IAdministradorRepository : IRepository<Administrador>
     void AtualizarAdm(Administrador administrador);
     void RemoverAdm(Administrador administrador);
     Task<Administrador?> ObterAdmPorId(int id);
+    Task<Administrador?> ObterAdmPorEmail(string email);
     Task<List<Administrador>> ObterTodosAdm();
 }

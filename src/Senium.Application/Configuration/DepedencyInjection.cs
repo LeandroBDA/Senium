@@ -39,7 +39,9 @@ public static class DependecyInjection
     
     public static void AddDependencyServices(this IServiceCollection service)
     {
-        service.AddScoped<IPasswordHasher<Usuario>, Argon2PasswordHasher<Usuario>>();
+        service
+            .AddScoped<IPasswordHasher<Usuario>, Argon2PasswordHasher<Usuario>>()
+            .AddScoped<IPasswordHasher<Administrador>, Argon2PasswordHasher<Administrador>>();
         
         service.AddScoped<INotificator, Notificator>();
 

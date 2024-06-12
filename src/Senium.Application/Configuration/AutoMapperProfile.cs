@@ -45,7 +45,7 @@ public class AutoMapperProfile : Profile
         #region Administrador
 
 
-        CreateMap<AdicionarUsuarioDto, Administrador>().ReverseMap();
+        CreateMap<AdministradorDto, Administrador>().ReverseMap();
         CreateMap<AdicionarAdministradorDto, Administrador>().ReverseMap();
         CreateMap<AtualizarAdministradorDto, Administrador>().ReverseMap();
 

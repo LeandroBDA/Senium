@@ -22,6 +22,7 @@ public class UsuariosAuthController : BaseController
     [SwaggerOperation(Summary = "Login de usuário.", Tags = new [] { "Usuário - Auth" })]
     [ProducesResponseType(typeof(TokenDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Login([FromBody] LoginUsuarioDto dto)
     {
         var token = await _usuarioAuthService.Login(dto);

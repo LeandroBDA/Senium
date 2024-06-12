@@ -33,9 +33,14 @@ public class AdministradorRepository : Repository<Administrador>, IAdministrador
             .FirstOrDefaultAsync(c => c.Id == id);
     }
 
-    public async Task<List<Administrador>> ObterTodosAdm()
+    public async Task<Administrador?> ObterAdmPorEmail(string email)
     {
         return await Context.Administradores.AsNoTrackingWithIdentityResolution()
-            .ToListAsync();
+            .FirstOrDefaultAsync(c => c.Email == email);
+    }
+
+    public async Task<List<Administrador>> ObterTodosAdm()
+    {
+        return await Context.Administradores.AsNoTrackingWithIdentityResolution().ToListAsync();
     }
 }

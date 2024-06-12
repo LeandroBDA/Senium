@@ -80,6 +80,12 @@ public class AdministradorService : BaseService, IAdministradorService
 
     public async Task RemoverAdm(int id)
     {
+        if (id == 1)
+        {
+            Notificator.Handle("Administrador Geral não pode ser excluido.");
+            return;
+        }
+        
         var administrador = await _administradorRepository.ObterAdmPorId(id);
 
         if (administrador == null)

@@ -19,7 +19,7 @@ public class CurriculoController : BaseController
     }
 
     [HttpPost]
-    [SwaggerOperation(Summary = "Adicionar Curriculo do Usuário", Tags = new[] { " Curriculo - Curriculos" })]
+    [SwaggerOperation(Summary = "Adicionar Curriculo do Usuário", Tags = new[] { " Curriculo " })]
     [ProducesResponseType(typeof(CurriculoDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -28,8 +28,8 @@ public class CurriculoController : BaseController
         return CreatedResponse("", await _curriculoService.AdicionarCurriculo(dto));
     }
     
-    [HttpPut]
-    [SwaggerOperation(Summary = "Atualizar Curriculo do Usuário", Tags = new[] { " Curriculo - Curriculos" })]
+    [HttpPut("{id}")]
+    [SwaggerOperation(Summary = "Atualizar Curriculo do Usuário", Tags = new[] { " Curriculo " })]
     [ProducesResponseType(typeof(CurriculoDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -40,11 +40,12 @@ public class CurriculoController : BaseController
         return OkResponse(curriculo);
     }
     
-    [HttpGet]
-    [SwaggerOperation(Summary = "Obter Curriculo do Usuário por Id", Tags = new[] { " Curriculo - Curriculos" })]
+    [HttpGet("id/{id:int}")]
+    [SwaggerOperation(Summary = "Obter Curriculo do Usuário por Id", Tags = new[] { " Curriculo " })]
     [ProducesResponseType(typeof(CurriculoDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ObterCurriculoPorId(int id)
     {
         var curriculo = await _curriculoService.ObterCurriculoPorId(id);

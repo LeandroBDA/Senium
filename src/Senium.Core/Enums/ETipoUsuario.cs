@@ -4,8 +4,10 @@ namespace Senium.Core.Enums;
 
 public enum ETipoUsuario
 {
-    [Description("Administrador")]
-    Administrador = 1,
+    [Description("Administrador Geral")]
+    AdministradorGeral = 1,
+    [Description("Administrador Comum")]
+    AdministradorComum = 2,
     [Description("Comum")]
-    Comum = 2
+    Comum = 3
 }

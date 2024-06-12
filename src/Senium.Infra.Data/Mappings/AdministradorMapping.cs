@@ -9,6 +9,7 @@ public class AdministradorMapping : IEntityTypeConfiguration<Administrador>
     public void Configure(EntityTypeBuilder<Administrador> builder)
     {
         builder.Property(a => a.Nome)
+            .HasMaxLength(50)
             .IsRequired();
         
         builder.Property(a => a.Email)
