@@ -396,7 +396,83 @@ public class AdministradorServiceTest : BaseServiceTest, IClassFixture<ServicesF
 
     #region Remover
 
+    [Fact]
+    public async Task RemoverAdm_AdministradorGeralNaoPodeSerExcluido_Handle()
+    {
+        // Arrange
+        SetupMocks();
+        int administradorGeralId = 1;
+
+        // Act
+        await _administradorService.RemoverAdm(administradorGeralId);
+
+        // Assert
+        NotificatorMock.Verify(c => c.Handle("Administrador Geral não pode ser excluido."), Times.Once);
+        _administradorRepositoryMock.Verify(c => c.ObterAdmPorId(It.IsAny<int>()), Times.Never);
+        _administradorRepositoryMock.Verify(c => c.RemoverAdm(It.IsAny<Administrador>()), Times.Never);
+        _administradorRepositoryMock.Verify(c => c.UnitOfWork.Commit(), Times.Never);
+    }
     
+    [Fact]
+    public async Task RemoverAdm_AdministradorNaoEncontrado_HandleNotFound()
+    {
+        // Arrange
+        SetupMocks();
+        int administradorId = 2;
+        
+        // Act
+        await _administradorService.RemoverAdm(administradorId);
+
+        // Assert
+        NotificatorMock.Verify(c => c.HandleNotFoundResource(), Times.Once);
+        _administradorRepositoryMock.Verify(c => c.RemoverAdm(It.IsAny<Administrador>()), Times.Never);
+        _administradorRepositoryMock.Verify(c => c.UnitOfWork.Commit(), Times.Never);
+    }
+
+    [Fact]
+    public async Task RemoverAdm_FalhaAoRemover_Handle()
+    {
+        // Arrange
+        SetupMocks();
+        int administradorId = 2;
+
+        _administradorRepositoryMock
+            .Setup(c => c.ObterAdmPorId(administradorId))
+            .ReturnsAsync(new Administrador());
+
+        _administradorRepositoryMock
+            .Setup(c => c.UnitOfWork.Commit())
+            .ReturnsAsync(false);
+
+        // Act
+        await _administradorService.RemoverAdm(administradorId);
+
+        // Assert
+        NotificatorMock.Verify(c => c.Handle("Não foi possível remover administrador."), Times.Once);
+        _administradorRepositoryMock.Verify(c => c.RemoverAdm(It.IsAny<Administrador>()), Times.Once);
+        _administradorRepositoryMock.Verify(c => c.UnitOfWork.Commit(), Times.Once);
+    }
+
+    [Fact]
+    public async Task RemoverAdm_SucessoAoRemover()
+    {
+        // Arrange
+        SetupMocks(commit: true);
+        int administradorId = 2;
+
+        _administradorRepositoryMock
+            .Setup(c => c.ObterAdmPorId(administradorId))
+            .ReturnsAsync(new Administrador());
+
+        // Act
+        await _administradorService.RemoverAdm(administradorId);
+
+        // Assert
+        NotificatorMock.Verify(c => c.Handle(It.IsAny<string>()), Times.Never);
+        _administradorRepositoryMock.Verify(c => c.RemoverAdm(It.IsAny<Administrador>()), Times.Once);
+        _administradorRepositoryMock.Verify(c => c.UnitOfWork.Commit(), Times.Once);
+    }
+
 
     #endregion
 
