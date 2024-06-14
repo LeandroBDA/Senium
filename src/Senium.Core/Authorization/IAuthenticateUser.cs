@@ -14,7 +14,8 @@ public interface IAuthenticatedUser
     
     public bool UsuarioLogado { get; }
     public bool UsuarioComum { get; }
-    public bool UsuarioAdministrador { get; }
+    public bool UsuarioAdministradorGeral { get; }
+    public bool UsuarioAdministradorComum { get; }
 
     int ObterIdentificador();
 }
@@ -28,7 +29,8 @@ public class AuthenticatedUser : IAuthenticatedUser
 
     public bool UsuarioLogado => Id > 0;
     public bool UsuarioComum => TipoUsuario is ETipoUsuario.Comum;
-    public bool UsuarioAdministrador => TipoUsuario is ETipoUsuario.Administrador;
+    public bool UsuarioAdministradorComum => TipoUsuario is ETipoUsuario.AdministradorComum;
+    public bool UsuarioAdministradorGeral => TipoUsuario is ETipoUsuario.AdministradorGeral;
     
     public AuthenticatedUser()
     { }
