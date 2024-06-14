@@ -34,8 +34,12 @@ public static class HttpContextAccessorExtension
         return string.IsNullOrWhiteSpace(tipo) ? null : Enum.Parse<ETipoUsuario>(tipo);
     }
     
-    public static bool EhAdministrador(this IHttpContextAccessor? contextAccessor)
+    public static bool EhAdministradorComum(this IHttpContextAccessor? contextAccessor)
     {
-        return ObterTipoUsuario(contextAccessor) is ETipoUsuario.Administrador;
+        return ObterTipoUsuario(contextAccessor) is ETipoUsuario.AdministradorComum;
+    }
+    public static bool EhAdministradorGeral(this IHttpContextAccessor? contextAccessor)
+    {
+        return ObterTipoUsuario(contextAccessor) is ETipoUsuario.AdministradorGeral;
     }
 }

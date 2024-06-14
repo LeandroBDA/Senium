@@ -75,9 +75,8 @@ public class ExperienciaService : BaseService, IExperienciaService
             return Mapper.Map<ExperienciaDto>(experiencia);
         }
 
-        Notificator.Handle("Não foi possível cadastrar experiência");
+        Notificator.Handle("Não foi possível atualizar experiência");
         return null;
-
     }
 
     public async Task DeletarExperiencia(int id)

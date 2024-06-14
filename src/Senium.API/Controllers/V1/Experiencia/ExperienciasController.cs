@@ -19,7 +19,7 @@ public class ExperienciasController : MainController
     }
     
     [HttpPost]
-    [SwaggerOperation(Summary = "Adicionar experiência.", Tags = new[] { " Experiência - Experiências" })]
+    [SwaggerOperation(Summary = "Adicionar experiência.", Tags = new[] { " Experiência " })]
     [ProducesResponseType(typeof(ExperienciaDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -29,7 +29,7 @@ public class ExperienciasController : MainController
     }
     
     [HttpGet("{id}")]
-    [SwaggerOperation(Summary = "Obter experiencia(s) por Curriculo", Tags = new[] { " Experiência - Experiências" })]
+    [SwaggerOperation(Summary = "Obter experiencia(s) por Curriculo", Tags = new[] { " Experiência " })]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -40,7 +40,7 @@ public class ExperienciasController : MainController
     }
 
     [HttpPut("{id}")]
-    [SwaggerOperation(Summary = "Atualizar experiencia", Tags = new[] { " Experiência - Experiências" })]
+    [SwaggerOperation(Summary = "Atualizar experiencia", Tags = new[] { " Experiência " })]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType( StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -51,7 +51,7 @@ public class ExperienciasController : MainController
     }
 
     [HttpDelete("{id}")]
-    [SwaggerOperation(Summary = "Deletar experiência", Tags = new[] { " Experiência - Experiências" })]
+    [SwaggerOperation(Summary = "Deletar experiência", Tags = new[] { " Experiência " })]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType( StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

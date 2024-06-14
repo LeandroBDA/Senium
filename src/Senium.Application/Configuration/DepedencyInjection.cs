@@ -39,7 +39,9 @@ public static class DependecyInjection
     
     public static void AddDependencyServices(this IServiceCollection service)
     {
-        service.AddScoped<IPasswordHasher<Usuario>, Argon2PasswordHasher<Usuario>>();
+        service
+            .AddScoped<IPasswordHasher<Usuario>, Argon2PasswordHasher<Usuario>>()
+            .AddScoped<IPasswordHasher<Administrador>, Argon2PasswordHasher<Administrador>>();
         
         service.AddScoped<INotificator, Notificator>();
 
@@ -51,7 +53,8 @@ public static class DependecyInjection
             .AddScoped<IEmpresaService, EmpresaService>()
             .AddScoped<ICurriculoService, CurriculoService>()
             .AddScoped<IExperienciaService, ExperienciaService>()
-            .AddScoped<IFileService, FileService>();
+            .AddScoped<IFileService, FileService>()
+            .AddScoped<IAdministradorService, AdministradorService>();
     }
     
     public static void UseStaticFileConfiguration(this IApplicationBuilder app, IConfiguration configuration)
