@@ -16,14 +16,14 @@ using Senium.Domain.Entities;
 
 namespace Senium.Application.Services;
 
-public class AdministradorAuthService : BaseService, IAuthAdmService 
+public class AdministradorGeralAuthService : BaseService, IAuthAdmService 
 {
     private readonly IAdministradorRepository _administradorRepository;
     private readonly IPasswordHasher<Administrador> _passwordHasher;
     private readonly IJwtService _jwtService;
     private readonly JwtSettings _jwtSettings;
     
-    public AdministradorAuthService(INotificator notificator, IMapper mapper, IPasswordHasher<Administrador> passwordHasher, IAdministradorRepository administradorRepository, IOptions<JwtSettings> jwtSettings, IJwtService jwtService) : base(notificator, mapper)
+    public AdministradorGeralAuthService(INotificator notificator, IMapper mapper, IPasswordHasher<Administrador> passwordHasher, IAdministradorRepository administradorRepository, IOptions<JwtSettings> jwtSettings, IJwtService jwtService) : base(notificator, mapper)
     {
         _passwordHasher = passwordHasher;
         _administradorRepository = administradorRepository;
@@ -61,11 +61,12 @@ public class AdministradorAuthService : BaseService, IAuthAdmService
 
         var claimsIdentity = new ClaimsIdentity();
         claimsIdentity.AddClaim(new Claim(ClaimTypes.NameIdentifier, administrador.Id.ToString()));
-        claimsIdentity.AddClaim(new Claim("TipoAdministrador", ETipoUsuario.Comum.ToDescriptionString()));
+        claimsIdentity.AddClaim(new Claim("TipoAdministrador", ETipoUsuario.AdministradorGeral.ToDescriptionString()));
         claimsIdentity.AddClaim(new Claim(ClaimTypes.Name, administrador.Nome));
         claimsIdentity.AddClaim(new Claim(ClaimTypes.Email, administrador.Email));
 
-        
+        claimsIdentity.AddClaim(new Claim("TipoAdministrador", ETipoUsuario.AdministradorGeral.ToString()));
+       
         var key = await _jwtService.GetCurrentSigningCredentials();
         var token = tokenHandler.CreateToken(new SecurityTokenDescriptor
         {
