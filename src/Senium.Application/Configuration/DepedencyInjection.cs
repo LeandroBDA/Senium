@@ -54,6 +54,7 @@ public static class DependecyInjection
             .AddScoped<ICurriculoService, CurriculoService>()
             .AddScoped<IExperienciaService, ExperienciaService>()
             .AddScoped<IFileService, FileService>()
+            .AddScoped<IAuthAdmService, AdministradorGeralAuthService>()
             .AddScoped<IAdministradorService, AdministradorService>();
     }
     

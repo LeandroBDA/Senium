@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Senium.Application.Contracts.Services;
-using Senium.Application.Dto.V1.Administrador;
 using Senium.Application.Dto.V1.Auth;
 using Senium.Application.Notifications;
 using Swashbuckle.AspNetCore.Annotations;
