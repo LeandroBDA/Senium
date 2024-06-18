@@ -15,6 +15,4 @@ public class Administrador : Entity, IAggregateRoot
         validationResult = new AdministradorValidation().Validate(this);
         return validationResult.IsValid;
     }
-
-  
 }
