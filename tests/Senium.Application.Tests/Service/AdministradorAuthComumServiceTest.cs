@@ -1,4 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -16,14 +16,15 @@ using Senium.Domain.Entities;
 
 namespace Senium.Application.Tests.Service;
 
-public class UsuarioAuthServiceTest : BaseServiceTest, IClassFixture<ServicesFixture>
+public class AdministradorAuthCumumServiceTest : BaseServiceTest, IClassFixture<ServicesFixture>
 {
-    private readonly UsuarioAuthService _usuarioAuthService;
+    private readonly AdministradorComumAuthService _administradorComumAuthService;
 
-    private readonly Mock<IUsuarioRepository> _usuarioRepositoryMock = new();
-    private readonly Mock<IPasswordHasher<Usuario>> _passwordHasherMock = new();
+    private readonly Mock<IAdministradorRepository> _admRepositoryMock = new();
+    private readonly Mock<IPasswordHasher<Administrador>> _passwordHasherMock = new();
     private readonly Mock<IJwtService> _jwtServiceMock = new();
-    public UsuarioAuthServiceTest(ServicesFixture fixture)
+    
+     public AdministradorAuthCumumServiceTest(ServicesFixture fixture)
     {
         IOptions<JwtSettings> jwtSettings = Options.Create(new JwtSettings
         {
@@ -31,11 +32,11 @@ public class UsuarioAuthServiceTest : BaseServiceTest, IClassFixture<ServicesFix
             ExpiracaoHoras = 1
         });
 
-        _usuarioAuthService = new UsuarioAuthService(
+        _administradorComumAuthService = new AdministradorComumAuthService(
             NotificatorMock.Object, 
             fixture.Mapper,
             _passwordHasherMock.Object, 
-            _usuarioRepositoryMock.Object, 
+            _admRepositoryMock.Object, 
             jwtSettings, 
             _jwtServiceMock.Object
         );
@@ -44,16 +45,16 @@ public class UsuarioAuthServiceTest : BaseServiceTest, IClassFixture<ServicesFix
     #region Login
 
         [Fact]
-        public async Task Login_UsuarioNaoEncontrado_HandleNotFoundResource()
+        public async Task Login_AdmNaoEncontrado_HandleNotFoundResource()
         {
             //Arrange
-            SetupMocks(usuarioExistente: false);
+            SetupMocks(administradorExistente: false);
     
             //Act
-            var result = await _usuarioAuthService.Login(
-            new LoginUsuarioDto
+            var result = await _administradorComumAuthService.Login(
+            new LoginAdministradorDto
             {
-                Email = "usuarionaoexiste@teste.com",
+                Email = "administradornaoexiste@teste.com",
                 Senha = "Senha123"
             });
     
@@ -67,13 +68,13 @@ public class UsuarioAuthServiceTest : BaseServiceTest, IClassFixture<ServicesFix
         public async Task Login_SenhaIncorreta_Handle()
         {
             //Arrege
-            SetupMocks(usuarioExistente: true, senhaCorreta: false);
+            SetupMocks(administradorExistente: true, senhaCorreta: false);
     
             //Act
-            var result = await _usuarioAuthService.Login(
-            new LoginUsuarioDto 
+            var result = await _administradorComumAuthService.Login(
+            new LoginAdministradorDto 
             { 
-                Email = "usuario@teste.com", 
+                Email = "administrador@teste.com", 
                 Senha = "SenhaIncorreta" 
             });
     
@@ -86,13 +87,13 @@ public class UsuarioAuthServiceTest : BaseServiceTest, IClassFixture<ServicesFix
         public async Task Login_SucessoGeracaoToken_LoginRetornaToken()
         {
             //Arrege
-            SetupMocks(usuarioExistente: true, senhaCorreta: true);
+            SetupMocks(administradorExistente: true, senhaCorreta: true);
     
             //Act
-            var result = await _usuarioAuthService.Login(
-            new LoginUsuarioDto 
+            var result = await _administradorComumAuthService.Login(
+            new LoginAdministradorDto 
             { 
-                Email = "usuario@teste.com", 
+                Email = "administrador@teste.com", 
                 Senha = "Senha123!" 
             });
     
@@ -103,21 +104,21 @@ public class UsuarioAuthServiceTest : BaseServiceTest, IClassFixture<ServicesFix
         }
 
         [Fact]
-        public async Task GerarToken_Usuario_TokenComTipoComum()
+        public async Task GerarToken_Admistrador_TokenComTipoComum()
         {
             // Arrange
-            var usuario = new Usuario
+            var administrador = new Administrador
             {
                 Id = 2,
                 Nome = "NomeDoUsuario",
-                Email = "usuario@teste.com",
+                Email = "administrador@teste.com",
                 Senha = "Senha123!",
             };
 
-            SetupMocks(usuarioExistente: true, senhaCorreta: true);
+            SetupMocks(administradorExistente: true, senhaCorreta: true);
 
             // Act
-            var token = await _usuarioAuthService.GerarToken(usuario);
+            var token = await _administradorComumAuthService.GerarToken(administrador);
 
             // Assert
             var handler = new JwtSecurityTokenHandler();
@@ -125,20 +126,20 @@ public class UsuarioAuthServiceTest : BaseServiceTest, IClassFixture<ServicesFix
 
             Assert.NotNull(jsonToken);
             
-            Assert.True(jsonToken?.Claims.Any(c => c.Type == "TipoUsuario" && c.Value == ETipoUsuario.Comum.ToDescriptionString()));
+            Assert.True(jsonToken?.Claims.Any(c => c.Type == "TipoUsuario" && c.Value == ETipoUsuario.AdministradorComum.ToDescriptionString()));
         }
 
         [Fact]
         public async Task Login_SenhaVazia_Handle()
         {
             //Arrange
-            SetupMocks(usuarioExistente: true, senhaCorreta: false);
+            SetupMocks(administradorExistente: true, senhaCorreta: false);
 
             //Act
-            var result = await _usuarioAuthService.Login(
-            new LoginUsuarioDto 
+            var result = await _administradorComumAuthService.Login(
+            new LoginAdministradorDto 
             { 
-                 Email = "usuario@teste.com", 
+                 Email = "administrador@teste.com", 
                 Senha = "" 
             });
 
@@ -148,30 +149,29 @@ public class UsuarioAuthServiceTest : BaseServiceTest, IClassFixture<ServicesFix
         }
         
         [Fact]
-        public async Task Login_Usuario_EmailVazio_SenhaCorreta()
+        public async Task Login_Administra_EmailVazio_SenhaCorreta()
         {
             // Arrange
-            var loginDto = new LoginUsuarioDto
+            var loginDto = new LoginAdministradorDto
             {
                 Email = "", 
                 Senha = "Senha123!" 
             };
 
-            SetupMocks(usuarioExistente: true, senhaCorreta: true);
+            SetupMocks(administradorExistente: true, senhaCorreta: true);
 
             // Act
-            var resultadoLogin = await _usuarioAuthService.Login(loginDto);
+            var resultadoLogin = await _administradorComumAuthService.Login(loginDto);
 
             // Assert
             Assert.NotNull(resultadoLogin);
         }
         
 
-        [Fact]
-        public async Task Login_Usuario_TudoVazio()
+        [Fact] public async Task Login_Usuario_TudoVazio()
         {
             // Arrange
-            var usuario = new Usuario
+            var administrador = new Administrador
             {
                 Id = 2,
                 Nome = "",
@@ -179,29 +179,25 @@ public class UsuarioAuthServiceTest : BaseServiceTest, IClassFixture<ServicesFix
                 Senha = "",
             };
 
-            SetupMocks(usuarioExistente: true, senhaCorreta: true);
+            SetupMocks(administradorExistente: true, senhaCorreta: true);
 
             // Act
-            var resultadoLogin = await _usuarioAuthService.Login(new LoginUsuarioDto
+            var resultadoLogin = await _administradorComumAuthService.Login(new LoginAdministradorDto
             {
-                Email = usuario.Email,
-                Senha = usuario.Senha
+                Email = administrador.Email,
+                Senha = administrador.Senha
             });
 
             // Assert
             Assert.Null(resultadoLogin);
         }
 
-        
-
-
     #endregion
     
-    
     #region SetupMocks
-    private void SetupMocks(bool usuarioExistente, bool senhaCorreta = true)
+    private void SetupMocks(bool administradorExistente, bool senhaCorreta = true)
     {
-        var usuario = usuarioExistente ? new Usuario
+        var adm = administradorExistente ? new Administrador
         {
             Id = 1,
             Nome = "NomeDoUsuario",
@@ -209,12 +205,12 @@ public class UsuarioAuthServiceTest : BaseServiceTest, IClassFixture<ServicesFix
             Senha = "Senha123!",
         } : null;
 
-        _usuarioRepositoryMock
-            .Setup(c => c.ObterUsuarioPorEmail(It.IsAny<string>()))
-            .ReturnsAsync(usuario);
+        _admRepositoryMock
+            .Setup(c => c.ObterAdmPorEmail(It.IsAny<string>()))
+            .ReturnsAsync(adm);
 
         _passwordHasherMock
-            .Setup(c => c.VerifyHashedPassword(It.IsAny<Usuario>(), It.IsAny<string>(), It.IsAny<string>()))
+            .Setup(c => c.VerifyHashedPassword(It.IsAny<Administrador>(), It.IsAny<string>(), It.IsAny<string>()))
             .Returns(senhaCorreta ? PasswordVerificationResult.Success : PasswordVerificationResult.Failed);
 
         _jwtServiceMock
@@ -225,5 +221,4 @@ public class UsuarioAuthServiceTest : BaseServiceTest, IClassFixture<ServicesFix
             ));
     }
     #endregion
-
 }
