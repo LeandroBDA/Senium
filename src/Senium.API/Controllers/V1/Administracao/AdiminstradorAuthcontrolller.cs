@@ -19,7 +19,7 @@ public class AdministradorAuthController : BaseController
     }
     
     [HttpPost]
-    [SwaggerOperation(Summary = "Login de addministrador.", Tags = new [] { "Adm - Auth" })]
+    [SwaggerOperation(Summary = "Login de addministrador.", Tags = new [] { "Administração - Auth" })]
     [ProducesResponseType(typeof(TokenDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

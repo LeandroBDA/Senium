@@ -1,4 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
@@ -18,7 +19,7 @@ namespace Senium.Application.Tests.Service;
 
 public class AdministradorAuthServiceTest : BaseServiceTest, IClassFixture<ServicesFixture>
 {
-    private readonly AdministradorGeralAuthService _administradorGeralAuthService;
+    private readonly AdministradorAuthService _administradorAuthService;
 
     private readonly Mock<IAdministradorRepository> _admRepositoryMock = new();
     private readonly Mock<IPasswordHasher<Administrador>> _passwordHasherMock = new();
@@ -32,7 +33,7 @@ public class AdministradorAuthServiceTest : BaseServiceTest, IClassFixture<Servi
             ExpiracaoHoras = 1
         });
 
-        _administradorGeralAuthService = new AdministradorGeralAuthService(
+        _administradorAuthService = new AdministradorAuthService(
             NotificatorMock.Object, 
             fixture.Mapper,
             _passwordHasherMock.Object, 
@@ -51,7 +52,7 @@ public class AdministradorAuthServiceTest : BaseServiceTest, IClassFixture<Servi
             SetupMocks(administradorExistente: false);
     
             //Act
-            var result = await _administradorGeralAuthService.Login(
+            var result = await _administradorAuthService.Login(
             new LoginAdministradorDto
             {
                 Email = "administradornaoexiste@teste.com",
@@ -71,7 +72,7 @@ public class AdministradorAuthServiceTest : BaseServiceTest, IClassFixture<Servi
             SetupMocks(administradorExistente: true, senhaCorreta: false);
     
             //Act
-            var result = await _administradorGeralAuthService.Login(
+            var result = await _administradorAuthService.Login(
             new LoginAdministradorDto 
             { 
                 Email = "administrador@teste.com", 
@@ -90,7 +91,7 @@ public class AdministradorAuthServiceTest : BaseServiceTest, IClassFixture<Servi
             SetupMocks(administradorExistente: true, senhaCorreta: true);
     
             //Act
-            var result = await _administradorGeralAuthService.Login(
+            var result = await _administradorAuthService.Login(
             new LoginAdministradorDto 
             { 
                 Email = "administrador@teste.com", 
@@ -114,11 +115,9 @@ public class AdministradorAuthServiceTest : BaseServiceTest, IClassFixture<Servi
                 Email = "administrador@teste.com",
                 Senha = "Senha123!",
             };
-
-            SetupMocks(administradorExistente: true, senhaCorreta: true);
-
+            
             // Act
-            var token = await _administradorGeralAuthService.GerarToken(administrador);
+            var token = await _administradorAuthService.GerarToken(administrador);
 
             // Assert
             var handler = new JwtSecurityTokenHandler();
@@ -126,7 +125,11 @@ public class AdministradorAuthServiceTest : BaseServiceTest, IClassFixture<Servi
 
             Assert.NotNull(jsonToken);
             
-            Assert.True(jsonToken?.Claims.Any(c => c.Type == "TipoUsuario" && c.Value == ETipoUsuario.AdministradorGeral.ToDescriptionString()));
+            Assert.True(jsonToken?.Claims.Any(c => c.Type == ClaimTypes.NameIdentifier && c.Value == administrador.Id.ToString()));
+            Assert.True(jsonToken?.Claims.Any(c => c.Type == ClaimTypes.Name && c.Value == administrador.Nome));
+            Assert.True(jsonToken?.Claims.Any(c => c.Type == ClaimTypes.Email && c.Value == administrador.Email));
+            
+            Assert.True(jsonToken?.Claims.Any(c => c.Type == "TipoAdministradorDescricao" && c.Value == ETipoUsuario.AdministradorComum.ToDescriptionString()));
         }
 
         [Fact]
@@ -136,7 +139,7 @@ public class AdministradorAuthServiceTest : BaseServiceTest, IClassFixture<Servi
             SetupMocks(administradorExistente: true, senhaCorreta: false);
 
             //Act
-            var result = await _administradorGeralAuthService.Login(
+            var result = await _administradorAuthService.Login(
             new LoginAdministradorDto 
             { 
                  Email = "administrador@teste.com", 
@@ -161,7 +164,7 @@ public class AdministradorAuthServiceTest : BaseServiceTest, IClassFixture<Servi
             SetupMocks(administradorExistente: true, senhaCorreta: true);
 
             // Act
-            var resultadoLogin = await _administradorGeralAuthService.Login(loginDto);
+            var resultadoLogin = await _administradorAuthService.Login(loginDto);
 
             // Assert
             Assert.NotNull(resultadoLogin);
@@ -182,7 +185,7 @@ public class AdministradorAuthServiceTest : BaseServiceTest, IClassFixture<Servi
             SetupMocks(administradorExistente: true, senhaCorreta: true);
 
             // Act
-            var resultadoLogin = await _administradorGeralAuthService.Login(new LoginAdministradorDto
+            var resultadoLogin = await _administradorAuthService.Login(new LoginAdministradorDto
             {
                 Email = administrador.Email,
                 Senha = administrador.Senha
