@@ -5,7 +5,7 @@ using Senium.Application.Dto.V1.Auth;
 using Senium.Application.Notifications;
 using Swashbuckle.AspNetCore.Annotations;
 
-namespace Senium.API.Controllers.V1.Usuario;
+namespace Senium.API.Controllers.V1.Administracao;
 
 [AllowAnonymous]
 [Route("v{version:apiVersion}/[controller]")]
@@ -19,7 +19,7 @@ public class AdministradorAuthController : BaseController
     }
     
     [HttpPost]
-    [SwaggerOperation(Summary = "Login de addministrador.", Tags = new [] { "Administração - Auth" })]
+    [SwaggerOperation(Summary = "Login de administrador.", Tags = new [] { "Administração - Auth" })]
     [ProducesResponseType(typeof(TokenDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

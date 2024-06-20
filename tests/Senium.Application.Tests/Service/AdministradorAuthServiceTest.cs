@@ -94,7 +94,7 @@ public class AdministradorAuthServiceTest : BaseServiceTest, IClassFixture<Servi
             var result = await _administradorAuthService.Login(
                 new LoginAdministradorDto
                 { 
-                    Email = "usuario@teste.com", 
+                    Email = "administrador@teste.com", 
                     Senha = "Senha123!" 
                 });
     
@@ -111,7 +111,7 @@ public class AdministradorAuthServiceTest : BaseServiceTest, IClassFixture<Servi
             var administrador = new Administrador
             {
                 Id = 2,
-                Nome = "NomeDoUsuario",
+                Nome = "NomeDoAdministrador",
                 Email = "administrador@teste.com",
                 Senha = "Senha123!",
             };
@@ -129,7 +129,33 @@ public class AdministradorAuthServiceTest : BaseServiceTest, IClassFixture<Servi
             
             Assert.True(jsonToken?.Claims.Any(c => c.Type == "TipoAdministrador" && c.Value == ETipoUsuario.AdministradorComum.ToString()));
         }   
+        
+        [Fact]
+        public async Task GerarToken_Admistrador_TokenComTipoGeral()
+        {
+            // Arrange
+            var administrador = new Administrador
+            {
+                Id = 1,
+                Nome = "NomeDoAdministrador",
+                Email = "administrador@teste.com",
+                Senha = "Senha123!",
+            };
 
+            SetupMocks(administradorExistente: true, senhaCorreta: true); 
+            
+            // Act
+            var token = await _administradorAuthService.GerarToken(administrador);
+
+            // Assert
+            var handler = new JwtSecurityTokenHandler();
+            var jsonToken = handler.ReadToken(token) as JwtSecurityToken;
+
+            Assert.NotNull(jsonToken);
+            
+            Assert.True(jsonToken?.Claims.Any(c => c.Type == "TipoAdministrador" && c.Value == ETipoUsuario.AdministradorGeral.ToString()));
+        }   
+        
         [Fact]
         public async Task Login_SenhaVazia_Handle()
         {

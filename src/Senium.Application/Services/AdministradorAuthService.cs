@@ -58,20 +58,23 @@ public class AdministradorAuthService : BaseService, IAuthAdmService
   
     public async Task<string> GerarToken(Administrador administrador)
     {
-        if (administrador.Id == 1 && ETipoUsuario.AdministradorComum.ToString().Equals("AdministradorComum"))
-        {
-            throw new InvalidOperationException("Login para esse usuário não autorizado.");
-        }
-        
         var tokenHandler = new JwtSecurityTokenHandler();
 
         var claimsIdentity = new ClaimsIdentity();
         claimsIdentity.AddClaim(new Claim(ClaimTypes.NameIdentifier, administrador.Id.ToString()));
         claimsIdentity.AddClaim(new Claim(ClaimTypes.Name, administrador.Nome));
         claimsIdentity.AddClaim(new Claim(ClaimTypes.Email, administrador.Email));
-        claimsIdentity.AddClaim(new Claim("TipoAdministrador", ETipoUsuario.AdministradorComum.ToString()));
-        claimsIdentity.AddClaim(new Claim("TipoAdministradorDescricao", ETipoUsuario.AdministradorComum.ToDescriptionString()));
-
+       
+        if (administrador.Id == 1)
+        {
+            claimsIdentity.AddClaim(new Claim("TipoAdministrador", ETipoUsuario.AdministradorGeral.ToString()));
+        }
+      
+        else
+        {
+            claimsIdentity.AddClaim(new Claim("TipoAdministrador", ETipoUsuario.AdministradorComum.ToString()));
+        }
+        
         var key = await _jwtService.GetCurrentSigningCredentials();
         var token = tokenHandler.CreateToken(new SecurityTokenDescriptor
         {
