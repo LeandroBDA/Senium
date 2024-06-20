@@ -37,7 +37,7 @@ public class AdministradorAuthService : BaseService, IAuthAdmService
             Notificator.HandleNotFoundResource();
             return null;
         }
-
+        
         var administrador = await _administradorRepository.ObterAdmPorEmail(loginAdministrador.Email);
         if (administrador == null )
         {
@@ -55,32 +55,33 @@ public class AdministradorAuthService : BaseService, IAuthAdmService
         Notificator.Handle("Não foi possível fazer o login");
         return null;
     }
+  
     public async Task<string> GerarToken(Administrador administrador)
     {
-        if (administrador.Id != 1)
+        if (administrador.Id == 1 && ETipoUsuario.AdministradorComum.ToString().Equals("AdministradorComum"))
         {
-            var tokenHandler = new JwtSecurityTokenHandler();
-
-            var claimsIdentity = new ClaimsIdentity();
-            claimsIdentity.AddClaim(new Claim(ClaimTypes.NameIdentifier, administrador.Id.ToString()));
-            claimsIdentity.AddClaim(new Claim("TipoAdministrador", ETipoUsuario.AdministradorComum.ToDescriptionString()));
-            claimsIdentity.AddClaim(new Claim(ClaimTypes.Name, administrador.Nome));
-            claimsIdentity.AddClaim(new Claim(ClaimTypes.Email, administrador.Email));
-
-            claimsIdentity.AddClaim(new Claim("TipoAdministrador", ETipoUsuario.AdministradorComum.ToString()));
-       
-            var key = await _jwtService.GetCurrentSigningCredentials();
-            var token = tokenHandler.CreateToken(new SecurityTokenDescriptor
-            {
-                Issuer = _jwtSettings.Emissor,
-                Subject = claimsIdentity,
-                Expires = DateTime.UtcNow.AddHours(_jwtSettings.ExpiracaoHoras),
-                SigningCredentials = key,
-                Audience = _jwtSettings.ComumValidoEm
-            });
-
-            return tokenHandler.WriteToken(token);
+            throw new InvalidOperationException("Login para esse usuário não autorizado.");
         }
-        return null;
+        
+        var tokenHandler = new JwtSecurityTokenHandler();
+
+        var claimsIdentity = new ClaimsIdentity();
+        claimsIdentity.AddClaim(new Claim(ClaimTypes.NameIdentifier, administrador.Id.ToString()));
+        claimsIdentity.AddClaim(new Claim(ClaimTypes.Name, administrador.Nome));
+        claimsIdentity.AddClaim(new Claim(ClaimTypes.Email, administrador.Email));
+        claimsIdentity.AddClaim(new Claim("TipoAdministrador", ETipoUsuario.AdministradorComum.ToString()));
+        claimsIdentity.AddClaim(new Claim("TipoAdministradorDescricao", ETipoUsuario.AdministradorComum.ToDescriptionString()));
+
+        var key = await _jwtService.GetCurrentSigningCredentials();
+        var token = tokenHandler.CreateToken(new SecurityTokenDescriptor
+        {
+            Issuer = _jwtSettings.Emissor,
+            Subject = claimsIdentity,
+            Expires = DateTime.UtcNow.AddHours(_jwtSettings.ExpiracaoHoras),
+            SigningCredentials = key,
+            Audience = _jwtSettings.ComumValidoEm
+        });
+
+        return tokenHandler.WriteToken(token);
     }
 }

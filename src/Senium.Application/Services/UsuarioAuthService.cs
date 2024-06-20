@@ -56,12 +56,6 @@ public class UsuarioAuthService : BaseService, IUsuarioAuthService
         Notificator.Handle("Não foi possível fazer o login");
         return null;
     }
-
-    public Task<TokenDto?> Login(LoginAdministradorDto loginAdministrador)
-    {
-        throw new NotImplementedException();
-    }
-
     public async Task<string> GerarToken(Usuario usuario)
     {
         var tokenHandler = new JwtSecurityTokenHandler();

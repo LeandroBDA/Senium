@@ -16,6 +16,6 @@ public abstract class Entity : BaseEntity, ITracking
 }
 
 public abstract class BaseEntity
-{
+{ 
     public int Id { get; set; }
 }

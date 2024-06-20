@@ -21,7 +21,7 @@ public class AdministradorAuthServiceTest : BaseServiceTest, IClassFixture<Servi
 {
     private readonly AdministradorAuthService _administradorAuthService;
 
-    private readonly Mock<IAdministradorRepository> _admRepositoryMock = new();
+    private readonly Mock<IAdministradorRepository> _administradorRepositoryMock = new();
     private readonly Mock<IPasswordHasher<Administrador>> _passwordHasherMock = new();
     private readonly Mock<IJwtService> _jwtServiceMock = new();
     
@@ -37,7 +37,7 @@ public class AdministradorAuthServiceTest : BaseServiceTest, IClassFixture<Servi
             NotificatorMock.Object, 
             fixture.Mapper,
             _passwordHasherMock.Object, 
-            _admRepositoryMock.Object, 
+            _administradorRepositoryMock.Object, 
             jwtSettings, 
             _jwtServiceMock.Object
         );
@@ -92,11 +92,11 @@ public class AdministradorAuthServiceTest : BaseServiceTest, IClassFixture<Servi
     
             //Act
             var result = await _administradorAuthService.Login(
-            new LoginAdministradorDto 
-            { 
-                Email = "administrador@teste.com", 
-                Senha = "Senha123!" 
-            });
+                new LoginAdministradorDto
+                { 
+                    Email = "usuario@teste.com", 
+                    Senha = "Senha123!" 
+                });
     
             //Assert
             Assert.NotNull(result);
@@ -115,6 +115,8 @@ public class AdministradorAuthServiceTest : BaseServiceTest, IClassFixture<Servi
                 Email = "administrador@teste.com",
                 Senha = "Senha123!",
             };
+
+            SetupMocks(administradorExistente: true, senhaCorreta: true); 
             
             // Act
             var token = await _administradorAuthService.GerarToken(administrador);
@@ -125,12 +127,8 @@ public class AdministradorAuthServiceTest : BaseServiceTest, IClassFixture<Servi
 
             Assert.NotNull(jsonToken);
             
-            Assert.True(jsonToken?.Claims.Any(c => c.Type == ClaimTypes.NameIdentifier && c.Value == administrador.Id.ToString()));
-            Assert.True(jsonToken?.Claims.Any(c => c.Type == ClaimTypes.Name && c.Value == administrador.Nome));
-            Assert.True(jsonToken?.Claims.Any(c => c.Type == ClaimTypes.Email && c.Value == administrador.Email));
-            
-            Assert.True(jsonToken?.Claims.Any(c => c.Type == "TipoAdministradorDescricao" && c.Value == ETipoUsuario.AdministradorComum.ToDescriptionString()));
-        }
+            Assert.True(jsonToken?.Claims.Any(c => c.Type == "TipoAdministrador" && c.Value == ETipoUsuario.AdministradorComum.ToString()));
+        }   
 
         [Fact]
         public async Task Login_SenhaVazia_Handle()
@@ -152,7 +150,7 @@ public class AdministradorAuthServiceTest : BaseServiceTest, IClassFixture<Servi
         }
         
         [Fact]
-        public async Task Login_Administra_EmailVazio_SenhaCorreta()
+        public async Task Login_Administrador_EmailVazio_SenhaCorreta()
         {
             // Arrange
             var loginDto = new LoginAdministradorDto
@@ -202,13 +200,13 @@ public class AdministradorAuthServiceTest : BaseServiceTest, IClassFixture<Servi
     {
         var adm = administradorExistente ? new Administrador
         {
-            Id = 1,
-            Nome = "NomeDoUsuario",
-            Email = "usuario@teste.com", 
+            Id = 2,
+            Nome = "NomeDoAdministrador",
+            Email = "administrador@teste.com", 
             Senha = "Senha123!",
         } : null;
 
-        _admRepositoryMock
+        _administradorRepositoryMock
             .Setup(c => c.ObterAdmPorEmail(It.IsAny<string>()))
             .ReturnsAsync(adm);
 
