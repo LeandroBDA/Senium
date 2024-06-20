@@ -5,4 +5,9 @@ namespace Senium.Application.Contracts.Services;
 public interface IUsuarioAuthService
 {
     Task<TokenDto?> Login(LoginUsuarioDto loginUsuario);
+   
+}
+public interface IAuthAdmService
+{
+    Task<TokenDto?> Login(LoginAdministradorDto loginAdministrador);
 }

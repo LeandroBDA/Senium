@@ -23,7 +23,6 @@ public class UsuarioAuthServiceTest : BaseServiceTest, IClassFixture<ServicesFix
     private readonly Mock<IUsuarioRepository> _usuarioRepositoryMock = new();
     private readonly Mock<IPasswordHasher<Usuario>> _passwordHasherMock = new();
     private readonly Mock<IJwtService> _jwtServiceMock = new();
-    
     public UsuarioAuthServiceTest(ServicesFixture fixture)
     {
         IOptions<JwtSettings> jwtSettings = Options.Create(new JwtSettings

@@ -1,4 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
@@ -16,56 +16,64 @@ using Senium.Domain.Entities;
 
 namespace Senium.Application.Services;
 
-public class UsuarioAuthService : BaseService, IUsuarioAuthService
+public class AdministradorAuthService : BaseService, IAuthAdmService 
 {
-    private readonly IUsuarioRepository _usuarioRepository;
-    private readonly IPasswordHasher<Usuario> _passwordHasher;
+    private readonly IAdministradorRepository _administradorRepository;
+    private readonly IPasswordHasher<Administrador> _passwordHasher;
     private readonly IJwtService _jwtService;
     private readonly JwtSettings _jwtSettings;
     
-    public UsuarioAuthService(INotificator notificator, IMapper mapper, IPasswordHasher<Usuario> passwordHasher, IUsuarioRepository usuarioRepository, IOptions<JwtSettings> jwtSettings, IJwtService jwtService) : base(notificator, mapper)
+    public AdministradorAuthService(INotificator notificator, IMapper mapper, IPasswordHasher<Administrador> passwordHasher, IAdministradorRepository administradorRepository, IOptions<JwtSettings> jwtSettings, IJwtService jwtService) : base(notificator, mapper)
     {
         _passwordHasher = passwordHasher;
-        _usuarioRepository = usuarioRepository;
+        _administradorRepository = administradorRepository;
         _jwtService = jwtService;
         _jwtSettings = jwtSettings.Value;
     }
-
-    public async Task<TokenDto?> Login(LoginUsuarioDto loginUsuario)
+    public async Task<TokenDto?> Login(LoginAdministradorDto loginAdministrador)
     {
-        if (string.IsNullOrEmpty(loginUsuario.Senha))
-        {
-            Notificator.HandleNotFoundResource();
-            return null;
-        }
-
-        var usuario = await _usuarioRepository.ObterUsuarioPorEmail(loginUsuario.Email);
-        if (usuario == null )
+        if (string.IsNullOrEmpty(loginAdministrador.Senha))
         {
             Notificator.HandleNotFoundResource();
             return null;
         }
         
-        if (_passwordHasher.VerifyHashedPassword(usuario, usuario.Senha, loginUsuario.Senha) !=
+        var administrador = await _administradorRepository.ObterAdmPorEmail(loginAdministrador.Email);
+        if (administrador == null )
+        {
+            Notificator.HandleNotFoundResource();
+            return null;
+        }
+        
+        if (_passwordHasher.VerifyHashedPassword(administrador, administrador.Senha, loginAdministrador.Senha) !=
             PasswordVerificationResult.Failed)
             return new TokenDto
             {
-                Token = await GerarToken(usuario)
+                Token = await GerarToken(administrador)
             };
         
         Notificator.Handle("Não foi possível fazer o login");
         return null;
     }
-    public async Task<string> GerarToken(Usuario usuario)
+  
+    public async Task<string> GerarToken(Administrador administrador)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
 
         var claimsIdentity = new ClaimsIdentity();
-        claimsIdentity.AddClaim(new Claim(ClaimTypes.NameIdentifier, usuario.Id.ToString()));
-        claimsIdentity.AddClaim(new Claim("TipoUsuario", ETipoUsuario.Comum.ToDescriptionString()));
-        claimsIdentity.AddClaim(new Claim(ClaimTypes.Name, usuario.Nome));
-        claimsIdentity.AddClaim(new Claim(ClaimTypes.Email, usuario.Email));
-
+        claimsIdentity.AddClaim(new Claim(ClaimTypes.NameIdentifier, administrador.Id.ToString()));
+        claimsIdentity.AddClaim(new Claim(ClaimTypes.Name, administrador.Nome));
+        claimsIdentity.AddClaim(new Claim(ClaimTypes.Email, administrador.Email));
+       
+        if (administrador.Id == 1)
+        {
+            claimsIdentity.AddClaim(new Claim("TipoAdministrador", ETipoUsuario.AdministradorGeral.ToString()));
+        }
+      
+        else
+        {
+            claimsIdentity.AddClaim(new Claim("TipoAdministrador", ETipoUsuario.AdministradorComum.ToString()));
+        }
         
         var key = await _jwtService.GetCurrentSigningCredentials();
         var token = tokenHandler.CreateToken(new SecurityTokenDescriptor
