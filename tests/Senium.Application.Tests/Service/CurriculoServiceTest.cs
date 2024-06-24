@@ -522,7 +522,8 @@ public class CurriculoServiceTest : BaseServiceTest, IClassFixture<ServicesFixtu
         }
     }
     
-        public async Task Adicionar_SucessoComPhoto_CurriculoDto()
+    [Fact]
+    public async Task Adicionar_SucessoComPhoto_CurriculoDto()
     {
         SetupMocks(false, true);
 

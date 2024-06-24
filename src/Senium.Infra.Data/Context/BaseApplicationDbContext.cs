@@ -11,7 +11,7 @@ public class BaseApplicationDbContext : DbContext, IUnitOfWork
 {
     public BaseApplicationDbContext(DbContextOptions options) : base(options) { }
 
-    public DbSet<Administrador?> Administradores { get; set; } = null!;
+    public DbSet<Administrador> Administradores { get; set; } = null!;
     public DbSet<Usuario> Usuarios { get; set; } = null!;
     public DbSet<Curriculo> Curriculos { get; set; } = null!;
     public DbSet<Experiencia> Experiencias { get; set; } = null!;

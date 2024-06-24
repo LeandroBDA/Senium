@@ -22,10 +22,10 @@ public class FileService : BaseService, IFileService
         _uploadSettings = uploadSettings.Value;
     }
     
-    public async Task<string> UploadPhoto(IFormFile arquivo, EUploadPath uploadPath,
+    public async Task<string?> UploadPhoto(IFormFile arquivo, EUploadPath uploadPath,
         EPathAccess pathAccess = EPathAccess.Private, int urlLimitLength = 255)
     {
-        const long MaxFileSizeInBytes = 2 * 1024 * 1024;
+        const long maxFileSizeInBytes = 2 * 1024 * 1024;
        
         var permittedExtensions = new[] { ".jpg", ".jpeg", ".png" };
         var ext = Path.GetExtension(arquivo.FileName).ToLowerInvariant();
@@ -36,9 +36,9 @@ public class FileService : BaseService, IFileService
             return null;
         }
         
-        if (arquivo.Length > MaxFileSizeInBytes)
+        if (arquivo.Length > maxFileSizeInBytes)
         {
-            Notificator.Handle($"O arquivo deve ter no máximo {MaxFileSizeInBytes / (1024 * 1024)} MB (2 MB).");
+            Notificator.Handle($"O arquivo deve ter no máximo {maxFileSizeInBytes / (1024 * 1024)} MB (2 MB).");
             return null; 
         }
         
