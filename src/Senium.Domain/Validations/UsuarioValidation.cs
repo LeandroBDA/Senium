@@ -35,4 +35,17 @@ public class UsuarioValidation : AbstractValidator<Usuario>
         
         return idade >= 45;
     }
+    
+}
+
+public class SenhaUsuarioValidator : AbstractValidator<string>
+{
+    public SenhaUsuarioValidator()
+    {
+        RuleFor(s => s)
+            .NotEmpty().WithMessage("O campo Senha é obrigatório.")
+            .Length(8, 20).WithMessage("A senha deve ter entre 8 e 20 caracteres.")
+            .Matches(@"^(?=.*[a-zA-Z])(?=.*\d)(?=.*[^a-zA-Z0-9]).{8,20}$")
+            .WithMessage("A senha deve conter letras, números, símbolos e ter entre 8 e 20 caracteres.");
+    }
 }

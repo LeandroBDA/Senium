@@ -9,4 +9,6 @@ public interface IUsuarioRepository : IRepository<Usuario>
     Task<Usuario?> ObterUsuarioPorId(int id);
     Task<Usuario?> ObterUsuarioPorEmail(string email);
     Task<List<Usuario>> ObterTodosUsuarios();
+    Task<Usuario?> ObterPorTokenDeResetSenha(string token);
+    Task<Usuario?> ObterPedidoResetSenhaValido(int usuarioId);
 }

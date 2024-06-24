@@ -10,6 +10,8 @@ public class Usuario : Entity, IAggregateRoot
     public string Email { get; set; } = null!;
     public string Senha { get; set; } = null!;
     public DateTime DataDeNascimento { get; set; }
+    public string? TokenDeResetSenha { get; set; }
+    public DateTime? ExpiraResetToken { get; set; }
 
     public Curriculo Curriculo { get; set; } = null!;
 

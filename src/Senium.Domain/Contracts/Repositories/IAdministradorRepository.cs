@@ -10,4 +10,6 @@ public interface IAdministradorRepository : IRepository<Administrador>
     Task<Administrador?> ObterAdmPorId(int id);
     Task<Administrador?> ObterAdmPorEmail(string email);
     Task<List<Administrador>> ObterTodosAdm();
+    Task<Administrador?> ObterPorTokenDeResetSenha(string token);
+    Task<Administrador?> ObterPedidoResetSenhaValido(int usuarioId);
 }
