@@ -43,4 +43,14 @@ public class AdministradorRepository : Repository<Administrador>, IAdministrador
     {
         return await Context.Administradores.AsNoTrackingWithIdentityResolution().ToListAsync();
     }
+    
+    public async Task<Administrador?> ObterPorTokenDeResetSenha(string token)
+    {
+        return await Context.Administradores.FirstOrDefaultAsync(u => u.TokenDeResetSenha == token);
+    }
+    
+    public async Task<Administrador?> ObterPedidoResetSenhaValido(int id)
+    {
+        return await Context.Administradores.FirstOrDefaultAsync(u => u.Id == id && u.ExpiraResetToken > DateTime.Now);
+    }
 }

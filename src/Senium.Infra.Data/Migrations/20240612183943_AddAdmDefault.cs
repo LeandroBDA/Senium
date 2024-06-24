@@ -14,10 +14,10 @@ namespace Senium.Infra.Data.Migrations
             
             migrationBuilder.InsertData(
                 table: "Administradores",
-                columns: new[] { "Id", "Nome", "Email", "Senha", "CriadoEm", "AtualizadoEm" },
+                columns: new[] { "Id", "CriadoEm", "AtualizadoEm", "Email", "Nome", "Senha",  },
                 values: new object[,]
                 {
-                    { 1, "Tereza Furtado", "terezafurtado77@gmail.com", senha,"2024-06-12 15:40:48", "2024-06-12 15:40:48" }
+                    { 1, "2024-06-12 15:40:48", "2024-06-12 15:40:48", "terezafurtado77@gmail.com", "Tereza Furtado", senha }
                 });
         }
 

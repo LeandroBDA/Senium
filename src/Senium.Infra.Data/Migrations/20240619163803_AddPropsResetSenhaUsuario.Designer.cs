@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Senium.Infra.Data.Context;
 
@@ -10,9 +11,11 @@ using Senium.Infra.Data.Context;
 namespace Senium.Infra.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240619163803_AddPropsResetSenhaUsuario")]
+    partial class AddPropsResetSenhaUsuario
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -39,9 +42,6 @@ namespace Senium.Infra.Data.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<DateTime?>("ExpiraResetToken")
-                        .HasColumnType("datetime(6)");
-
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -49,9 +49,6 @@ namespace Senium.Infra.Data.Migrations
 
                     b.Property<string>("Senha")
                         .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("TokenDeResetSenha")
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");

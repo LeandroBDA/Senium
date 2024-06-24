@@ -5,9 +5,14 @@ namespace Senium.Application.Contracts.Services;
 public interface IUsuarioAuthService
 {
     Task<TokenDto?> Login(LoginUsuarioDto loginUsuario);
-   
+    Task<bool> EsqueceuSenha(string email);
+    Task<bool> RedefinirSenha(ResetSenhaDto requestDto);
+
 }
-public interface IAuthAdmService
+
+public interface IAdministradorAuthService
 {
-    Task<TokenDto?> Login(LoginAdministradorDto loginAdministrador);
+    Task<TokenDto?> Login(LoginAdministradorDto loginUsuario);
+    Task<bool> EsqueceuSenha(string email);
+    Task<bool> RedefinirSenha(ResetSenhaDto requestDto);
 }
