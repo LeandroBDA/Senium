@@ -51,6 +51,11 @@ deploy:staging:
   variables:
     SSH_HOST: '$HOST_STAGING'
     APPSETTINGS_PATH: '$OUTPUT_PUBLISH/appsettings.Staging.json'
+  before_script:
+    - sed -i "s/@EmailSettings_User@/$EmailSettings_User/g" $APPSETTINGS_PATH
+    - sed -i "s/@EmailSettings_Password@/$EmailSettings_Password/g" $APPSETTINGS_PATH
+    - sed -i "s/@EmailSettings_Server@/$EmailSettings_Server/g" $APPSETTINGS_PATH
+    - sed -i "s/@EmailSettings_Port@/$EmailSettings_Port/g" $APPSETTINGS_PATH
   cache:
     <<: *global_cache
   allow_failure: false
