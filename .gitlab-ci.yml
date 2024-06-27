@@ -1,79 +1,19 @@
 include:
   - project: 'nds-ifce-maracanau/devops-shared-jobs'
-    ref: 'main-v02'
-    file: 'dotnet-jobs.yml'
+    ref: 'nds-devops'
+    file: 'nds-dotnet.yml'
 
 variables:
-  GIT_DEPTH: 1
+  #Build
+  SELF_CONTAINED_DEPLOY: true
+  #Deploy
   SERVICE: 'Senium'
   DEPLOY_PATH: '/var/www/src/Senium/backend'
   OUTPUT_PUBLISH: 'publish'
   PROJECT_BUILD: 'src/Senium.API/Senium.API.csproj'
-  SOURCE_CODE_DIRECTORY: 'src'
-  NUGET_PACKAGES_DIRECTORY: '.nuget'
+  #Coverage
+  ASSEMBLY_FILTERS: '+Senium.Application;+Senium.Domain;+Senium.Core;-xunit*;-Senium.Infra.Data;-Senium.API;-Senium.API.*;'
+  CLASS_FILTERS: '-*.DependencyInjection;'
 
-default:
-  cache: &global_cache
-    key: $CI_COMMIT_REF_SLUG
-    paths:
-      - src/*/bin/
-      - src/*/obj/
-      - $OUTPUT_PUBLISH
-      - $NUGET_PACKAGES_DIRECTORY
-    policy: pull
-
-build:
-  extends: .build
-  cache:
-    <<: *global_cache
-    policy: push
-
-test:
-  extends: .test
-  cache:
-    <<: *global_cache
-  allow_failure: false
-
-# required DotCoverConfig.xml
 coverage:
-  extends: .coverage
-  variables:
-    ASSEMBLY_FILTERS: '+Senium.Application;+Senium.Domain;+Senium.Core;-xunit*;-Senium.Infra.Data;-Senium.API;-Senium.API.*;'
-    CLASS_FILTERS: '-*.DependencyInjection;'
-  cache:
-    <<: *global_cache
   allow_failure: true
-
-deploy:staging:
-  extends: .deploy
-  environment:
-    name: Staging
-  variables:
-    SSH_HOST: '$HOST_STAGING'
-    APPSETTINGS_PATH: '$OUTPUT_PUBLISH/appsettings.Staging.json'
-  before_script:
-    - sed -i "s/@EmailSettings_User@/$EmailSettings_User/g" $APPSETTINGS_PATH
-    - sed -i "s/@EmailSettings_Password@/$EmailSettings_Password/g" $APPSETTINGS_PATH
-    - sed -i "s/@EmailSettings_Server@/$EmailSettings_Server/g" $APPSETTINGS_PATH
-    - sed -i "s/@EmailSettings_Port@/$EmailSettings_Port/g" $APPSETTINGS_PATH
-  cache:
-    <<: *global_cache
-  allow_failure: false
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "development"'
-      when: on_success
-      
-deploy:production:
-  extends: .deploy
-  environment:
-    name: Production
-  variables:
-    SSH_HOST: '$HOST_PROD'
-    APPSETTINGS_PATH: '$OUTPUT_PUBLISH/appsettings.Production.json'
-  cache:
-    <<: *global_cache
-  allow_failure: false
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-      when: on_success
-
