@@ -9,7 +9,7 @@ public class AdministradorValidation : AbstractValidator<Administrador>
     {
         RuleFor(a => a.Nome)
             .NotEmpty().WithMessage("O campo Nome é obrigatório.")
-            .Length(1,50).WithMessage("O campo Nome deve conter 1 a 50 caracteres")
+            .Length(3,50).WithMessage("O campo Nome deve conter 3 a 50 caracteres")
             .Matches("^[a-zA-ZÀ-ÿ ]+$").WithMessage("O campo Nome deve conter somente letras.");
             
         RuleFor(u => u.Email)

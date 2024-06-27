@@ -58,10 +58,15 @@ public class CurriculoValidation : AbstractValidator<Curriculo>
         RuleFor(x => x.RacaEtnia).NotEmpty().WithMessage("RacaEtnia é necessário");
             
       
-        RuleFor(x => x.GrauDeFormacao).NotEmpty().WithMessage("Grau de formação necessário");
+        RuleFor(x => x.GrauDeFormacao)
+            .NotEmpty().WithMessage("Grau de formação necessário.")
+            .Must(SerUmGrauDeFormacaoValido).WithMessage("Grau de formação inválido.");
 
 
-        RuleFor(x => x.Cep).NotEmpty();
+        RuleFor(x => x.Cep)
+            .NotEmpty().WithMessage("O CEP não pode estar vazio.")
+            .Length(8).WithMessage("O CEP deve conter exatamente 8 caracteres.")
+            .Matches("^[0-9]{8}$").WithMessage("O CEP deve conter apenas números.");
 
         RuleFor(x => x)
             .Custom((obj, context) =>
@@ -120,5 +125,17 @@ public class CurriculoValidation : AbstractValidator<Curriculo>
     {
         var regex = new Regex(@"^https:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9-]+\/?$");
         return regex.IsMatch(url);
+    }
+    
+    private bool SerUmGrauDeFormacaoValido(string grauDeFormacao)
+    {
+        var validOptions = new[]
+        {
+            "Ensino Fundamental", "Ensino Fundamental Incompleto", "Ensino Médio",
+            "Ensino Médio Incompleto", "Superior incompleto", "Superior completo",
+            "Pós graduação", "Mestrado", "Doutorado"
+        };
+
+        return validOptions.Contains(grauDeFormacao);
     }
 }
