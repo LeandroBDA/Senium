@@ -20,5 +20,10 @@ public class ExperienciaMapping : IEntityTypeConfiguration<Experiencia>
 
         builder.Property(e => e.DataDeInicio)
             .IsRequired();
+        
+        builder.HasOne(e => e.Usuario)
+            .WithMany(u => u.Experiencias)
+            .HasForeignKey(e => e.UsuarioId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

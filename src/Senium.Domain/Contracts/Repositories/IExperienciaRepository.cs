@@ -8,5 +8,5 @@ public interface IExperienciaRepository : IRepository<Experiencia>
     void AtualizarExperiencia(Experiencia experiencia);
     void RemoverExperiencia(Experiencia experiencia);
     Task<Experiencia?> ObterExperienciaPorId(int id);
-    Task<List<Experiencia>> ObterExperienciaDoCurriculo(int curriculoId);
+    Task<List<Experiencia>> ObterExperienciaDoUsuario(int usuarioId);
 }

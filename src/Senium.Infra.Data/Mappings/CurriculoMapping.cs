@@ -58,9 +58,10 @@ public class CurriculoMapping : IEntityTypeConfiguration<Curriculo>
             .IsRequired()
             .HasMaxLength(300);
         
-        builder.HasMany(c => c.Experiencias)
-            .WithOne(e => e.Curriculo)
-            .HasForeignKey(e => e.CurriculoId)
+        builder
+            .HasOne(c => c.Usuario)
+            .WithOne(u => u.Curriculo)
+            .HasForeignKey<Curriculo>(c => c.UsuarioId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

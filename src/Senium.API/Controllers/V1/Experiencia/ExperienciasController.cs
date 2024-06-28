@@ -29,14 +29,14 @@ public class ExperienciasController : MainController
     }
     
     [HttpGet("{id}")]
-    [SwaggerOperation(Summary = "Obter experiencia(s) por Curriculo", Tags = new[] { " Experiência " })]
+    [SwaggerOperation(Summary = "Obter experiencia(s) do Usuário", Tags = new[] { " Experiência " })]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ObterPorId(int id)
     {
-        return OkResponse(await _experienciaService.ObterExperienciaPorCurriculoId(id));
+        return OkResponse(await _experienciaService.ObterExperienciaPorUsuarioId(id));
     }
 
     [HttpPut("{id}")]

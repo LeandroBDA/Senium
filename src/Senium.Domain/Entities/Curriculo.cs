@@ -48,11 +48,8 @@ public class Curriculo : Entity, IAggregateRoot
     public bool Presencial { get; set; }
     public bool Remoto { get; set; }
     public bool Hibrido { get; set; }
-
-
+    
     public Usuario Usuario { get; set; } = null!;
-        
-    public List<Experiencia> Experiencias { get; set; } = new();
     
     public override bool Validar(out ValidationResult validationResult)
     {

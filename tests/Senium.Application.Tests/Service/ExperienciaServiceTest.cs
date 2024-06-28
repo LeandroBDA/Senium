@@ -2,6 +2,7 @@
 using FluentAssertions;
 using FluentAssertions.Execution;
 using FluentValidation.Results;
+using Microsoft.AspNetCore.Http;
 using Moq;
 using Senium.Application.Dto.V1.Experiencia;
 using Senium.Application.Services;
@@ -15,14 +16,14 @@ public class ExperienciaServiceTest : BaseServiceTest, IClassFixture<ServicesFix
 {
     private readonly ExperienciaService _experienciaService;
     private readonly Mock<IExperienciaRepository> _experienciaRepositoryMock = new();
-    private readonly Mock<ICurriculoRepository> _curriculoRepositoryMock = new();
+    private readonly Mock<IHttpContextAccessor> _httpContextAccessorMock = new();
     
     public ExperienciaServiceTest(ServicesFixture fixture)
     {
         _experienciaService = new ExperienciaService(NotificatorMock.Object, fixture.Mapper,
-            _experienciaRepositoryMock.Object, _curriculoRepositoryMock.Object);
+            _experienciaRepositoryMock.Object, _httpContextAccessorMock.Object);
     }
-
+    
     #region AdicionarExperiencia
 
     [Fact]
@@ -33,7 +34,6 @@ public class ExperienciaServiceTest : BaseServiceTest, IClassFixture<ServicesFix
 
         var dto = new AdicionarExperienciaDto
         {
-            CurriculoId = 1,
             Cargo = "",
             Empresa = " ",
             Descricao = " ",
@@ -41,7 +41,7 @@ public class ExperienciaServiceTest : BaseServiceTest, IClassFixture<ServicesFix
             DataDeTermino = null,
             TrabalhoAtual = true
         };
-        
+
         // Act
         var experiencia = await _experienciaService.AdicionarExperiencia(dto);
 
@@ -55,7 +55,7 @@ public class ExperienciaServiceTest : BaseServiceTest, IClassFixture<ServicesFix
 
             _experienciaRepositoryMock
                 .Verify(c => c.AdicionarExperiencia(It.IsAny<Experiencia>()), Times.Never);
-        
+
             _experienciaRepositoryMock
                 .Verify(c => c.UnitOfWork.Commit(), Times.Never);
         }
@@ -69,7 +69,6 @@ public class ExperienciaServiceTest : BaseServiceTest, IClassFixture<ServicesFix
 
         var dto = new AdicionarExperienciaDto
         {
-            CurriculoId = 1,
             Cargo = "Desenvolvedor de Software",
             Empresa = "Tech Solutions Ltda",
             DataDeInicio = new DateTime(2023, 3, 6),
@@ -90,7 +89,7 @@ public class ExperienciaServiceTest : BaseServiceTest, IClassFixture<ServicesFix
 
             _experienciaRepositoryMock
                 .Verify(c => c.AdicionarExperiencia(It.IsAny<Experiencia>()), Times.Never);
-    
+
             _experienciaRepositoryMock
                 .Verify(c => c.UnitOfWork.Commit(), Times.Never);
         }
@@ -100,11 +99,10 @@ public class ExperienciaServiceTest : BaseServiceTest, IClassFixture<ServicesFix
     public async Task Adicionar_ErroAoSalvar_Handle()
     {
         // Arrange
-        SetupMocks();
+        SetupMocks(commit: false);
 
         var dto = new AdicionarExperienciaDto
         {
-            CurriculoId = 1,
             Cargo = "Desenvolvedor de Software",
             Empresa = "Tech Solutions Ltda",
             Descricao = "Desenvolver aplicativos",
@@ -140,7 +138,6 @@ public class ExperienciaServiceTest : BaseServiceTest, IClassFixture<ServicesFix
 
         var dto = new AdicionarExperienciaDto
         {
-            CurriculoId = 1,
             Cargo = "Desenvolvedor de Software",
             Empresa = "Tech Solutions Ltda",
             Descricao = "Desenvolver aplicativos",
@@ -154,7 +151,7 @@ public class ExperienciaServiceTest : BaseServiceTest, IClassFixture<ServicesFix
 
         // Assert
         using (new AssertionScope())
-        { 
+        {
             experiencia.Should().NotBeNull();
 
             NotificatorMock
@@ -167,44 +164,9 @@ public class ExperienciaServiceTest : BaseServiceTest, IClassFixture<ServicesFix
                 .Verify(c => c.UnitOfWork.Commit(), Times.Once);
         }
     }
-    
-    [Fact]
-    public async Task Adicionar_CurriculoNaoEncontrado_Handle()
-    {
-        // Arrange
-        SetupMocks(experienciaExistente: false);
-
-        var dto = new AdicionarExperienciaDto
-        {
-            CurriculoId = 2, 
-            Cargo = "Desenvolvedor de Software",
-            Empresa = "Tech Solutions Ltda",
-            Descricao = "Desenvolver aplicativos",
-            DataDeInicio = new DateTime(2023, 3, 6),
-            DataDeTermino = null,
-            TrabalhoAtual = true
-        };
-
-        // Act
-        var experiencia = await _experienciaService.AdicionarExperiencia(dto);
-
-        // Assert
-        using (new AssertionScope())
-        {
-            experiencia.Should().BeNull();
-
-            NotificatorMock
-                .Verify(c => c.Handle("Currículo não encontrado."), Times.Once);
-
-            _experienciaRepositoryMock
-                .Verify(c => c.AdicionarExperiencia(It.IsAny<Experiencia>()), Times.Never);
-
-            _experienciaRepositoryMock
-                .Verify(c => c.UnitOfWork.Commit(), Times.Never);
-        }
-    }
 
     #endregion
+
 
     #region AtualizarExperiencia
 
@@ -473,7 +435,7 @@ public class ExperienciaServiceTest : BaseServiceTest, IClassFixture<ServicesFix
         const int id = 1;
 
         // Act
-        var experiencia = await _experienciaService.ObterExperienciaPorCurriculoId(id);
+        var experiencia = await _experienciaService.ObterExperienciaPorUsuarioId(id);
 
         // Assert
         using (new AssertionScope())
@@ -492,7 +454,7 @@ public class ExperienciaServiceTest : BaseServiceTest, IClassFixture<ServicesFix
         const int id = 1;
 
         // Act
-        var experiencia = await _experienciaService.ObterExperienciaPorCurriculoId(id);
+        var experiencia = await _experienciaService.ObterExperienciaPorUsuarioId(id);
 
         //Assert
         using (new AssertionScope())
@@ -509,14 +471,14 @@ public class ExperienciaServiceTest : BaseServiceTest, IClassFixture<ServicesFix
 
     private void SetupMocks(bool experienciaExistente = false, bool commit = false)
     {
-        var curriculo = new Curriculo
+        var usuario = new Usuario
         {
             Id = 1
         };
         
         var experiencia = new Experiencia
         {
-            CurriculoId = 1,
+            UsuarioId = 1,
             Cargo = "Desenvolvedor de Software",
             Empresa = "Tech Solutions Ltda",
             Descricao = "Desenvolver aplicativos",
@@ -540,12 +502,9 @@ public class ExperienciaServiceTest : BaseServiceTest, IClassFixture<ServicesFix
         var experiencias = experienciaExistente ? new List<Experiencia> { experiencia } : new List<Experiencia>();
 
         _experienciaRepositoryMock
-            .Setup(c => c.ObterExperienciaDoCurriculo(It.IsAny<int>()))
-            .ReturnsAsync((int curriculoId) => experiencias.Where(e => e.CurriculoId == curriculoId).ToList());
+            .Setup(c => c.ObterExperienciaDoUsuario(It.IsAny<int>()))
+            .ReturnsAsync((int usuarioId) => experiencias.Where(e => e.UsuarioId == usuarioId).ToList());
         
-        _curriculoRepositoryMock
-            .Setup(c => c.ObterCurriculoPorId(It.Is<int>(id => id == 1)))
-            .ReturnsAsync(curriculo);
     }
 
     #endregion

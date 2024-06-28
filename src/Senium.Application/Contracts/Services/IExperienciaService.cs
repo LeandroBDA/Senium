@@ -7,5 +7,5 @@ public interface IExperienciaService
     Task<ExperienciaDto?> AdicionarExperiencia(AdicionarExperienciaDto dto);
     Task<ExperienciaDto?> AtualizarExperiencia(int id, AtualizarExperienciaDto dto);
     Task DeletarExperiencia(int id);
-    Task<List<ExperienciaDto>?> ObterExperienciaPorCurriculoId(int curriculoId);
+    Task<List<ExperienciaDto>?> ObterExperienciaPorUsuarioId(int usuarioId);
 }
