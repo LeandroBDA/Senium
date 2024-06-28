@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Senium.Application.Contracts.Services;
 using Senium.Application.Dto.V1.Experiencia;
 using Senium.Application.Notifications;
+using Senium.Core.Extensions;
 using Senium.Domain.Contracts.Repositories;
 using Senium.Domain.Entities;
 
@@ -10,27 +12,23 @@ namespace Senium.Application.Services;
 public class ExperienciaService : BaseService, IExperienciaService
 {
     private readonly IExperienciaRepository _experienciaRepository;
-    private readonly ICurriculoRepository _curriculoRepository;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public ExperienciaService(INotificator notificator, IMapper mapper, IExperienciaRepository experienciaRepository, ICurriculoRepository curriculoRepository) 
+    public ExperienciaService(INotificator notificator,
+        IMapper mapper,
+        IExperienciaRepository experienciaRepository,
+        IHttpContextAccessor httpContextAccessor) 
         : base(notificator, mapper)
     {
         _experienciaRepository = experienciaRepository;
-        _curriculoRepository = curriculoRepository;
+        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<ExperienciaDto?> AdicionarExperiencia(AdicionarExperienciaDto dto)
     {
-        var curriculo = await _curriculoRepository.ObterCurriculoPorId(dto.CurriculoId);
-        if (curriculo == null)
-        {
-            Notificator.Handle("Currículo não encontrado.");
-            return null;
-        }
-
         var experiencia = Mapper.Map<Experiencia>(dto);
-        experiencia.CurriculoId = curriculo.Id;
-
+        experiencia.UsuarioId = _httpContextAccessor.ObterUsuarioId() ?? 0;
+        
         if (!await Validar(experiencia))
         {
             return null;
@@ -97,11 +95,11 @@ public class ExperienciaService : BaseService, IExperienciaService
         }
     }
 
-    public async Task<List<ExperienciaDto>?> ObterExperienciaPorCurriculoId(int curriculoId)
+    public async Task<List<ExperienciaDto>?> ObterExperienciaPorUsuarioId(int usuarioId)
     {
-        var experiencias = await _experienciaRepository.ObterExperienciaDoCurriculo(curriculoId);
+        var experiencias = await _experienciaRepository.ObterExperienciaDoUsuario(usuarioId);
 
-        if (experiencias != null && experiencias.Any()) 
+        if (experiencias.Any()) 
             return Mapper.Map<List<ExperienciaDto>>(experiencias);
     
         Notificator.HandleNotFoundResource(); 
@@ -120,7 +118,7 @@ public class ExperienciaService : BaseService, IExperienciaService
             a.Cargo == experiencia.Cargo
             && a.Empresa == experiencia.Empresa
             && a.Descricao == experiencia.Descricao
-            && a.CurriculoId == experiencia.CurriculoId);
+            && a.UsuarioId == experiencia.UsuarioId);
 
         if (experienciaExistente != null)
         {

@@ -32,11 +32,11 @@ public class ExperienciaRepository : Repository<Experiencia>, IExperienciaReposi
         return await Context.Experiencias.FirstOrDefaultAsync(c => c.Id == id);
     }
 
-    public async Task<List<Experiencia>> ObterExperienciaDoCurriculo(int curriculoId)
+    public async Task<List<Experiencia>> ObterExperienciaDoUsuario(int usuarioId)
     {
         return await Context.Experiencias
-            .Include(x => x.Curriculo)
-            .Where(x => x.CurriculoId == curriculoId)
+            .Include(x => x.Usuario)
+            .Where(x => x.UsuarioId == usuarioId)
             .ToListAsync();
     }
 }

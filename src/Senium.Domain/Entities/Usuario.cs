@@ -14,6 +14,7 @@ public class Usuario : Entity, IAggregateRoot
     public DateTime? ExpiraResetToken { get; set; }
 
     public Curriculo Curriculo { get; set; } = null!;
+    public List<Experiencia> Experiencias { get; set; } = null!;
 
     public override bool Validar(out ValidationResult validationResult)
     {
