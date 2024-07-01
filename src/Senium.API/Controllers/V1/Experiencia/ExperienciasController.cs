@@ -29,7 +29,7 @@ public class ExperienciasController : MainController
     }
     
     [HttpGet("{id}")]
-    [SwaggerOperation(Summary = "Obter experiencia(s) do Usuário", Tags = new[] { " Experiência " })]
+    [SwaggerOperation(Summary = "Obter experiencia(s) do usuario por id do usuário", Tags = new[] { " Experiência " })]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

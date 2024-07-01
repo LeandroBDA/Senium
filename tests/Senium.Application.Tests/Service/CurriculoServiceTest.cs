@@ -38,7 +38,7 @@ public class CurriculoServiceTest : BaseServiceTest, IClassFixture<ServicesFixtu
         const int id = 2;
     
         // Act
-        var curriculoDto = await _curriculoService.ObterCurriculoPorId(id);
+        var curriculoDto = await _curriculoService.ObterCurriculoPorUsuarioId(id);
 
         // Assert
         using (new AssertionScope())
@@ -57,7 +57,7 @@ public class CurriculoServiceTest : BaseServiceTest, IClassFixture<ServicesFixtu
         const int id = 1;
     
         // Act
-        var curriculoDto = await _curriculoService.ObterCurriculoPorId(id);
+        var curriculoDto = await _curriculoService.ObterCurriculoPorUsuarioId(id);
 
         // Assert
         using (new AssertionScope())
@@ -1482,7 +1482,48 @@ public async Task Atualizar_CurriculoComPdf_MaiorQueLimite_NotificacaoErro()
             _curriculoRepositoryMock.Verify(c => c.UnitOfWork.Commit(), Times.Never);
         }
     }
+    #endregion
     
+    #region ObterTodosCurriculo
+
+    [Fact]
+    public async Task ObterTodosCurriculo_SemCurriculos_DeveRetornarNuloEHandleNotFoundResource()
+    {
+        // Arrange
+        SetupMocks(curriculoExistente: false);
+
+        // Act
+        var curriculosDto = await _curriculoService.ObterTodosCurriculo();
+
+        // Assert
+        using (new AssertionScope())
+        {
+            curriculosDto.Should().BeNull();
+            _curriculoRepositoryMock.Verify(c => c.ObterTodosCurriculo(), Times.Once);
+            NotificatorMock.Verify(c => c.HandleNotFoundResource(), Times.Once);
+        }
+    }
+
+    [Fact]
+    public async Task ObterTodosCurriculo_ComCurriculos_DeveRetornarListaDeCurriculos()
+    {
+        // Arrange
+        SetupMocks(curriculoExistente: true);
+
+        // Act
+        var curriculosDto = await _curriculoService.ObterTodosCurriculo();
+
+        // Assert
+        using (new AssertionScope())
+        {
+            curriculosDto.Should().NotBeNull();
+            curriculosDto.Should().NotBeEmpty();
+            curriculosDto.Should().AllBeOfType<CurriculoDto>();
+            _curriculoRepositoryMock.Verify(c => c.ObterTodosCurriculo(), Times.Once);
+            NotificatorMock.Verify(c => c.HandleNotFoundResource(), Times.Never);
+        }
+    }
+
     #endregion
     
     #region SetupMocks
@@ -1512,7 +1553,7 @@ public async Task Atualizar_CurriculoComPdf_MaiorQueLimite_NotificacaoErro()
             Titulo = "Desenvolvedor Full Stack 2",
             AreaDeAtuacao = "Tecnologia da Informação",
             ResumoProfissional = "Profissional com experiência em desenvolvimento web.",
-            Linkedin = "https://www.linkedin.com/in/seuperfil",
+            Linkedin = "https://www.linkedin.com/in/seuperfil/",
             Portfolio = "https://www.portfolio.com",
             Pdf = retornaComPdf ? "https://pdf.com/pdfteste.pdf" : null,
             Photo = retornaComPhoto? "https://photo.com/phototeste.photo" : null,
@@ -1533,7 +1574,7 @@ public async Task Atualizar_CurriculoComPdf_MaiorQueLimite_NotificacaoErro()
             .ReturnsAsync(commit);
     
         _curriculoRepositoryMock
-            .Setup(c => c.ObterCurriculoPorId(It.Is<int>(id => id == 1)))
+            .Setup(c => c.ObterCurriculoPorUsuarioId(It.Is<int>(id => id == 1)))
             .ReturnsAsync(curriculo);
         
         _fileServiceMock
@@ -1545,6 +1586,15 @@ public async Task Atualizar_CurriculoComPdf_MaiorQueLimite_NotificacaoErro()
             .Setup(c => c.UploadPhoto(It.IsAny<IFormFile>(), It.IsAny<EUploadPath>(), It.IsAny<EPathAccess>(),
                 It.IsAny<int>()))
             .ReturnsAsync("path");
+        
+        _fileServiceMock
+            .Setup(c => c.Apagar(It.IsAny<Uri>()))
+            .Returns(true);
+        
+        var curriculoList = curriculoExistente ? new List<Curriculo> { curriculo } : new List<Curriculo>();
+        _curriculoRepositoryMock
+            .Setup(c => c.ObterTodosCurriculo())
+            .ReturnsAsync(curriculoList);
     }
 
 

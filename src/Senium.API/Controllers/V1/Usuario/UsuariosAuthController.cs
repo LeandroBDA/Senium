@@ -30,7 +30,7 @@ public class UsuariosAuthController : BaseController
     }
     
     [HttpPost("esqueceu-senha")]
-    [SwaggerOperation(Summary = "Esqueceu a Senha", Tags = new[] { "Usuário - Auth" })]
+    [SwaggerOperation(Summary = "Esqueceu a senha", Tags = new[] { "Usuário - Auth" })]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -41,7 +41,7 @@ public class UsuariosAuthController : BaseController
     }
     
     [HttpPost("resetar-senha")]
-    [SwaggerOperation(Summary = "Redefinir Senha", Tags = new[] { "Usuário - Auth" })]
+    [SwaggerOperation(Summary = "Redefinir senha", Tags = new[] { "Usuário - Auth" })]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

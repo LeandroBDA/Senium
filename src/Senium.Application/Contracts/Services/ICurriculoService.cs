@@ -4,7 +4,8 @@ namespace Senium.Application.Contracts.Services;
 
 public interface ICurriculoService
 {
-    Task<CurriculoDto?> ObterCurriculoPorId(int id);
+    Task<CurriculoDto?> ObterCurriculoPorUsuarioId(int id);
     Task<CurriculoDto?> AdicionarCurriculo(AdicionarCurriculoDto curriculodto);
     Task<CurriculoDto?> AtualizarCurriculo(int id, AtualizarCurriculoDto curriculoDto);
+    Task<List<CurriculoDto>?> ObterTodosCurriculo();
 }

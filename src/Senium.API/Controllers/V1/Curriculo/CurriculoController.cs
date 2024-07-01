@@ -19,7 +19,7 @@ public class CurriculoController : BaseController
     }
 
     [HttpPost]
-    [SwaggerOperation(Summary = "Adicionar Curriculo do Usuário", Tags = new[] { " Curriculo " })]
+    [SwaggerOperation(Summary = "Adicionar curriculo do usuário", Tags = new[] { " Curriculo " })]
     [ProducesResponseType(typeof(CurriculoDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -29,7 +29,7 @@ public class CurriculoController : BaseController
     }
     
     [HttpPut("{id}")]
-    [SwaggerOperation(Summary = "Atualizar Curriculo do Usuário", Tags = new[] { " Curriculo " })]
+    [SwaggerOperation(Summary = "Atualizar curriculo do usuário", Tags = new[] { " Curriculo " })]
     [ProducesResponseType(typeof(CurriculoDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -41,14 +41,26 @@ public class CurriculoController : BaseController
     }
     
     [HttpGet("id/{id:int}")]
-    [SwaggerOperation(Summary = "Obter Curriculo do Usuário por Id", Tags = new[] { " Curriculo " })]
+    [SwaggerOperation(Summary = "Obter curriculo por id do usuário", Tags = new[] { " Curriculo " })]
     [ProducesResponseType(typeof(CurriculoDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> ObterCurriculoPorId(int id)
     {
-        var curriculo = await _curriculoService.ObterCurriculoPorId(id);
+        var curriculo = await _curriculoService.ObterCurriculoPorUsuarioId(id);
+        return OkResponse(curriculo);
+    }
+    
+    [HttpGet]
+    [SwaggerOperation(Summary = "Obter todos os curriculo", Tags = new[] { " Curriculo " })]
+    [ProducesResponseType(typeof(CurriculoDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ObterTodosCurriculo()
+    {
+        var curriculo = await _curriculoService.ObterTodosCurriculo();
         return OkResponse(curriculo);
     }
     

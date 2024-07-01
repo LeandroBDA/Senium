@@ -6,4 +6,5 @@ public class UsuarioDto
     public string Nome { get; set; } = null!;
     public string Email { get; set; } = null!;
     public DateTime DataDeNascimento { get; set; }
+    public DateTime CriadoEm { get; set; }
 }

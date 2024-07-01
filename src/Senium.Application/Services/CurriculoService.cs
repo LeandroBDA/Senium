@@ -23,9 +23,9 @@ public class CurriculoService : BaseService, ICurriculoService
         _fileService = fileService;
     }
     
-    public async Task<CurriculoDto?> ObterCurriculoPorId(int id)
+    public async Task<CurriculoDto?> ObterCurriculoPorUsuarioId(int id)
     {
-        var curriculo = await _curriculoRepository.ObterCurriculoPorId(id);
+        var curriculo = await _curriculoRepository.ObterCurriculoPorUsuarioId(id);
         if (curriculo != null)
         {
             return Mapper.Map<CurriculoDto>(curriculo);
@@ -105,7 +105,7 @@ public class CurriculoService : BaseService, ICurriculoService
             return null;
         }
 
-        var curriculo = await _curriculoRepository.ObterCurriculoPorId(id);
+        var curriculo = await _curriculoRepository.ObterCurriculoPorUsuarioId(id);
         if (curriculo == null)
         {
             Notificator.HandleNotFoundResource();
@@ -159,7 +159,20 @@ public class CurriculoService : BaseService, ICurriculoService
         Notificator.Handle("Não foi possível alterar o currículo");
         return null;
     }
-    
+
+    public async Task<List<CurriculoDto>?> ObterTodosCurriculo()
+    {
+        var curriculos = await _curriculoRepository.ObterTodosCurriculo();
+        if (curriculos == null || !curriculos.Any())
+        {
+            Notificator.HandleNotFoundResource();
+            return null;
+        }
+
+        return Mapper.Map<List<CurriculoDto>>(curriculos);
+    }
+
+
     public async Task<bool> Validar(Curriculo curriculo)
     {
         if (!curriculo.Validar(out var validationResult))
@@ -179,15 +192,15 @@ public class CurriculoService : BaseService, ICurriculoService
         return !Notificator.HasNotification;
     }
     
-    public async Task<bool> ValidarAtualizacao(Curriculo curriculo)
+    public Task<bool> ValidarAtualizacao(Curriculo curriculo)
     {
         if (!curriculo.Validar(out var validationResult))
         {
             Notificator.Handle(validationResult.Errors);
-            return false;
+            return Task.FromResult(false);
         }
 
-        return !Notificator.HasNotification;
+        return Task.FromResult(!Notificator.HasNotification);
     }
     
     private async Task<bool> ManterPdf(IFormFile pdf, Curriculo curriculo)
