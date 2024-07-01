@@ -158,28 +158,95 @@ public class EmpresaServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
 
     #endregion
 
+    #region ObterTodos
+
+    [Fact]
+    public async Task ObterTodasEmpresas_ExistemEmpresas_Sucesso()
+    {
+        // Arrange
+        SetupMocks(empresaExistente: true);
+
+        // Act
+        var empresas = await _empresaService.ObterTodasEmpresas();
+
+        // Assert
+        using (new AssertionScope())
+        {
+            empresas.Should().NotBeNull();
+            empresas.Should().BeOfType<List<EmpresaDto>>();
+            NotificatorMock.Verify(c => c.HandleNotFoundResource(), Times.Never);
+
+            // Verifica se o método do repositório foi chamado uma vez
+            _empresaRepositoryMock.Verify(c => c.ObterTodasEmpresas(), Times.Once);
+        }
+    }
+
+    [Fact]
+    public async Task ObterTodasEmpresas_NaoExistemEmpresas_HandleNotFound()
+    {
+        // Arrange
+        SetupMocks(empresaExistente: false);
+
+        // Act
+        var empresas = await _empresaService.ObterTodasEmpresas();
+
+        // Assert
+        using (new AssertionScope())
+        {
+            empresas.Should().BeNull();
+            NotificatorMock.Verify(c => c.HandleNotFoundResource(), Times.Once);
+
+            // Verifica se o método do repositório foi chamado uma vez
+            _empresaRepositoryMock.Verify(c => c.ObterTodasEmpresas(), Times.Once);
+        }
+    }
+    
+    #endregion
     
     #region SetupMocks
-    
+
     private void SetupMocks(bool empresaExistente = false, bool commit = false)
     {
-        var empresa = new Empresa
-        {
-            Nome = "UsuarioTeste",
-            Email = "emailempresa@teste.com",
-            Telefone = "(21)912345678",
-            NomeDaEmpresa = "EmpresaTeste"
-        };
-    
+        List<Empresa>? empresas = empresaExistente
+            ? new List<Empresa>
+            {
+                new Empresa
+                {
+                    Id = 1,
+                    Nome = "Empresa A",
+                    Email = "email.empresa@teste.com",
+                    Telefone = "(11) 98765-4321",
+                    NomeDaEmpresa = "Empresa A Ltda"
+                },
+                new Empresa
+                {
+                    Id = 2,
+                    Nome = "Empresa B",
+                    Email = "email.empresa.b@teste.com",
+                    Telefone = "(22) 98765-4321",
+                    NomeDaEmpresa = "Empresa B S.A."
+                }
+            }
+            : null;
 
-        _empresaRepositoryMock
-            .Setup(c => c.FirstOrDefault(It.IsAny<Expression<Func<Empresa, bool>>>()))
-            .ReturnsAsync(empresaExistente ? empresa : null);
+
+        if (empresas != null)
+        {
+            _empresaRepositoryMock
+                .Setup(c => c.FirstOrDefault(It.IsAny<Expression<Func<Empresa, bool>>>()))
+                .ReturnsAsync(empresaExistente ? empresas.FirstOrDefault() : null);
+
+            _empresaRepositoryMock
+                .Setup(c => c.ObterTodasEmpresas())
+                .ReturnsAsync(empresas);
+        }
 
         _empresaRepositoryMock
             .Setup(c => c.UnitOfWork.Commit())
             .ReturnsAsync(commit);
     }
 
+
     #endregion
+    
 }

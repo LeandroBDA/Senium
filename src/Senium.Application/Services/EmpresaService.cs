@@ -38,6 +38,18 @@ public class EmpresaService : BaseService, IEmpresaService
         Notificator.Handle("Não foi possível cadastrar a empresa");
         return null;
     }
+    public async Task<List<EmpresaDto>?> ObterTodasEmpresas()
+    {
+        var empresa = await _empresaRepository.ObterTodasEmpresas();
+       
+        if (empresa != null)
+        {
+            return Mapper.Map<List<EmpresaDto>>(empresa);
+        }
+        
+        Notificator.HandleNotFoundResource();
+        return null;
+    }
 
     private async Task<bool> Validar(Empresa empresa)
     {
@@ -54,7 +66,7 @@ public class EmpresaService : BaseService, IEmpresaService
         
         if (usuarioExistente != null)
         {
-            Notificator.Handle($"Já existe uma emperesa cadastrada com essas indentificações!");
+            Notificator.Handle($"Já existe uma empresa cadastrada com essas indentificações!");
         }
 
         return !Notificator.HasNotification;
