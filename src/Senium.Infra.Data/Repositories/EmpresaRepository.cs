@@ -1,4 +1,5 @@
-﻿using Senium.Domain.Contracts.Repositories;
+﻿using Microsoft.EntityFrameworkCore;
+using Senium.Domain.Contracts.Repositories;
 using Senium.Domain.Entities;
 using Senium.Infra.Data.Abstractions;
 using Senium.Infra.Data.Context;
@@ -15,4 +16,10 @@ public class EmpresaRepository : Repository<Empresa>, IEmpresaRepository
     {
         Context.Empresas.Add(empresa);
     }
+    
+    public async Task<List<Empresa>> ObterTodasEmpresas()
+    {
+        return await Context.Empresas.AsNoTrackingWithIdentityResolution().ToListAsync();
+    }
+    
 }

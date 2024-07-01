@@ -11,8 +11,7 @@ namespace Senium.API.Controllers.V1.Usuario;
 [Route("v{version:apiVersion}/[controller]")]
 public class UsuariosAuthController : BaseController
 {
-    private readonly IUsuarioAuthService _usuarioAuthService;
-    
+    private readonly IUsuarioAuthService _usuarioAuthService; 
     public UsuariosAuthController(INotificator notificator, IUsuarioAuthService usuarioAuthService) : base(notificator)
     {
         _usuarioAuthService = usuarioAuthService;
