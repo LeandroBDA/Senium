@@ -3,6 +3,7 @@ namespace Senium.Application.Dto.V1.Curriculo;
 public class CurriculoDto
 {
     public int Id { get; set; }
+    public int UsuarioId { get; set; }
     public string Telefone { get; set; } = null!;
     public string EstadoCivil { get; set; } = null!;
     public string Genero { get; set; } = null!;
@@ -38,4 +39,5 @@ public class CurriculoDto
     public bool Presencial { get; set; }
     public bool Remoto { get; set; }
     public bool Hibrido { get; set; }
+    public DateTime CriadoEm { get; set; }
 }

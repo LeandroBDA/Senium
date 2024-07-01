@@ -19,7 +19,7 @@ public class EmpresaController : MainController
     }
 
     [HttpPost]
-    [SwaggerOperation(Summary = "Cadastro de Empresa", Tags = new[] { " Empresa " })]
+    [SwaggerOperation(Summary = "Cadastro de empresa", Tags = new[] { " Empresa " })]
     [ProducesResponseType(typeof(EmpresaDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

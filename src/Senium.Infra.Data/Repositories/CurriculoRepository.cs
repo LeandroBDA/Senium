@@ -12,10 +12,10 @@ public class CurriculoRepository : Repository<Curriculo>, ICurriculoRepository
     {
     }
     
-    public async Task<Curriculo?> ObterCurriculoPorId(int id)
+    public async Task<Curriculo?> ObterCurriculoPorUsuarioId(int id)
     {
         return await Context.Curriculos.AsNoTrackingWithIdentityResolution()
-            .FirstOrDefaultAsync(c => c.Id == id);
+            .FirstOrDefaultAsync(c => c.UsuarioId == id);
     }
 
     public void AdicionarCurriculo(Curriculo curriculo)
@@ -31,5 +31,10 @@ public class CurriculoRepository : Repository<Curriculo>, ICurriculoRepository
     public void RemoverCurriculo(Curriculo curriculo)
     {
         Context.Curriculos.Remove(curriculo);
+    }
+    
+    public async Task<List<Curriculo>> ObterTodosCurriculo()
+    {
+        return await Context.Curriculos.AsNoTrackingWithIdentityResolution().ToListAsync();
     }
 }
