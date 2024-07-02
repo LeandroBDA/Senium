@@ -220,13 +220,13 @@ public class AdministradorServiceTest : BaseServiceTest, IClassFixture<ServicesF
     }
     
     #endregion
-
+    
     #region Atualizar
 
     [Fact]
-    public async Task Atualizar_IdsNaoConferem_Handle()
+    public async Task Atualizar_IdsNaoConfere_Handle()
     {
-        //Arrange
+        // Arrange
         SetupMocks();
         
         const int id = 2;
@@ -235,10 +235,10 @@ public class AdministradorServiceTest : BaseServiceTest, IClassFixture<ServicesF
             Id = 1
         };
         
-        //Act
+        // Act
         var administrador = await _administradorService.AtualizarAdm(id, dto);
 
-        //Assert
+        // Assert
         using (new AssertionScope())
         {
             administrador.Should().BeNull();
@@ -256,21 +256,24 @@ public class AdministradorServiceTest : BaseServiceTest, IClassFixture<ServicesF
     }
 
     [Fact]
-    public async Task Atualizar_AdminstradorInexistente_HandleNotFoundResourse()
+    public async Task Atualizar_AdministradorInexistente_HandleNotFoundResource()
     {
-        //Arrange
-        SetupMocks();
+        // Arrange
+        SetupMocks(possuiAdministrador: false);
         
         const int id = 2;
         var dto = new AtualizarAdministradorDto
         {
-            Id = 2
+            Id = 2,
+            Email = "email@teste.com",
+            Nome = "AdministradorTeste",
+            Senha = "SenhaTeste123!"
         };
         
-        //Act
+        // Act
         var administrador = await _administradorService.AtualizarAdm(id, dto);
 
-        //Assert
+        // Assert
         using (new AssertionScope())
         {
             administrador.Should().BeNull();
@@ -279,8 +282,8 @@ public class AdministradorServiceTest : BaseServiceTest, IClassFixture<ServicesF
                 .Verify(c => c.Handle(It.IsAny<string>()), Times.Never);
             NotificatorMock
                 .Verify(c => c.Handle(It.IsAny<List<ValidationFailure>>()), Times.Never);
-            NotificatorMock.
-                Verify(c => c.HandleNotFoundResource(), Times.Once);
+            NotificatorMock
+                .Verify(c => c.HandleNotFoundResource(), Times.Once);
             
             _administradorRepositoryMock
                 .Verify(c => c.AtualizarAdm(It.IsAny<Administrador>()), Times.Never);
@@ -288,12 +291,12 @@ public class AdministradorServiceTest : BaseServiceTest, IClassFixture<ServicesF
                 .Verify(c => c.UnitOfWork.Commit(), Times.Never);
         }
     }
-    
+
     [Fact]
-    public async Task Atualizar_AdministradorInvalido_HandleErros()
+    public async Task Atualizar_NenhumaAlteracao_Handle()
     {
-        //Arrange
-        SetupMocks(true);
+        // Arrange
+        SetupMocks();
         
         const int id = 1;
         var dto = new AtualizarAdministradorDto
@@ -301,10 +304,43 @@ public class AdministradorServiceTest : BaseServiceTest, IClassFixture<ServicesF
             Id = 1
         };
         
-        //Act
+        // Act
         var administrador = await _administradorService.AtualizarAdm(id, dto);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            administrador.Should().BeNull();
+            
+            NotificatorMock
+                .Verify(c => c.Handle("Nenhuma alteração a ser feita"), Times.Once);
+            NotificatorMock
+                .Verify(c => c.Handle(It.IsAny<List<ValidationFailure>>()), Times.Never);
+            
+            _administradorRepositoryMock
+                .Verify(c => c.AtualizarAdm(It.IsAny<Administrador>()), Times.Never);
+            _administradorRepositoryMock
+                .Verify(c => c.UnitOfWork.Commit(), Times.Never);
+        }
+    }
+
+    [Fact]
+    public async Task Atualizar_AdministradorInvalid_HandleErros()
+    {
+        // Arrange
+        SetupMocks(administradorExistente: true);
         
-        //Assert
+        const int id = 1;
+        var dto = new AtualizarAdministradorDto
+        {
+            Id = 1,
+            Email = "email@invalido"
+        };
+        
+        // Act
+        var administrador = await _administradorService.AtualizarAdm(id, dto);
+
+        // Assert
         using (new AssertionScope())
         {
             administrador.Should().BeNull();
@@ -322,9 +358,9 @@ public class AdministradorServiceTest : BaseServiceTest, IClassFixture<ServicesF
     }
 
     [Fact]
-    public async Task Atualizar_ErroAoComitar_Handle()
+    public async Task Atualizar_ErroAoComita_Handle()
     {
-        //Arrange
+        // Arrange
         SetupMocks();
         
         const int id = 1;
@@ -336,10 +372,10 @@ public class AdministradorServiceTest : BaseServiceTest, IClassFixture<ServicesF
             Senha = "SenhaTeste123!"
         };
         
-        //Act
+        // Act
         var administrador = await _administradorService.AtualizarAdm(id, dto);
         
-        //Assert
+        // Assert
         using (new AssertionScope())
         {
             administrador.Should().BeNull();
@@ -357,9 +393,9 @@ public class AdministradorServiceTest : BaseServiceTest, IClassFixture<ServicesF
     }
 
     [Fact]
-    public async Task Atualizar_SucessoAoComitar_AdministradorDto()
+    public async Task Atualizar_SucessoAoComita_AdministradorDto()
     {
-        //Arrange
+        // Arrange
         SetupMocks(commit: true);
 
         const int id = 1;
@@ -371,10 +407,10 @@ public class AdministradorServiceTest : BaseServiceTest, IClassFixture<ServicesF
             Senha = "SenhaTeste123!"
         };
         
-        //Act
+        // Act
         var administrador = await _administradorService.AtualizarAdm(id, dto);
         
-        //Assert
+        // Assert
         using (new AssertionScope())
         {
             administrador.Should().NotBeNull();
@@ -390,7 +426,6 @@ public class AdministradorServiceTest : BaseServiceTest, IClassFixture<ServicesF
                 .Verify(c => c.UnitOfWork.Commit(), Times.Once);
         }
     }
-
 
     #endregion
 
