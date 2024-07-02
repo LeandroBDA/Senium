@@ -2,6 +2,7 @@
 
 public class ExperienciaDto
 {
+    public int Id { get; set; }
     public string Cargo { get; set; } = null!;
     public string Empresa { get; set; } = null!;
     public string Descricao { get; set; } = null!;
