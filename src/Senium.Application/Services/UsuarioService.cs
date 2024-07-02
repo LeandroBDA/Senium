@@ -5,6 +5,7 @@ using Senium.Application.Dto.V1.Usuario;
 using Senium.Application.Notifications;
 using Senium.Domain.Contracts.Repositories;
 using Senium.Domain.Entities;
+using Senium.Domain.Validations;
 
 namespace Senium.Application.Services;
 
@@ -45,6 +46,37 @@ public class UsuarioService : BaseService, IUsuarioService
             return Mapper.Map<UsuarioDto>(usuario);
         }
         Notificator.Handle("Não foi possível cadastrar o usuário");
+        return null;
+    }
+
+    public async Task<UsuarioDto?> AtualizarUsuario(int id, AtualizarUsuarioDto dto)
+    {
+        if (id != dto.Id)
+        {
+            Notificator.Handle("Ids não conferem");
+            return null;
+        }
+
+        var usuario = await _usuarioRepository.ObterUsuarioPorId(id);
+        if (usuario == null)
+        {
+           Notificator.HandleNotFoundResource();
+           return null;
+        }
+
+        Mapper.Map(dto, usuario);
+        if (!await ValidarAtualizacao(usuario))
+        {
+            return null;
+        }
+        
+        _usuarioRepository.AtualizarUsuario(usuario);
+        if (await _usuarioRepository.UnitOfWork.Commit())
+        {
+            return Mapper.Map<UsuarioDto>(usuario);
+        }
+        
+        Notificator.Handle("Não foi possivel atualizar o usuário");
         return null;
     }
 
@@ -92,6 +124,26 @@ public class UsuarioService : BaseService, IUsuarioService
             Notificator.Handle($"Já existe um usuario cadastrado com esse e-mail!");
         }
 
+        return !Notificator.HasNotification;
+    }
+
+    private async Task<bool> ValidarAtualizacao(Usuario usuario)
+    {
+        var validator = new AtualizarUsuarioValidation();
+        var validationResult = validator.Validate(usuario);
+
+        if (!validationResult.IsValid)
+        {
+            Notificator.Handle(validationResult.Errors);
+        }
+        
+        var usuarioExistente = await _usuarioRepository.FirstOrDefault(a => a.Email == usuario.Email && a.Id != usuario.Id);
+
+        if (usuarioExistente != null)
+        {
+            Notificator.Handle("Já existe um usuario cadastrado com esse e-mail!");
+        }
+        
         return !Notificator.HasNotification;
     }
 }

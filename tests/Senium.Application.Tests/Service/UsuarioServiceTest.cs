@@ -1,6 +1,7 @@
 ﻿using System.Linq.Expressions;
 using FluentAssertions;
 using FluentAssertions.Execution;
+using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Identity;
 using Moq;
@@ -296,6 +297,84 @@ public class UsuarioServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
 
 
     #endregion
+    
+    #region Atualizar
+
+    [Fact]
+    public async Task AtualizarUsuario_IdNaoConfere_HandleErro()
+    {
+        // Arrange
+        SetupMocks();
+
+        var dto = new AtualizarUsuarioDto
+        {
+            Id = 2,
+            Email = "email@teste.com",
+            Nome = "UsuarioTesteAtualizado"
+        };
+
+        // Act
+        var usuario = await _usuarioService.AtualizarUsuario(1, dto);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            usuario.Should().BeNull();
+            NotificatorMock.Verify(c => c.Handle("Ids não conferem"), Times.Once);
+        }
+    }
+
+    [Fact]
+    public async Task AtualizarUsuario_UsuarioNaoEncontrado_HandleNotFoundResource()
+    {
+        // Arrange
+        SetupMocks();
+
+        var dto = new AtualizarUsuarioDto
+        {
+            Id = 1,
+            Email = "email@teste.com",
+            Nome = "UsuarioTesteAtualizado"
+        };
+
+        _usuarioRepositoryMock.Setup(c => c.ObterUsuarioPorId(It.IsAny<int>())).ReturnsAsync((Usuario?)null);
+
+        // Act
+        var usuario = await _usuarioService.AtualizarUsuario(1, dto);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            usuario.Should().BeNull();
+            NotificatorMock.Verify(c => c.HandleNotFoundResource(), Times.Once);
+        }
+    }
+
+    [Fact]
+    public async Task AtualizarUsuario_UsuarioExistente_Handle()
+    {
+        // Arrange
+        SetupMocks(usuarioExistente: true);
+
+        var dto = new AtualizarUsuarioDto
+        {
+            Id = 1,
+            Email = "email@teste.com",
+            Nome = "UsuarioTesteAtualizado"
+        };
+
+        // Act
+        var usuario = await _usuarioService.AtualizarUsuario(1, dto);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            usuario.Should().BeNull();
+            NotificatorMock.Verify(c => c.Handle("Já existe um usuario cadastrado com esse e-mail!"), Times.Once);
+        }
+    }
+
+    #endregion
 
     #region ObterPorId
 
@@ -306,7 +385,7 @@ public class UsuarioServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
         SetupMocks();
 
         const int id = 2;
-    
+
         // Act
         var usuarioDto = await _usuarioService.ObterUsuarioPorId(id);
 
@@ -325,7 +404,7 @@ public class UsuarioServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
         SetupMocks(usuarioExistente: true);
 
         const int id = 1;
-    
+
         // Act
         var usuarioDto = await _usuarioService.ObterUsuarioPorId(id);
 
@@ -335,6 +414,63 @@ public class UsuarioServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
             usuarioDto.Should().NotBeNull();
             usuarioDto.Should().BeOfType<UsuarioDto>();
             NotificatorMock.Verify(c => c.HandleNotFoundResource(), Times.Never);
+        }
+    }
+
+    [Fact]
+    public async Task AtualizarUsuario_CommitBemSucedido_RetornaUsuarioDto()
+    {
+        // Arrange
+        SetupMocks(commit: true);
+
+        var dto = new AtualizarUsuarioDto
+        {
+            Id = 1,
+            Email = "email@teste.com",
+            Nome = "UsuarioTesteAtualizado",
+            DataDeNascimento = DateTime.Parse("06/03/1979")
+        };
+
+        // Act
+        var usuario = await _usuarioService.AtualizarUsuario(1, dto);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            NotificatorMock
+                .Verify(c => c.Handle(It.IsAny<List<ValidationFailure>>()), Times.Never);
+            NotificatorMock
+                .Verify(c => c.Handle(It.IsAny<string>()), Times.Never);
+
+            _usuarioRepositoryMock
+                .Verify(c => c.AtualizarUsuario(It.IsAny<Usuario>()), Times.Once);
+            _usuarioRepositoryMock
+                .Verify(c => c.UnitOfWork.Commit(), Times.Once);
+        }
+    }
+
+    [Fact]
+    public async Task AtualizarUsuario_CommitFalha_HandleErro()
+    {
+        // Arrange
+        SetupMocks(commit: false);
+
+        var dto = new AtualizarUsuarioDto
+        {
+            Id = 1,
+            Email = "email@teste.com",
+            Nome = "UsuarioTesteAtualizado",
+            DataDeNascimento = DateTime.Parse("06/03/1979")
+        };
+
+        // Act
+        var usuario = await _usuarioService.AtualizarUsuario(1, dto);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            usuario.Should().BeNull();
+            NotificatorMock.Verify(c => c.Handle("Não foi possivel atualizar o usuário"), Times.Once);
         }
     }
 
@@ -412,12 +548,20 @@ public class UsuarioServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
     {
         var usuario = new Usuario
         {
+            Id = 1,
             Email = "email@teste.com",
             Nome = "UsuarioTeste",
             Senha = "SenhaTeste123!",
             DataDeNascimento = DateTime.Parse("06/03/1979")
         };
-    
+
+        _usuarioRepositoryMock
+            .Setup(c => c.ObterUsuarioPorId(It.IsAny<int>()))
+            .ReturnsAsync((int id) => id == usuario.Id ? usuario : null);
+
+        _usuarioRepositoryMock
+            .Setup(c => c.ObterUsuarioPorEmail(It.IsAny<string>()))
+            .ReturnsAsync((string email) => email == usuario.Email ? usuario : null);
 
         _usuarioRepositoryMock
             .Setup(c => c.FirstOrDefault(It.IsAny<Expression<Func<Usuario, bool>>>()))
@@ -426,24 +570,20 @@ public class UsuarioServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
         _usuarioRepositoryMock
             .Setup(c => c.UnitOfWork.Commit())
             .ReturnsAsync(commit);
-        
+
         _usuarioRepositoryMock
-            .Setup(c => c.ObterUsuarioPorId(It.Is<int>(id => id == 1)))
-            .ReturnsAsync(usuario);
-        
-        
-        _usuarioRepositoryMock
-            .Setup(c => c.ObterUsuarioPorEmail(It.Is<string>(email => email == "email@teste.com")))
-            .ReturnsAsync(usuario);
-        
-        _usuarioRepositoryMock
-            .Setup(c => c.ObterTodosUsuarios())!
+            .Setup(c => c.ObterTodosUsuarios())
             .ReturnsAsync(possuiUsuario ? new List<Usuario> { usuario } : null);
-    
+
         _passwordHasherMock
             .Setup(c => c.HashPassword(It.IsAny<Usuario>(), It.IsAny<string>()))
             .Returns("senha-hasheada");
+
+        _passwordHasherMock
+            .Setup(c => c.VerifyHashedPassword(It.IsAny<Usuario>(), It.IsAny<string>(), It.IsAny<string>()))
+            .Returns(PasswordVerificationResult.Success);
     }
+
     
 
     #endregion

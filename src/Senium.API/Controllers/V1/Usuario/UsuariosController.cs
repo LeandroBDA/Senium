@@ -27,6 +27,18 @@ public class UsuariosController : MainController
     {
         return CreatedResponse("", await _usuarioService.AdicionarUsuario(dto));
     }
+
+    [Authorize]
+    [HttpPut("{id}")]
+    [SwaggerOperation(Summary = "Atualizar usuário", Tags = new[] { " Usuário " })]
+    [ProducesResponseType(typeof(UsuarioDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Atualizar( int id, [FromBody] AtualizarUsuarioDto dto)
+    {
+        return OkResponse(await _usuarioService.AtualizarUsuario(id, dto));
+    }
     
     [Authorize]
     [HttpGet("{id}")]
