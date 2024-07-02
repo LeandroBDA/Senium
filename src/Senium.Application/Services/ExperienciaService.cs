@@ -118,7 +118,10 @@ public class ExperienciaService : BaseService, IExperienciaService
             a.Cargo == experiencia.Cargo
             && a.Empresa == experiencia.Empresa
             && a.Descricao == experiencia.Descricao
-            && a.UsuarioId == experiencia.UsuarioId);
+            && a.UsuarioId == experiencia.UsuarioId
+            && a.DataDeInicio == experiencia.DataDeInicio
+            && a.DataDeTermino == experiencia.DataDeTermino
+            && a.TrabalhoAtual == experiencia.TrabalhoAtual);
 
         if (experienciaExistente != null)
         {
