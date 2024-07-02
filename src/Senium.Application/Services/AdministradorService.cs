@@ -5,6 +5,7 @@ using Senium.Application.Dto.V1.Administrador;
 using Senium.Application.Notifications;
 using Senium.Domain.Contracts.Repositories;
 using Senium.Domain.Entities;
+using Senium.Domain.Validations;
 
 namespace Senium.Application.Services;
 
@@ -51,32 +52,45 @@ public class AdministradorService : BaseService, IAdministradorService
             return null;
         }
 
+        if (string.IsNullOrEmpty(dto.Nome) & string.IsNullOrEmpty(dto.Email) & string.IsNullOrEmpty(dto.Senha))
+        {
+            Notificator.Handle("Nenhuma alteração a ser feita");
+            return null;
+        }
+
         var administrador = await _administradorRepository.ObterAdmPorId(id);
         if (administrador == null)
         {
             Notificator.HandleNotFoundResource();
             return null;
         }
-
+        
+        var nomeAtual = administrador.Nome;
+        var emailAtual = administrador.Email;
+        var senhaAtual = administrador.Senha;
+        
+        dto.Nome = !string.IsNullOrEmpty(dto.Nome) ? dto.Nome : nomeAtual;
+        dto.Email = !string.IsNullOrEmpty(dto.Email) ? dto.Email : emailAtual;
+        
         Mapper.Map(dto, administrador);
         
-        if (!await Validar(administrador))
+        if (!await ValidarAtualizacao(administrador))
         {
             return null;
         }
         
-        administrador.Senha = _passwordHasher.HashPassword(administrador, administrador.Senha);
+        administrador.Senha = !string.IsNullOrEmpty(dto.Senha) ? _passwordHasher.HashPassword(administrador, dto.Senha) : senhaAtual;
         _administradorRepository.AtualizarAdm(administrador);
-        
+
         if (await _administradorRepository.UnitOfWork.Commit())
         {
             return Mapper.Map<AdministradorDto>(administrador);
         }
-        
+
         Notificator.Handle("Não foi possível atualizar o administrador");
         return null;
-
     }
+
 
     public async Task RemoverAdm(int id)
     {
@@ -121,6 +135,27 @@ public class AdministradorService : BaseService, IAdministradorService
         if (administradorExistente != null)
         {
             Notificator.Handle($"Já existe um administrador cadastrado cadastrado com essas identificações!");
+        }
+
+        return !Notificator.HasNotification;
+    }
+    
+    private async Task<bool> ValidarAtualizacao(Administrador dto)
+    {
+        var validator = new AtualizarAdministradorValidator();
+        var validationResult = validator.Validate(dto);
+
+        if (!validationResult.IsValid)
+        {
+            Notificator.Handle(validationResult.Errors);
+        }
+
+        var administradorExistente = await _administradorRepository.FirstOrDefault(a => 
+            a.Email == dto.Email && a.Id != dto.Id);
+    
+        if (administradorExistente != null)
+        {
+            Notificator.Handle("Já existe um administrador cadastrado com esse e-mail!");
         }
 
         return !Notificator.HasNotification;
