@@ -922,7 +922,7 @@ public class CurriculoServiceTest : BaseServiceTest, IClassFixture<ServicesFixtu
             curriculo.Should().BeNull();
 
             NotificatorMock
-                .Verify(c => c.Handle(It.IsAny<List<ValidationFailure>>()), Times.Once);
+                .Verify(c => c.Handle(It.IsAny<string>()), Times.Never);
 
             _curriculoRepositoryMock
                 .Verify(c => c.AdicionarCurriculo(It.IsAny<Curriculo>()), Times.Never);

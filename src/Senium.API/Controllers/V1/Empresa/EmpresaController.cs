@@ -39,4 +39,16 @@ public class EmpresaController : MainController
     {
         return OkResponse(await _empresaService.ObterTodasEmpresas());
     }
+    
+    [HttpPut("{Id}")]
+    [SwaggerOperation(Summary = "Atualizar empresa cadastrada", Tags = new[] { " Empresa " })]
+    [ProducesResponseType(typeof(EmpresaDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Atualizar(int id, [FromForm] AtualizarEmpresaDto dto)
+    {
+        var empresa = await _empresaService.AtualizarEmpresa(id, dto);
+        return OkResponse(empresa);
+    }
 }

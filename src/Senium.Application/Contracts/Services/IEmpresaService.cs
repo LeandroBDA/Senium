@@ -6,4 +6,5 @@ public interface IEmpresaService
 {
     Task<EmpresaDto?> AdicionarEmpresa(AdicionarEmpresaDto dto);
     Task<List<EmpresaDto>?> ObterTodasEmpresas();
+    Task<EmpresaDto?> AtualizarEmpresa(int id, AtualizarEmpresaDto empresaDto);
 }
