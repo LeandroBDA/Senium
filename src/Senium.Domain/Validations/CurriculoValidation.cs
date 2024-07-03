@@ -97,11 +97,14 @@ public class CurriculoValidation : AbstractValidator<Curriculo>
             .MaximumLength(300).WithMessage("O campo Resumo profissional deve conter 300 caracteres.");
         
         RuleFor(c => c.Linkedin)
-            .Must(SerUmaUrlValida).WithMessage("Por favor, insira uma URL válida.")
-            .Must(SerUmaUrlValidaDoLinkedIn).WithMessage("Por favor, insira um link válido do LinkedIn.");
+            .NotEmpty().When(c => !string.IsNullOrEmpty(c.Linkedin)).WithMessage("Por favor, insira uma URL válida.")
+            .Must(SerUmaUrlValida).When(c => !string.IsNullOrEmpty(c.Linkedin)).WithMessage("Por favor, insira uma URL válida.")
+            .Must(SerUmaUrlValidaDoLinkedIn).When(c => !string.IsNullOrEmpty(c.Linkedin)).WithMessage("Por favor, insira um link válido do LinkedIn.");
 
         RuleFor(c => c.Portfolio)
-            .Must(SerUmaUrlValida).WithMessage("Por favor, insira uma URL válida.");
+            .NotEmpty().When(c => !string.IsNullOrEmpty(c.Portfolio)).WithMessage("Por favor, insira uma URL válida.")
+            .Must(SerUmaUrlValida).When(c => !string.IsNullOrEmpty(c.Portfolio)).WithMessage("Por favor, insira uma URL válida.");
+
         
         RuleFor(curriculo => curriculo)
             .Must(c => c.Clt || c.Pj || c.Temporario)
@@ -113,19 +116,30 @@ public class CurriculoValidation : AbstractValidator<Curriculo>
     }
     
     private bool SerUmaUrlValida(string url)
+{
+    if (string.IsNullOrEmpty(url))
     {
-        if (Uri.TryCreate(url, UriKind.Absolute, out Uri? resultado))
-        {
-            return resultado.Scheme == Uri.UriSchemeHttp || resultado.Scheme == Uri.UriSchemeHttps;
-        }
         return false;
     }
 
-    private bool SerUmaUrlValidaDoLinkedIn(string url)
+    if (Uri.TryCreate(url, UriKind.Absolute, out Uri? resultado))
     {
-        var regex = new Regex(@"^https:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9-]+\/?$");
-        return regex.IsMatch(url);
+        return resultado.Scheme == Uri.UriSchemeHttp || resultado.Scheme == Uri.UriSchemeHttps;
     }
+
+    return false;
+}
+
+private bool SerUmaUrlValidaDoLinkedIn(string url)
+{
+    if (string.IsNullOrEmpty(url))
+    {
+        return false;
+    }
+
+    var regex = new Regex(@"^https:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9-]+\/?$");
+    return regex.IsMatch(url);
+}
     
     private bool SerUmGrauDeFormacaoValido(string grauDeFormacao)
     {
