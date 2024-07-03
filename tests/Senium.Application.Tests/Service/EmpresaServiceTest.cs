@@ -248,5 +248,175 @@ public class EmpresaServiceTest : BaseServiceTest, IClassFixture<ServicesFixture
 
 
     #endregion
+
+    #region AtualizarEmpresa
+
+    [Fact]
+    public async Task Atualizar_NomesNaoConferem_Handle()
+    {
+        //Arrange
+        SetupMocks();
+        const int id = 1;
+        var dto = new AtualizarEmpresaDto
+        {
+            Id = 2
+        };
+        
+        //Act
+        var empresa = await _empresaService.AtualizarEmpresa(id, dto);
+
+        //Assert
+        using (new AssertionScope())
+        {
+            empresa.Should().BeNull();
+            
+          
+            NotificatorMock
+                .Verify(c => c.Handle(It.IsAny<List<ValidationFailure>>()), Times.Never);
+            
+            _empresaRepositoryMock
+                .Verify(c => c.AtualizarEmpresa(It.IsAny<Empresa>()), Times.Never);
+            _empresaRepositoryMock
+                .Verify(c => c.UnitOfWork.Commit(), Times.Never);
+        }
+    }
+
+    [Fact]
+    public async Task Atualizar_EmpresaInexistente_HandleNotFoundResourse()
+    {
+        //Arrange
+        SetupMocks();
+        
+        const int id = 2;
+        var dto = new AtualizarEmpresaDto
+        {
+            Id = 2
+        };
+        
+        //Act
+        var empresa = await _empresaService.AtualizarEmpresa(id, dto);
+
+
+        //Assert
+        using (new AssertionScope())
+        {
+            empresa.Should().BeNull();
+            
+            NotificatorMock
+                .Verify(c => c.Handle(It.IsAny<string>()), Times.Never);
+            NotificatorMock
+                .Verify(c => c.Handle(It.IsAny<List<ValidationFailure>>()), Times.Never);
+            NotificatorMock.
+                Verify(c => c.HandleNotFoundResource(), Times.Once);
+            
+             
+            _empresaRepositoryMock
+                .Verify(c => c.AtualizarEmpresa(It.IsAny<Empresa>()), Times.Never);
+            _empresaRepositoryMock
+                .Verify(c => c.UnitOfWork.Commit(), Times.Never);
+        }
+    }
+    
+    [Fact]
+    public async Task Atualizar_ErroAoComitar_Handle()
+    {
+        //Arrange
+        SetupMocks();
+        
+        const int id = 1;
+        var dto = new AtualizarEmpresaDto
+        {
+            Id = 1,
+            Nome = "Embraer",
+            Email = "Embraer@gmail.com",
+            NomeDaEmpresa = "Embraer",
+            Telefone = "85 988888888",
+        };
+        
+        //Act
+        var empresa = await _empresaService.AtualizarEmpresa(id, dto);
+        
+        //Assert
+        using (new AssertionScope())
+        {
+            empresa.Should().BeNull();
+            
+           
+            NotificatorMock
+                .Verify(c => c.Handle(It.IsAny<List<ValidationFailure>>()), Times.Never);
+            
+            _empresaRepositoryMock
+                .Verify(c => c.AtualizarEmpresa(It.IsAny<Empresa>()), Times.Never);
+            _empresaRepositoryMock
+                .Verify(c => c.UnitOfWork.Commit(), Times.Never);
+        }
+    }
+    
+    [Fact]
+    public async Task Atualizar_EmpresaInvalida_HandleErros()
+    {
+        // Arrange
+        SetupMocks(true);
+        
+        const int id = 1;
+        var dto = new AtualizarEmpresaDto
+        {
+            Id = 1,
+            Nome = "Embraer",
+            Email = "Embraer@gmail.com",
+            NomeDaEmpresa = "Embraer",
+            Telefone = "85 988888888",
+        };
+        
+        // Act
+        var empresa = await _empresaService.AtualizarEmpresa( id, dto);
+
+        // Assert
+        using (new AssertionScope())
+        {
+            empresa.Should().BeNull();
+
+          
+            _empresaRepositoryMock
+                .Verify(c => c.AtualizarEmpresa(It.IsAny<Empresa>()), Times.Never);
+            _empresaRepositoryMock
+                .Verify(c => c.UnitOfWork.Commit(), Times.Never);
+        }
+    }
+    
+    [Fact]
+    public async Task Atualizar_SucessoAoComitar_EmpresaDto()
+    {
+        //Arrange
+        SetupMocks(commit: true);
+
+        const int id = 1;
+        var dto = new AtualizarEmpresaDto
+        {
+            Id = 1,
+            Nome = "Embraer",
+            Email = "Embraer@gmail.com",
+            NomeDaEmpresa = "Embraer",
+            Telefone = "85 988888888",
+        };
+        
+        //Act
+        var empresa = await _empresaService.AtualizarEmpresa(id, dto);
+        
+        //Assert
+        using (new AssertionScope())
+        {
+            empresa.Should().BeNull();
+
+            NotificatorMock
+                .Verify(c => c.Handle(It.IsAny<string>()), Times.Never);
+            _empresaRepositoryMock
+                .Verify(c => c.AtualizarEmpresa(It.IsAny<Empresa>()), Times.Never);
+            _empresaRepositoryMock
+                .Verify(c => c.UnitOfWork.Commit(), Times.Never);
+        }
+    }
+
+    #endregion
     
 }

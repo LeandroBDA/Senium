@@ -21,5 +21,14 @@ public class EmpresaRepository : Repository<Empresa>, IEmpresaRepository
     {
         return await Context.Empresas.AsNoTrackingWithIdentityResolution().ToListAsync();
     }
-    
+
+    public void AtualizarEmpresa(Empresa empresa)
+    {
+        Context.Empresas.Update(empresa);
+    }
+    public async Task<Empresa?> ObterEmpresaPorId(int id)
+    {
+        return await Context.Empresas.AsNoTrackingWithIdentityResolution()
+            .FirstOrDefaultAsync(c => Equals(c.Id, id));
+    }
 }

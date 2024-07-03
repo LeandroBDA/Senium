@@ -19,9 +19,9 @@ public class EmpresaService : BaseService, IEmpresaService
         _empresaRepository = empresaRepository;
     }
 
-    public async Task<EmpresaDto?> AdicionarEmpresa(AdicionarEmpresaDto dto)
+    public async Task<EmpresaDto?> AdicionarEmpresa(AdicionarEmpresaDto empresaDto)
     {
-        var empresa = Mapper.Map<Empresa>(dto);
+        var empresa = Mapper.Map<Empresa>(empresaDto);
 
         if (!await Validar(empresa))
         {
@@ -38,6 +38,49 @@ public class EmpresaService : BaseService, IEmpresaService
         Notificator.Handle("Não foi possível cadastrar a empresa");
         return null;
     }
+    
+    public async Task<EmpresaDto?> AtualizarEmpresa(int id, AtualizarEmpresaDto empresaDto)
+    {
+        if (id != empresaDto.Id)
+        {
+            Notificator.Handle("Os Ids não conferem");
+            return null;
+        }
+        
+        var empresa = await _empresaRepository.ObterEmpresaPorId(id);
+        if (empresa == null)
+        {
+            Notificator.HandleNotFoundResource();
+            return null;
+        }
+        
+        Mapper.Map(empresaDto, empresa);
+        
+        if (!await ValidarAtualizacao(empresa))
+        {
+            return null;
+        }
+        
+        _empresaRepository.AtualizarEmpresa(empresa);
+      
+        if (await _empresaRepository.UnitOfWork.Commit())
+        {
+            return Mapper.Map<EmpresaDto>(empresa);
+        }
+      
+        return null;
+    }
+    public Task<bool> ValidarAtualizacao(Empresa empresa)
+    {
+        if (!empresa.Validar(out var validationResult))
+        {
+            Notificator.Handle(validationResult.Errors);
+            return Task.FromResult(false);
+        }
+
+        return Task.FromResult(!Notificator.HasNotification);
+    }
+    
     public async Task<List<EmpresaDto>?> ObterTodasEmpresas()
     {
         var empresa = await _empresaRepository.ObterTodasEmpresas();

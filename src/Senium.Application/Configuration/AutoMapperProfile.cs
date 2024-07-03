@@ -26,7 +26,8 @@ public class AutoMapperProfile : Profile
 
         CreateMap<EmpresaDto, Empresa>().ReverseMap();
         CreateMap<AdicionarEmpresaDto, Empresa>();
-
+        CreateMap<AtualizarEmpresaDto, Empresa>();
+        
         #endregion
         
         #region Curriculo
