@@ -39,8 +39,8 @@ public class Curriculo : Entity, IAggregateRoot
     public string Titulo { get; set; } = null!;
     public string AreaDeAtuacao { get; set; } = null!;
     public string ResumoProfissional { get; set; } = null!;
-    public string Linkedin { get; set; } = null!;
-    public string Portfolio { get; set; } = null!;
+    public string? Linkedin { get; set; }
+    public string? Portfolio { get; set; }
     
     public bool Clt { get; set; }
     public bool Pj { get; set; }

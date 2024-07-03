@@ -147,7 +147,6 @@ namespace Senium.Infra.Data.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Linkedin")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("Pdf")
@@ -160,7 +159,6 @@ namespace Senium.Infra.Data.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Portfolio")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<bool>("Presencial")
