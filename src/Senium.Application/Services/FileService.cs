@@ -14,7 +14,7 @@ public class FileService : BaseService, IFileService
     private readonly AppSettings _appSettings;
     private readonly UploadSettings _uploadSettings;
     
-    private const long MaxFileSizeInBytes = 5 * 1024 * 1024; // 5 MB
+    private const long MaxFileSizeInBytes = 5 * 1024 * 1024;
     
     public FileService(INotificator notificator, IMapper mapper, IOptions<AppSettings> appSettings, IOptions<UploadSettings> uploadSettings) : base(notificator, mapper)
     {
@@ -42,8 +42,8 @@ public class FileService : BaseService, IFileService
             return null; 
         }
         
-        var fileName = GenerateNewFileName(arquivo.FileName, pathAccess, EUploadPath.FotoUsuarios, urlLimitLength);
-        var filePath = MountFilePath(fileName, pathAccess, EUploadPath.FotoUsuarios);
+        var fileName = GenerateNewFileName(arquivo.FileName, pathAccess, uploadPath, urlLimitLength);
+        var filePath = MountFilePath(fileName, pathAccess, uploadPath);
 
         try
         {
@@ -56,7 +56,7 @@ public class FileService : BaseService, IFileService
             await File.WriteAllBytesAsync(filePath, ConvertFileInByteArray(arquivo));
         }
 
-        return GetFileUrl(fileName, pathAccess, EUploadPath.FotoUsuarios);
+        return GetFileUrl(fileName, pathAccess, uploadPath);
     }
 
     public async Task<string?> UploadPdf(IFormFile arquivo, EUploadPath uploadPath, EPathAccess pathAccess = EPathAccess.Private, int urlLimitLength = 255)
@@ -65,11 +65,11 @@ public class FileService : BaseService, IFileService
         if (arquivo.Length > MaxFileSizeInBytes)
         {
             Notificator.Handle($"O arquivo deve ter no máximo {MaxFileSizeInBytes / (1024 * 1024)} MB.");
-            return null; // Retorna null para indicar que o upload não foi realizado
+            return null;
         }
 
-        var fileName = GenerateNewFileName(arquivo.FileName, pathAccess, EUploadPath.PdfUsuarios, urlLimitLength);
-        var filePath = MountFilePath(fileName, pathAccess, EUploadPath.PdfUsuarios);
+        var fileName = GenerateNewFileName(arquivo.FileName, pathAccess, uploadPath, urlLimitLength);
+        var filePath = MountFilePath(fileName, pathAccess, uploadPath);
 
         try
         {
@@ -82,21 +82,20 @@ public class FileService : BaseService, IFileService
             await File.WriteAllBytesAsync(filePath, ConvertFileInByteArray(arquivo));
         }
 
-        return GetFileUrl(fileName, pathAccess, EUploadPath.PdfUsuarios);
+        return GetFileUrl(fileName, pathAccess, uploadPath);
     }
-
-
+    
     public string ObterPath(Uri uri)
     {
         return GetFilePath(uri);
     }
-
+    
     public bool Apagar(Uri uri)
     {
         try
         {
             var filePath = GetFilePath(uri);
-
+        
             new FileInfo(filePath).Delete();
             return true;
         }
@@ -110,26 +109,26 @@ public class FileService : BaseService, IFileService
     private string GenerateNewFileName(string fileName, EPathAccess pathAccess, EUploadPath uploadPath, int limit = 255)
     {
         var guid = Guid.NewGuid().ToString("N");
-        var newFileName = fileName.Replace("-", "");
-        var url = GetFileUrl($"{guid}_{newFileName}", pathAccess, uploadPath);
-
+        var clearedFileName = fileName.Replace("-", "");
+        var url = GetFileUrl($"{guid}_{clearedFileName}", pathAccess, uploadPath);
+        
         if (url.Length <= limit)
         {
-            return newFileName;
+            return $"{guid}_{clearedFileName}";
         }
-
+        
         var remove = url.Length - limit;
-        newFileName = newFileName.Remove(newFileName.Length - remove - Path.GetExtension(newFileName).Length, remove);
+        clearedFileName = clearedFileName.Remove(clearedFileName.Length - remove - Path.GetExtension(clearedFileName).Length, remove);
 
-        return $"{guid}_{newFileName}";
+        return $"{guid}_{clearedFileName}";
     }
-
+    
     private string MountFilePath(string fileName, EPathAccess pathAccess, EUploadPath uploadPath)
     {
         var path = pathAccess == EPathAccess.Private ? _uploadSettings.PrivateBasePath : _uploadSettings.PublicBasePath;
         return Path.Combine(path, uploadPath.ToDescriptionString(), fileName);
     }
-
+    
     private string GetFileUrl(string fileName, EPathAccess pathAccess, EUploadPath uploadPath)
     {
         return Path.Combine(_appSettings.UrlApi, pathAccess.ToDescriptionString(), uploadPath.ToDescriptionString(),
@@ -156,20 +155,16 @@ public class FileService : BaseService, IFileService
         {
             filePath = filePath.Remove(0, 1);
         }
+        
+        var basePath = pathAccess == EPathAccess.Private ? _uploadSettings.PrivateBasePath : _uploadSettings.PublicBasePath;
 
-        var basePath = pathAccess == EPathAccess.Private
-            ? _uploadSettings.PrivateBasePath
-            : _uploadSettings.PublicBasePath;
-
-        return Path.Combine(basePath, filePath);
+        return  Path.Combine(basePath, filePath);
     }
-
+    
     private static byte[] ConvertFileInByteArray(IFormFile file)
     {
         using var memoryStream = new MemoryStream();
         file.CopyTo(memoryStream);
         return memoryStream.ToArray();
     }
-
-
 }
