@@ -23,7 +23,7 @@ public class FileService : BaseService, IFileService
     }
     
     public async Task<string?> UploadPhoto(IFormFile arquivo, EUploadPath uploadPath,
-        EPathAccess pathAccess = EPathAccess.Private, int urlLimitLength = 255)
+        EPathAccess pathAccess = EPathAccess.Public, int urlLimitLength = 255)
     {
         const long maxFileSizeInBytes = 2 * 1024 * 1024;
        
@@ -43,7 +43,7 @@ public class FileService : BaseService, IFileService
         }
         
         var fileName = GenerateNewFileName(arquivo.FileName, pathAccess, uploadPath, urlLimitLength);
-        var filePath = MountFilePath(fileName, pathAccess, uploadPath);
+        var filePath = MountFilePath(fileName, uploadPath);
 
         try
         {
@@ -59,7 +59,7 @@ public class FileService : BaseService, IFileService
         return GetFileUrl(fileName, pathAccess, uploadPath);
     }
 
-    public async Task<string?> UploadPdf(IFormFile arquivo, EUploadPath uploadPath, EPathAccess pathAccess = EPathAccess.Private, int urlLimitLength = 255)
+    public async Task<string?> UploadPdf(IFormFile arquivo, EUploadPath uploadPath, EPathAccess pathAccess = EPathAccess.Public, int urlLimitLength = 255)
     {
         
         if (arquivo.Length > MaxFileSizeInBytes)
@@ -69,7 +69,7 @@ public class FileService : BaseService, IFileService
         }
 
         var fileName = GenerateNewFileName(arquivo.FileName, pathAccess, uploadPath, urlLimitLength);
-        var filePath = MountFilePath(fileName, pathAccess, uploadPath);
+        var filePath = MountFilePath(fileName, uploadPath);
 
         try
         {
@@ -123,9 +123,9 @@ public class FileService : BaseService, IFileService
         return $"{guid}_{clearedFileName}";
     }
     
-    private string MountFilePath(string fileName, EPathAccess pathAccess, EUploadPath uploadPath)
+    private string MountFilePath(string fileName, EUploadPath uploadPath)
     {
-        var path = pathAccess == EPathAccess.Private ? _uploadSettings.PrivateBasePath : _uploadSettings.PublicBasePath;
+        var path = _uploadSettings.PublicBasePath;
         return Path.Combine(path, uploadPath.ToDescriptionString(), fileName);
     }
     
@@ -156,7 +156,7 @@ public class FileService : BaseService, IFileService
             filePath = filePath.Remove(0, 1);
         }
         
-        var basePath = pathAccess == EPathAccess.Private ? _uploadSettings.PrivateBasePath : _uploadSettings.PublicBasePath;
+        var basePath = _uploadSettings.PublicBasePath;
 
         return  Path.Combine(basePath, filePath);
     }
