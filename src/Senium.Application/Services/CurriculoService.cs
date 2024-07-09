@@ -99,7 +99,7 @@ public class CurriculoService : BaseService, ICurriculoService
 
     public async Task<CurriculoDto?> AtualizarCurriculo(int id, AtualizarCurriculoDto curriculoDto)
     {
-        if (id != curriculoDto.Id)
+        if (id != curriculoDto.UsuarioId)
         {
             Notificator.Handle("Os IDs não conferem");
             return null;

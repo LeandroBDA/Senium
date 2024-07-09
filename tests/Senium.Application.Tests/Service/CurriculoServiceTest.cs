@@ -756,7 +756,7 @@ public class CurriculoServiceTest : BaseServiceTest, IClassFixture<ServicesFixtu
         const int id = 2;
         var dto = new AtualizarCurriculoDto
         {
-            Id = 1
+            UsuarioId = 1
         };
         
         //Act
@@ -788,7 +788,7 @@ public class CurriculoServiceTest : BaseServiceTest, IClassFixture<ServicesFixtu
         const int id = 2;
         var dto = new AtualizarCurriculoDto
         {
-            Id = 2
+            UsuarioId = 2
         };
         
         //Act
@@ -822,7 +822,7 @@ public class CurriculoServiceTest : BaseServiceTest, IClassFixture<ServicesFixtu
         const int id = 1;
         var dto = new AtualizarCurriculoDto
         {
-            Id = 1,
+            UsuarioId = 1,
             Telefone = "85 988888888",
             EstadoCivil = "Solteiro",
             Genero = "Masculino",
@@ -882,7 +882,7 @@ public class CurriculoServiceTest : BaseServiceTest, IClassFixture<ServicesFixtu
         const int id = 1;
         var dto = new AtualizarCurriculoDto
         {
-            Id = 1,
+            UsuarioId = 1,
             Telefone = "85 988888888",
             EstadoCivil = "Solteiro",
             Genero = "Masculino",
@@ -941,7 +941,7 @@ public class CurriculoServiceTest : BaseServiceTest, IClassFixture<ServicesFixtu
         const int id = 1;
         var dto = new AtualizarCurriculoDto
         {
-            Id = 1,
+            UsuarioId = 1,
             Telefone = "85 988888888",
             EstadoCivil = "Solteiro",
             Genero = "Masculino",
@@ -1002,7 +1002,7 @@ public class CurriculoServiceTest : BaseServiceTest, IClassFixture<ServicesFixtu
         const int id = 1;
         var dto = new AtualizarCurriculoDto
         {
-            Id = 1,
+            UsuarioId = 1,
             Telefone = "85 988888888",
             EstadoCivil = "Solteiro",
             Genero = "Masculino",
@@ -1055,7 +1055,7 @@ public class CurriculoServiceTest : BaseServiceTest, IClassFixture<ServicesFixtu
         const int id = 1;
         var dto = new AtualizarCurriculoDto
         {
-            Id = 1,
+            UsuarioId = 1,
             Telefone = "85 988888888",
             EstadoCivil = "Solteiro",
             Genero = "Masculino",
@@ -1109,7 +1109,7 @@ public async Task Atualizar_CurriculoComPdf_MaiorQueLimite_NotificacaoErro()
     const int id = 1;
     var dto = new AtualizarCurriculoDto
     {
-        Id = id,
+        UsuarioId = id,
         Telefone = "85 988888888",
         EstadoCivil = "Solteiro",
         Genero = "Masculino",
@@ -1166,7 +1166,7 @@ public async Task Atualizar_CurriculoComPdf_MaiorQueLimite_NotificacaoErro()
         const int id = 1;
         var dto = new AtualizarCurriculoDto
         {
-            Id = id,
+            UsuarioId = id,
             Telefone = "85 988888888",
             EstadoCivil = "Solteiro",
             Genero = "Masculino",
@@ -1221,7 +1221,7 @@ public async Task Atualizar_CurriculoComPdf_MaiorQueLimite_NotificacaoErro()
         const int id = 1;
         var dto = new AtualizarCurriculoDto
         {
-            Id = id,
+            UsuarioId = id,
             Pdf = file.Object // Este é o objeto do arquivo PDF, fornecido pelo mock
         };
 
@@ -1247,7 +1247,7 @@ public async Task Atualizar_CurriculoComPdf_MaiorQueLimite_NotificacaoErro()
         const int id = 1;
         var dto = new AtualizarCurriculoDto
         {
-            Id = 1,
+            UsuarioId = 1,
             Telefone = "85 988888888",
             EstadoCivil = "Solteiro",
             Genero = "Masculino",
@@ -1301,7 +1301,7 @@ public async Task Atualizar_CurriculoComPdf_MaiorQueLimite_NotificacaoErro()
         const int id = 1;
         var dto = new AtualizarCurriculoDto
         {
-            Id = 1,
+            UsuarioId = 1,
             Telefone = "85 988888888",
             EstadoCivil = "Solteiro",
             Genero = "Masculino",
@@ -1355,7 +1355,7 @@ public async Task Atualizar_CurriculoComPdf_MaiorQueLimite_NotificacaoErro()
         const int id = 1;
         var dto = new AtualizarCurriculoDto
         {
-            Id = id,
+            UsuarioId = id,
             Telefone = "85 988888888",
             EstadoCivil = "Solteiro",
             Genero = "Masculino",
@@ -1411,7 +1411,7 @@ public async Task Atualizar_CurriculoComPdf_MaiorQueLimite_NotificacaoErro()
         const int id = 1;
         var dto = new AtualizarCurriculoDto
         {
-            Id = id,
+            UsuarioId = id,
             Telefone = "85 988888888",
             EstadoCivil = "Solteiro",
             Genero = "Masculino",
@@ -1466,7 +1466,7 @@ public async Task Atualizar_CurriculoComPdf_MaiorQueLimite_NotificacaoErro()
         const int id = 1;
         var dto = new AtualizarCurriculoDto
         {
-            Id = id,
+            UsuarioId = id,
             Photo = file.Object 
         };
 
