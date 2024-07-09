@@ -29,7 +29,7 @@ public class CurriculoController : BaseController
     }
     
     [HttpPut("{id}")]
-    [SwaggerOperation(Summary = "Atualizar curriculo do usuário", Tags = new[] { " Curriculo " })]
+    [SwaggerOperation(Summary = "Atualizar curriculo por id do usuario", Tags = new[] { " Curriculo " })]
     [ProducesResponseType(typeof(CurriculoDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

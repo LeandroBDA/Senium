@@ -4,7 +4,7 @@ namespace Senium.Application.Dto.V1.Curriculo;
 
 public class AtualizarCurriculoDto
 {
-    public int Id { get; set; }
+    public int UsuarioId { get; set; }
     public string Telefone { get; set; } = null!;
     public string EstadoCivil { get; set; } = null!;
     public string Genero { get; set; } = null!;

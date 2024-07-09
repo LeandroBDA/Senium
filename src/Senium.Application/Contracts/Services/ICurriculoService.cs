@@ -6,6 +6,6 @@ public interface ICurriculoService
 {
     Task<CurriculoDto?> ObterCurriculoPorUsuarioId(int id);
     Task<CurriculoDto?> AdicionarCurriculo(AdicionarCurriculoDto curriculodto);
-    Task<CurriculoDto?> AtualizarCurriculo(int id, AtualizarCurriculoDto curriculoDto);
+    Task<CurriculoDto?> AtualizarCurriculo(int usuarioId, AtualizarCurriculoDto curriculoDto);
     Task<List<CurriculoDto>?> ObterTodosCurriculo();
 }
