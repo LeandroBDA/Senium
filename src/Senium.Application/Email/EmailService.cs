@@ -20,7 +20,7 @@ public class EmailService : IEmailService
     
     public async Task EnviarEmailRecuperarSenhaUsuario(Usuario usuario)
     {
-        var url = $"{_appSettings.UrlComum}/resetar-senha?token={usuario.TokenDeResetSenha}";
+        var url = $"{_appSettings.UrlComum}/resetar-senha?token={usuario.TokenDeResetSenha}&role=user";
         var body = 
             $"Olá {usuario.Nome},<br><br>" +
             "Você solicitou a redefinição de senha para a sua conta na Senium Talentos. Para continuar, clique no botão abaixo e siga as instruções para criar uma nova senha segura:<br><br>" +
@@ -41,7 +41,7 @@ public class EmailService : IEmailService
     
     public async Task EnviarEmailRecuperarSenhaAdministrador(Administrador administrador)
     {
-        var url = $"{_appSettings.UrlGestao}/resetar-senha?token={administrador.TokenDeResetSenha}";
+        var url = $"{_appSettings.UrlComum}/resetar-senha?token={administrador.TokenDeResetSenha}&role=admin";
         var body = 
             $"Olá {administrador.Nome},<br><br>" +
             "Você solicitou a redefinição de senha para a sua conta na Senium Talentos. Para continuar, clique no botão abaixo e siga as instruções para criar uma nova senha segura:<br><br>" +

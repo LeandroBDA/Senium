@@ -149,11 +149,11 @@ public class AdministradorAuthService : BaseService, IAdministradorAuthService
         
         if(administrador.Id == 1)
         {
-            claimsIdentity.AddClaim(new Claim("TipoAdministrador", ETipoUsuario.AdministradorGeral.ToString()));
+            claimsIdentity.AddClaim(new Claim("TipoUsuario", ETipoUsuario.AdministradorGeral.ToString()));
         }
         else
         {
-            claimsIdentity.AddClaim(new Claim("TipoAdministrador", ETipoUsuario.AdministradorComum.ToString()));
+            claimsIdentity.AddClaim(new Claim("TipoUsuario", ETipoUsuario.AdministradorComum.ToString()));
         }
 
         var key = await _jwtService.GetCurrentSigningCredentials();
