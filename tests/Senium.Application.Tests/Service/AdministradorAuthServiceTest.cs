@@ -129,7 +129,7 @@ public class AdministradorAuthServiceTest : BaseServiceTest, IClassFixture<Servi
         Assert.NotNull(jsonToken);
 
         Assert.True(jsonToken?.Claims.Any(c =>
-            c.Type == "TipoAdministrador" && c.Value == ETipoUsuario.AdministradorComum.ToString()));
+            c.Type == "TipoUsuario" && c.Value == ETipoUsuario.AdministradorComum.ToString()));
     }
 
     [Fact]
