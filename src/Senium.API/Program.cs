@@ -50,6 +50,8 @@ builder
 
 var app = builder.Build();
 
+app.UseCors("default");
+
 app.UseApiConfiguration(app.Services, app.Environment);
 
 if (!app.Environment.IsProduction())
