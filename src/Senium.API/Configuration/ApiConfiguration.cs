@@ -44,7 +44,7 @@ public static class ApiConfiguration
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             });
 
-         services
+        services
             .AddCors(o => 
             {
                 o.AddPolicy("default", policy =>
