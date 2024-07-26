@@ -56,7 +56,7 @@ public class FileService : BaseService, IFileService
             await File.WriteAllBytesAsync(filePath, ConvertFileInByteArray(arquivo));
         }
 
-        return GetFileUrl(fileName, pathAccess, uploadPath);
+        return fileName;
     }
 
     public async Task<string?> UploadPdf(IFormFile arquivo, EUploadPath uploadPath, EPathAccess pathAccess = EPathAccess.Public, int urlLimitLength = 255)
@@ -132,6 +132,12 @@ public class FileService : BaseService, IFileService
     private string GetFileUrl(string fileName, EPathAccess pathAccess, EUploadPath uploadPath)
     {
         return Path.Combine(_appSettings.UrlApi, pathAccess.ToDescriptionString(), uploadPath.ToDescriptionString(),
+            fileName);
+    }
+    
+    private string GetFilePhoto(string fileName, EPathAccess pathAccess, EUploadPath uploadPath)
+    {
+        return Path.Combine(pathAccess.ToDescriptionString(), uploadPath.ToDescriptionString(),
             fileName);
     }
 
