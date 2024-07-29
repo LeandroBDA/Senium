@@ -56,7 +56,7 @@ public class FileService : BaseService, IFileService
             await File.WriteAllBytesAsync(filePath, ConvertFileInByteArray(arquivo));
         }
 
-        return fileName;
+        return GetFileUrl(fileName, pathAccess, uploadPath);
     }
 
     public async Task<string?> UploadPdf(IFormFile arquivo, EUploadPath uploadPath, EPathAccess pathAccess = EPathAccess.Public, int urlLimitLength = 255)
