@@ -49,6 +49,14 @@ public static class ApiConfiguration
             o.AddPolicy("default", policy =>
             {
                 policy
+                    .AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+            });
+
+            o.AddPolicy("specificOrigin", policy =>
+            {
+                policy
                     .WithOrigins("https://senium-h.maracanau.ifce.edu.br")
                     .AllowAnyHeader()
                     .AllowAnyMethod();
@@ -75,6 +83,7 @@ public static class ApiConfiguration
         });
         
         app.UseCors("default");
+        app.UseCors("specificOrigin");
     }
 
     private sealed class SlugifyParameterTransformer : IOutboundParameterTransformer
