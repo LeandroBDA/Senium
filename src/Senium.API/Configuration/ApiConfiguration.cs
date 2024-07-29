@@ -44,17 +44,16 @@ public static class ApiConfiguration
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             });
 
-        services
-            .AddCors(o => 
+        services.AddCors(o => 
+        {
+            o.AddPolicy("default", policy =>
             {
-                o.AddPolicy("default", policy =>
-                {
-                    policy
-                        .AllowAnyOrigin()
-                        .AllowAnyHeader()
-                        .AllowAnyMethod();
-                });
+                policy
+                    .WithOrigins("https://senium-h.maracanau.ifce.edu.br")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
             });
+        });
         
         services
             .Configure<ApiBehaviorOptions>(options =>
