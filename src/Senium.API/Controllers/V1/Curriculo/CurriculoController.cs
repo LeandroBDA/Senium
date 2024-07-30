@@ -64,4 +64,19 @@ public class CurriculoController : BaseController
         return OkResponse(curriculo);
     }
     
+    [HttpGet("{id}/foto")]
+    [SwaggerOperation(Summary = "Obter foto do currículo por ID", Tags = new[] { " Curriculo " })]
+    [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ObterFotoPorId(int id)
+    {
+        var fotoBytes = await _curriculoService.ObterFotoPorId(id);
+        if (fotoBytes == null)
+        {
+            return NotFound();
+        }
+
+        return File(fotoBytes, "image/jpeg"); // Ajuste o MIME type conforme necessário
+    }
+
 }
