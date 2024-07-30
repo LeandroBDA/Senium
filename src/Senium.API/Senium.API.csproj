@@ -34,4 +34,10 @@
       <ProjectReference Include="..\Senium.Infra.Data\Senium.Infra.Data.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <SonarQubeSetting Include="sonar.coverage.exclusions">
+            <Value>**/*.*</Value>
+        </SonarQubeSetting>
+    </ItemGroup>
+
 </Project>

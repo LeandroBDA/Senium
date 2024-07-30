@@ -26,4 +26,16 @@
       <ProjectReference Include="..\Senium.Domain\Senium.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+        <SonarQubeSetting Include="sonar.coverage.exclusions">
+            <Value>**/*.*</Value>
+        </SonarQubeSetting>
+    </ItemGroup>
+    
+    <ItemGroup>
+        <SonarQubeSetting Include="sonar.exclusions">
+            <Value>**/Migrations/*.*</Value>
+        </SonarQubeSetting>
+    </ItemGroup>
+
 </Project>
