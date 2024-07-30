@@ -15,5 +15,5 @@ variables:
   ASSEMBLY_FILTERS: '+Senium.Application;+Senium.Domain;+Senium.Core;-xunit*;-Senium.Infra.Data;-Senium.API;-Senium.API.*;'
   CLASS_FILTERS: '-*.DependencyInjection;'
 
-coverage:
+code-quality:
   allow_failure: true
