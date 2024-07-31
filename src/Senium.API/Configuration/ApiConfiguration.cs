@@ -53,14 +53,6 @@ public static class ApiConfiguration
                     .AllowAnyHeader()
                     .AllowAnyMethod();
             });
-
-            o.AddPolicy("specificOrigin", policy =>
-            {
-                policy
-                    .WithOrigins("https://senium-h.maracanau.ifce.edu.br")
-                    .AllowAnyHeader()
-                    .AllowAnyMethod();
-            });
         });
         
         services
@@ -83,7 +75,6 @@ public static class ApiConfiguration
         });
         
         app.UseCors("default");
-        app.UseCors("specificOrigin");
     }
 
     private sealed class SlugifyParameterTransformer : IOutboundParameterTransformer
