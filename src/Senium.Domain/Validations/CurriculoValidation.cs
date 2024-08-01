@@ -115,7 +115,7 @@ public class CurriculoValidation : AbstractValidator<Curriculo>
             .WithMessage("Selecione pelo menos uma modalidade de trabalho pretendida (Presencial, Remoto, Híbrido).");
     }
     
-    private bool SerUmaUrlValida(string url)
+    private bool SerUmaUrlValida(string? url)
 {
     if (string.IsNullOrEmpty(url))
     {
@@ -130,7 +130,7 @@ public class CurriculoValidation : AbstractValidator<Curriculo>
     return false;
 }
 
-private bool SerUmaUrlValidaDoLinkedIn(string url)
+private bool SerUmaUrlValidaDoLinkedIn(string? url)
 {
     if (string.IsNullOrEmpty(url))
     {
