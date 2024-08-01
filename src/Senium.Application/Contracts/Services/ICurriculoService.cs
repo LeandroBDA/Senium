@@ -8,5 +8,4 @@ public interface ICurriculoService
     Task<CurriculoDto?> AdicionarCurriculo(AdicionarCurriculoDto curriculodto);
     Task<CurriculoDto?> AtualizarCurriculo(int usuarioId, AtualizarCurriculoDto curriculoDto);
     Task<List<CurriculoDto>?> ObterTodosCurriculo();
-    Task<byte[]?> ObterFotoPorId(int id);
 }

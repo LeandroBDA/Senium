@@ -12,7 +12,7 @@ namespace Senium.API.Controllers.V1.Curriculo;
 public class CurriculoController : BaseController
 {
     private readonly ICurriculoService _curriculoService;
-    
+
     public CurriculoController(INotificator notificator, ICurriculoService curriculoService) : base(notificator)
     {
         _curriculoService = curriculoService;
@@ -27,7 +27,7 @@ public class CurriculoController : BaseController
     {
         return CreatedResponse("", await _curriculoService.AdicionarCurriculo(dto));
     }
-    
+
     [HttpPut("{id}")]
     [SwaggerOperation(Summary = "Atualizar curriculo por id do usuario", Tags = new[] { " Curriculo " })]
     [ProducesResponseType(typeof(CurriculoDto), StatusCodes.Status200OK)]
@@ -39,7 +39,7 @@ public class CurriculoController : BaseController
         var curriculo = await _curriculoService.AtualizarCurriculo(id, dto);
         return OkResponse(curriculo);
     }
-    
+
     [HttpGet("id/{id:int}")]
     [SwaggerOperation(Summary = "Obter curriculo por id do usuário", Tags = new[] { " Curriculo " })]
     [ProducesResponseType(typeof(CurriculoDto), StatusCodes.Status200OK)]
@@ -51,7 +51,7 @@ public class CurriculoController : BaseController
         var curriculo = await _curriculoService.ObterCurriculoPorUsuarioId(id);
         return OkResponse(curriculo);
     }
-    
+
     [HttpGet]
     [SwaggerOperation(Summary = "Obter todos os curriculo", Tags = new[] { " Curriculo " })]
     [ProducesResponseType(typeof(CurriculoDto), StatusCodes.Status200OK)]
@@ -63,20 +63,4 @@ public class CurriculoController : BaseController
         var curriculo = await _curriculoService.ObterTodosCurriculo();
         return OkResponse(curriculo);
     }
-    
-    [HttpGet("{id}/foto")]
-    [SwaggerOperation(Summary = "Obter foto do currículo por ID", Tags = new[] { " Curriculo " })]
-    [ProducesResponseType(typeof(FileResult), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> ObterFotoPorId(int id)
-    {
-        var fotoBytes = await _curriculoService.ObterFotoPorId(id);
-        if (fotoBytes == null)
-        {
-            return NotFound();
-        }
-
-        return File(fotoBytes, "image/jpeg"); // Ajuste o MIME type conforme necessário
-    }
-
 }

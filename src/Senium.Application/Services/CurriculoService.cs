@@ -172,28 +172,6 @@ public class CurriculoService : BaseService, ICurriculoService
         return Mapper.Map<List<CurriculoDto>>(curriculos);
     }
     
-    public async Task<byte[]?> ObterFotoPorId(int id)
-    {
-        var curriculo = await _curriculoRepository.ObterCurriculoPorUsuarioId(id);
-        if (curriculo == null || string.IsNullOrEmpty(curriculo.Photo))
-        {
-            Notificator.HandleNotFoundResource();
-            return null;
-        }
-
-        var photoUri = new Uri(curriculo.Photo);
-        var filePath = _fileService.ObterPath(photoUri);
-
-        if (!File.Exists(filePath))
-        {
-            Notificator.HandleNotFoundResource();
-            return null;
-        }
-
-        return await File.ReadAllBytesAsync(filePath);
-    }
-
-    
     public async Task<bool> Validar(Curriculo curriculo)
     {
         if (!curriculo.Validar(out var validationResult))
